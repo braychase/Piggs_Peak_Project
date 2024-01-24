@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1NScXL2GnG/6YcyPpxtyOq8PGPy23+UZKM6dmnIZ0nBLlHwbagPvEF3L4hh/um7nKJdwh5tHB/gFgx82wiXl4g==",
+  "dgSpecHash": "RZ1RMzfl1cm2i77gXkd6zdvpQ30z6gDdvcZsFYwZqCVCjR+z/+jFb1YUs4UsZeGvaQdukRpkF3ToZZTiWKq+kQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\ba-ch\\OneDrive\\Documents\\Y2_Semester_2\\PiggsPeak\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj",
+  "projectFilePath": "C:\\Users\\ba-ch\\OneDrive\\Documents\\Y2_Semester_2\\PiggsPeak\\Piggs_Peak_Project\\PPP-Server-Side\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ba-ch\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\ba-ch\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

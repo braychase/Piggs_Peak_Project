@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PiggsPeak_API.Classes;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
