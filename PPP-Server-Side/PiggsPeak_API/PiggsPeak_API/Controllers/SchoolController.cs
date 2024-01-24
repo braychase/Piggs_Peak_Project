@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
@@ -8,37 +9,74 @@ namespace PiggsPeak_API.Controllers
 	[ApiController]
 	public class SchoolController : ControllerBase
 	{
-		// GET: api/<SchoolController>
+		private readonly AppDbContext _dbContext;
+
+		public SchoolController(AppDbContext dbContext)
+		{
+			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+		}
+
+
 		[HttpGet]
-		public IEnumerable<School> Get()
+		public async Task<IEnumerable<School>> Get()
 		{
-			
-			return new School[] {new School(1, "One", "school one"), new School(2, "Two", "school two")};
+			return await _dbContext.Schools.ToListAsync();
 		}
 
-		// GET api/<SchoolController>/5
 		[HttpGet("{id}")]
-		public string Get(int id)
+		public async Task<ActionResult<School>> Get(int id)
 		{
-			return "value";
+			var school = await _dbContext.Schools.FindAsync(id);
+
+			if (school == null)
+			{
+				return NotFound();
+			}
+
+			return school;
 		}
 
-		// POST api/<SchoolController>
 		[HttpPost]
-		public void Post([FromBody] string value)
+		public async Task<IActionResult> Post([FromBody] School school)
 		{
+			_dbContext.Schools.Add(school);
+			await _dbContext.SaveChangesAsync();
+
+			return CreatedAtAction(nameof(Get), new { id = school.SchoolID }, school);
 		}
 
-		// PUT api/<SchoolController>/5
 		[HttpPut("{id}")]
-		public void Put(int id, [FromBody] string value)
+		public async Task<IActionResult> Put(int id, [FromBody] School updatedSchool)
 		{
+			var existingSchool = await _dbContext.Schools.FindAsync(id);
+
+			if (existingSchool == null)
+			{
+				return NotFound();
+			}
+
+			existingSchool.SchoolCode = updatedSchool.SchoolCode;
+			existingSchool.Description = updatedSchool.Description;
+
+			await _dbContext.SaveChangesAsync();
+
+			return NoContent();
 		}
 
-		// DELETE api/<SchoolController>/5
 		[HttpDelete("{id}")]
-		public void Delete(int id)
+		public async Task<IActionResult> Delete(int id)
 		{
+			var school = await _dbContext.Schools.FindAsync(id);
+
+			if (school == null)
+			{
+				return NotFound();
+			}
+
+			_dbContext.Schools.Remove(school);
+			await _dbContext.SaveChangesAsync();
+
+			return NoContent();
 		}
 	}
 }
