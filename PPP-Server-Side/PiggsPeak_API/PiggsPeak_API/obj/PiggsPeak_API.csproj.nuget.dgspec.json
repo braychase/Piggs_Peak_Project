@@ -1,28 +1,28 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ba-ch\\OneDrive\\Documents\\Y2_Semester_2\\PiggsPeak\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj": {}
+    "C:\\Users\\chris.rendell\\Documents\\PiggsPeak\\PPP-Server-Side\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ba-ch\\OneDrive\\Documents\\Y2_Semester_2\\PiggsPeak\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj": {
+    "C:\\Users\\chris.rendell\\Documents\\PiggsPeak\\PPP-Server-Side\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ba-ch\\OneDrive\\Documents\\Y2_Semester_2\\PiggsPeak\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj",
+        "projectUniqueName": "C:\\Users\\chris.rendell\\Documents\\PiggsPeak\\PPP-Server-Side\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj",
         "projectName": "PiggsPeak_API",
-        "projectPath": "C:\\Users\\ba-ch\\OneDrive\\Documents\\Y2_Semester_2\\PiggsPeak\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj",
-        "packagesPath": "C:\\Users\\ba-ch\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ba-ch\\OneDrive\\Documents\\Y2_Semester_2\\PiggsPeak\\PiggsPeak_API\\PiggsPeak_API\\obj\\",
+        "projectPath": "C:\\Users\\chris.rendell\\Documents\\PiggsPeak\\PPP-Server-Side\\PiggsPeak_API\\PiggsPeak_API\\PiggsPeak_API.csproj",
+        "packagesPath": "C:\\Users\\chris.rendell\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\chris.rendell\\Documents\\PiggsPeak\\PPP-Server-Side\\PiggsPeak_API\\PiggsPeak_API\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ba-ch\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\chris.rendell\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net7.0"
+          "net6.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -30,8 +30,8 @@
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net7.0": {
-            "targetAlias": "net7.0",
+          "net6.0": {
+            "targetAlias": "net6.0",
             "projectReferences": {}
           }
         },
@@ -42,8 +42,8 @@
         }
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net6.0": {
+          "targetAlias": "net6.0",
           "dependencies": {
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
@@ -83,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.402\\RuntimeIdentifierGraph.json"
         }
       }
     }

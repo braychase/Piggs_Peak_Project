@@ -1,2 +1,4 @@
-
-PPP-Client-Side/PiggsPeakProject_v1/package-lock.json
+bin/
+obj/
+.vs/
+package-lock.json
