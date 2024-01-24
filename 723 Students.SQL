@@ -6,6 +6,7 @@ select * from Student_Grade ;
 DELETE from Student_Grade where StudentGrade_id > 0;
 */
 
+tweak
 
 INSERT INTO Student
 (Student_id, Student_nm, First_nm, Last_nm, StudentCode_tx, Birth_dt, Gender_tx, Sponsored_yn, OVC_yn, deleted_yn, active_yn) VALUES (1, 'DLAMINI, Ayanda', 'Ayanda', 'DLAMINI', 'PCH-2013-01', '1999-10-17', 'F', 'Y', 'Y', 'N', 'N');
