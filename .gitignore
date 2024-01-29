@@ -1,4 +1,5 @@
-
+bin/*
+obj/*
+.vs/*
 PPP-Client-Side/PiggsPeakProject_v1/package-lock.json
-PPP-Server-Side/PiggsPeak_API/PiggsPeak_API/Migrations/20240124192524_YourMigrationName.cs
-PPP-Server-Side/PiggsPeak_API/PiggsPeak_API/Migrations/20240124192524_YourMigrationName.Designer.cs
+PPP-Server-Side/PiggsPeak_API/PiggsPeak_API/Migrations/*
