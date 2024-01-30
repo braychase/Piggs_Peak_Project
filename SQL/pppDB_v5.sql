@@ -223,39 +223,42 @@ CREATE TABLE Student_Note (
     FOREIGN KEY (Student_id) REFERENCES Student(Student_id) ON DELETE CASCADE
 );
 
-CREATE TABLE Party(
-	Party_id smallint NOT NULL,
-	Party_nm varchar(60) NOT NULL,
-	Login_id varchar(12) NULL,
-	Password_Hash_tx varchar(255) NULL,
-	Group_yn char(1) NOT NULL,
-	Password_Change_dt datetime NULL,
-	Admin_yn char(1) NOT NULL,
-	Failed_Login_nb tinyint NULL,
-	Last_Login_dt datetime NULL,
-	Disabled_yn char(1) NOT NULL,
-	Failed_Login_dt datetime NULL,
-	Deleted_yn char(1) NOT NULL,
-	Created_by varchar(20) NULL,
-	Created_dt datetime NULL,
-	Modified_by varchar(20) NULL,
-	Created_tz varchar(6) NULL,
-	Modified_dt datetime NULL,
-	Modified_tz varchar(6) NULL
-	);
+CREATE TABLE Party (
+    Party_id smallint NOT NULL PRIMARY KEY,
+    Party_nm varchar(60) NOT NULL,
+    Login_id varchar(12) NULL,
+    Password_Hash_tx varchar(255) NULL,
+    Group_yn char(1) NOT NULL,
+    Password_Change_dt datetime NULL,
+    Admin_yn char(1) NOT NULL,
+    Failed_Login_nb tinyint NULL,
+    Last_Login_dt datetime NULL,
+    Disabled_yn char(1) NOT NULL,
+    Failed_Login_dt datetime NULL,
+    Deleted_yn char(1) NOT NULL,
+    Created_by varchar(20) NULL,
+    Created_dt datetime NULL,
+    Modified_by varchar(20) NULL,
+    Created_tz varchar(6) NULL,
+    Modified_dt datetime NULL,
+    Modified_tz varchar(6) NULL
+);
 
-CREATE TABLE Permission(
-	Permission_id smallint NOT NULL,
-	Permission_nm varchar(20) NOT NULL,
-	Description_tx varchar(60) NULL,
-	Permit_yn char(1) NOT NULL
-	);
+CREATE TABLE Permission (
+    Permission_id smallint NOT NULL PRIMARY KEY,
+    Permission_nm varchar(20) NOT NULL,
+    Description_tx varchar(60) NULL,
+    Permit_yn char(1) NOT NULL
+);
 
-CREATE TABLE Party_Permission(
-	Party_id smallint NOT NULL,
-	Permission_id smallint NOT NULL,
-	Permit_yn char(1) NOT NULL
-	);
+CREATE TABLE Party_Permission (
+    Party_id smallint NOT NULL,
+    Permission_id smallint NOT NULL,
+    Permit_yn char(1) NOT NULL,
+    PRIMARY KEY (Party_id, Permission_id),
+    FOREIGN KEY (Party_id) REFERENCES Party(Party_id),
+    FOREIGN KEY (Permission_id) REFERENCES Permission(Permission_id)
+);
 
 INSERT Permission (Permission_id, Permission_nm, Description_tx, Permit_yn) 	
 	VALUES (1, 'Pref', 'Preferences', 'Y');
