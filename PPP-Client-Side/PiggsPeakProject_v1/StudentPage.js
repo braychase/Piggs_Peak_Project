@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import { getStudents } from "./StudentService";
 import { DataTable, Button, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -62,13 +62,22 @@ const StudentPage = () => {
         ))}
       </DataTable>
 
-      <View style={styles.navigationButtons}>
+      {/* <View style={styles.navigationButtons}>
         <Button onPress={goToPrevPage} mode="contained">
           Prev
         </Button>
         <Button onPress={goToNextPage} mode="contained">
           Next
         </Button>
+      </View> */}
+
+      <View style={styles.navigationButtons}>
+        <Pressable onPress={goToPrevPage}>
+          <Text><FontAwesomeIcon icon={faArrowLeft} style={{marginRight: 2}} />Prev</Text>
+        </Pressable>
+        <Pressable onPress={goToNextPage}>
+          <Text><FontAwesomeIcon icon={faArrowRight} style={{marginRight: 2}} />Next</Text>
+        </Pressable>
       </View>
 
       <View style={styles.filterContainer}>
