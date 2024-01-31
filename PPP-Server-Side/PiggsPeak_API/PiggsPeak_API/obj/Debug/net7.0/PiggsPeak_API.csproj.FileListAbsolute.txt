@@ -74,3 +74,9 @@ C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP
 C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\obj\Debug\net7.0\PiggsPeak_API.pdb
 C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\obj\Debug\net7.0\PiggsPeak_API.genruntimeconfig.cache
 C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\obj\Debug\net7.0\ref\PiggsPeak_API.dll
+C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\bin\Debug\net7.0\System.Web.Cors.dll
+C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\bin\Debug\net7.0\System.Net.Http.Formatting.dll
+C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\bin\Debug\net7.0\System.Web.Http.dll
+C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\bin\Debug\net7.0\System.Web.Http.Cors.dll
+C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\bin\Debug\net7.0\Newtonsoft.Json.dll
+C:\Users\ba-ch\OneDrive\Documents\Y2_Semester_2\PiggsPeak\Piggs_Peak_Project\PPP-Server-Side\PiggsPeak_API\PiggsPeak_API\bin\Debug\net7.0\Newtonsoft.Json.Bson.dll

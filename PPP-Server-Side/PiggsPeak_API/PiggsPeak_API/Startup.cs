@@ -22,12 +22,6 @@ namespace PiggsPeak_API
 				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
 			services.AddControllers();
-
-			services.AddCors(options =>
-			{
-				options.AddPolicy("AllowOrigin",
-					builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-			});
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,9 +34,6 @@ namespace PiggsPeak_API
 			app.UseHttpsRedirection();
 
 			app.UseRouting();
-
-			// Use CORS
-			app.UseCors("AllowOrigin");
 
 			app.UseAuthorization();
 

@@ -1,9 +1,9 @@
-// App.js
 import React, { useState } from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Provider as PaperProvider } from "react-native-paper"; // Add this line
 import LoginScreen from "./LoginScreen";
 import LogoutButton from "./LogoutButton";
 import StudentPage from "./StudentPage";
@@ -19,7 +19,6 @@ const HomeScreen = () => (
 
 const StudentScreen = () => (
   <View style={styles.container}>
-    <Text>Welcome to Student Screen!</Text>
     <StudentPage />
   </View>
 );
@@ -97,23 +96,27 @@ export default function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {isLoggedIn ? (
-          <Stack.Screen
-            name="Home"
-            component={TabNavigator}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            initialParams={{ setLoggedIn }}
-            options={{ headerShown: false }}
-          />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <PaperProvider>
+      {" "}
+      {/* Wrap your App component with PaperProvider */}
+      <NavigationContainer>
+        <Stack.Navigator>
+          {isLoggedIn ? (
+            <Stack.Screen
+              name="Home"
+              component={TabNavigator}
+              options={{ headerShown: false }}
+            />
+          ) : (
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              initialParams={{ setLoggedIn }}
+              options={{ headerShown: false }}
+            />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
