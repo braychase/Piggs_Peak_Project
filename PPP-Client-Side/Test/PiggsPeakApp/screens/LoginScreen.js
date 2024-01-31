@@ -26,7 +26,7 @@ export default function LoginScreen({ navigation }) {
         <Image source={require("../assets/HooperStarfish.jpg")} style={Styles.logo} />
       </View>
       <View style={Styles.action}>
-        <FontAwesomeIcon icon={faCircleUser} style={{ marginRight: 5 }} />
+        <FontAwesomeIcon icon={faCircleUser} style={{marginTop:5, marginRight: 7 }} />
         <TextInput
           placeholder='Username'
           value={username}
@@ -34,7 +34,7 @@ export default function LoginScreen({ navigation }) {
         />
       </View>
       <View style={Styles.action}>
-        <FontAwesomeIcon icon={faUnlock} style={{ marginRight: 5 }} />
+        <FontAwesomeIcon icon={faUnlock} style={{marginTop:5, marginRight: 7}} />
         <TextInput
           placeholder='Password'
           style={{ flex: 1, paddingVertical: 0 }}
@@ -73,29 +73,29 @@ const Styles = StyleSheet.create({
         borderColor: COLORS.gray,
         borderRadius: 50,
         backgroundColor: COLORS.white,
-        width: '40%',
-        marginHorizontal: '30%',
+        width: '80%',
+        marginHorizontal: '10%',
     },
     textCenter: {
         textAlign: 'center',
         fontSize: 28,
         fontWeight: '500',
         color: COLORS.black,
-        fontFamily:'Verdana',
+        marginTop: '25%',
     },
     loginButton: {
         backgroundColor: 'blue',
-        width: '20%',
-        marginHorizontal: '40%',
+        width: '50%',
+        marginHorizontal: '25%',
         padding: 14,
-        marginTop: 15,
+        marginTop: 25,
         textAlign: 'center',
         fontWeight: '500',
         color: COLORS.white,
-        fontFamily:'Verdana',
         borderRadius: 50,
         borderWidth: 2,
         borderColor: COLORS.white,
+        fontSize: 15,
 
     }
 
