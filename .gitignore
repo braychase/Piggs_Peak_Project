@@ -1,6 +1,7 @@
-bin/*
-obj/*
-.vs/*
-PPP-Client-Side/PiggsPeakProject_v1/package-lock.json
-PPP-Server-Side/PiggsPeak_API/PiggsPeak_API/Migrations/*
-PPP-Client-Side/PiggsPeakProject_v1/yarn.lock
+bin
+obj
+.vs
+Migrations
+*.lock
+package-lock.json
+
