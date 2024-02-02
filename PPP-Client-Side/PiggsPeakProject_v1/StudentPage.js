@@ -124,7 +124,7 @@ const StudentPage = () => {
             style={styles.filterInput}
           />
           <Pressable onPress={goToNextPage}>
-            <Text>Next</Text>
+            <Text style={styles.navButton}>Next</Text>
             <FontAwesomeIcon
               icon={faArrowRight}
               size={16}
@@ -176,6 +176,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     height: 40,
     borderRadius: 5,
+  },
+  navButton: {
+    backgroundColor: "blue",
+    textAlign: "center",
+    fontWeight: "500",
+    color: COLORS.white,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: COLORS.white,
+    fontSize: 15,
   },
 });
 
