@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Pressable, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  ScrollView,
+  Picker,
+} from "react-native";
 import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { getStudents } from "./StudentService";
+import { getSchools } from "./SchoolService";
 import COLORS from "./constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
 const StudentPage = () => {
   const [allStudents, setAllStudents] = useState([]);
   const [students, setStudents] = useState([]);
+  const [schools, setSchools] = useState([]);
+  const [selectedSchool, setSelectedSchool] = useState("all");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,18 +33,39 @@ const StudentPage = () => {
         console.error("Error loading students:", error.message);
       }
     };
+
+    const fetchSchools = async () => {
+      try {
+        const schoolsData = await getSchools(); // Assume this function is implemented
+        setSchools(schoolsData);
+      } catch (error) {
+        console.error("Error loading schools:", error.message);
+      }
+    };
+
     fetchStudents();
-  }, [itemsPerPage]);
+    fetchSchools();
+  }, [itemsPerPage]); // Assuming itemsPerPage affects student data fetching
 
   useEffect(() => {
-    const applyFilter = () => {
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const filteredStudents = allStudents.slice(startIndex, endIndex);
-      setStudents(filteredStudents);
-    };
     applyFilter();
-  }, [currentPage, itemsPerPage, allStudents]);
+  }, [currentPage, itemsPerPage, allStudents, selectedSchool, searchQuery]);
+
+  const applyFilter = () => {
+    let filteredStudents = allStudents.filter((student) => {
+      const matchesName = student.studentName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+      const matchesSchool =
+        selectedSchool === "all" ||
+        student.schoolID.toString() === selectedSchool;
+      return matchesName && matchesSchool;
+    });
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setStudents(filteredStudents.slice(startIndex, endIndex));
+  };
 
   const goToNextPage = () => {
     const totalPages = Math.ceil(allStudents.length / itemsPerPage);
@@ -51,38 +82,22 @@ const StudentPage = () => {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    if (query.trim() !== "") {
-      const filteredStudents = allStudents.filter((student) =>
-        student.studentName.toLowerCase().includes(query.toLowerCase())
-      );
-      setStudents(filteredStudents);
-    } else {
-      // If the search bar is cleared, show the original list based on pagination
-      applyFilter();
-    }
+    setCurrentPage(1); // Reset to the first page on search
   };
 
-  const applyFilter = () => {
-    let filteredStudents = allStudents;
-
-    if (searchQuery.trim() !== "") {
-      filteredStudents = filteredStudents.filter((student) =>
-        student.studentName.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    setStudents(filteredStudents.slice(startIndex, endIndex));
+  const clearSearch = () => {
+    setSearchQuery("");
+    applyFilter();
   };
 
   return (
     <LinearGradient
-      style={{ flex: 1 }}
+      style={styles.fullScreen}
       colors={[COLORS.secondary, COLORS.primary]}
     >
       <View style={styles.container}>
         <Text style={styles.textCenter}>Student List</Text>
+
         <View style={styles.searchContainer}>
           <TextInput
             placeholder="Search by name"
@@ -90,7 +105,27 @@ const StudentPage = () => {
             value={searchQuery}
             style={styles.searchInput}
           />
+          {searchQuery.length > 0 && (
+            <Pressable onPress={clearSearch} style={styles.clearButton}>
+              <Text style={styles.clearButtonText}>Clear</Text>
+            </Pressable>
+          )}
         </View>
+
+        <Picker
+          selectedValue={selectedSchool}
+          style={styles.schoolPicker}
+          onValueChange={(itemValue, itemIndex) => setSelectedSchool(itemValue)}
+        >
+          <Picker.Item label="All Schools" value="all" />
+          {schools.map((school) => (
+            <Picker.Item
+              key={school.schoolID}
+              label={school.schoolCode}
+              value={school.schoolID.toString()}
+            />
+          ))}
+        </Picker>
 
         <ScrollView style={styles.dataTableScroll}>
           <DataTable
@@ -100,13 +135,14 @@ const StudentPage = () => {
             <DataTable.Header>
               <DataTable.Title>Name</DataTable.Title>
             </DataTable.Header>
-            {students.map((item) => (
-              <DataTable.Row key={item.studentID}>
-                <DataTable.Cell>{item.studentName}</DataTable.Cell>
+            {students.map((student) => (
+              <DataTable.Row key={student.studentID}>
+                <DataTable.Cell>{student.studentName}</DataTable.Cell>
               </DataTable.Row>
             ))}
           </DataTable>
         </ScrollView>
+
         <View style={styles.filterAndButtonsContainer}>
           <Pressable onPress={goToPrevPage}>
             <Text>Prev</Text>
@@ -124,7 +160,7 @@ const StudentPage = () => {
             style={styles.filterInput}
           />
           <Pressable onPress={goToNextPage}>
-            <Text style={styles.navButton}>Next</Text>
+            <Text>Next</Text>
             <FontAwesomeIcon
               icon={faArrowRight}
               size={16}
@@ -138,13 +174,16 @@ const StudentPage = () => {
 };
 
 const styles = StyleSheet.create({
+  fullScreen: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     padding: 20,
   },
   dataTableScroll: {
-    maxHeight: "85%", // Adjust this value based on your layout
+    maxHeight: "60%",
   },
   dataTable: {
     backgroundColor: COLORS.gray,
@@ -166,26 +205,36 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "500",
     color: COLORS.black,
+    marginBottom: 20,
   },
   searchContainer: {
-    marginVertical: 20,
+    flexDirection: "row",
+    marginBottom: 20,
+    alignItems: "center",
   },
   searchInput: {
+    flex: 1,
     fontSize: 18,
     backgroundColor: "white",
     paddingHorizontal: 10,
     height: 40,
     borderRadius: 5,
   },
-  navButton: {
-    backgroundColor: "blue",
-    textAlign: "center",
-    fontWeight: "500",
-    color: COLORS.white,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: COLORS.white,
-    fontSize: 15,
+  clearButton: {
+    marginLeft: 10,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    height: 40,
+  },
+  clearButtonText: {
+    color: "white",
+    fontSize: 18,
+  },
+  schoolPicker: {
+    height: 50,
+    width: "100%",
+    color: "black",
+    marginBottom: 20,
   },
 });
 
