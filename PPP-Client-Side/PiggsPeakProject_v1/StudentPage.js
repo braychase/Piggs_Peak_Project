@@ -73,10 +73,16 @@ const StudentPage = () => {
 
       <View style={styles.navigationButtons}>
         <Pressable onPress={goToPrevPage}>
-          <Text><FontAwesomeIcon icon={faArrowLeft} style={{marginRight: 2}} />Prev</Text>
+          <Text>
+            <FontAwesomeIcon icon={faArrowLeft} style={{ marginRight: 2 }} />
+            Prev
+          </Text>
         </Pressable>
         <Pressable onPress={goToNextPage}>
-          <Text><FontAwesomeIcon icon={faArrowRight} style={{marginRight: 2}} />Next</Text>
+          <Text>
+            <FontAwesomeIcon icon={faArrowRight} style={{ marginRight: 2 }} />
+            Next
+          </Text>
         </Pressable>
       </View>
 
