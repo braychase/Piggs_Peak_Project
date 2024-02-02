@@ -1,89 +1,141 @@
-// LoginScreen.js
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Image } from "react-native";
+import React, { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Image,
+  Pressable,
+} from "react-native";
+import axios from "axios";
+import { AuthContext } from "./App"; // Import the AuthContext
+import { LinearGradient } from "expo-linear-gradient";
+import COLORS from "./constants/colors";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
+import { faUnlock } from "@fortawesome/free-solid-svg-icons";
 
-const LoginScreen = ({ navigation, route }) => {
+const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { setLoggedIn } = useContext(AuthContext); // Use AuthContext to manage login state
 
-  const handleLogin = () => {
-    // Simple login logic
-    if (username === "demo" && password === "password") {
-      console.log("Login successful!");
-      route.params.setLoggedIn(true); // Set isLoggedIn to true
-      navigation.navigate("Home");
-    } else {
-      setError("Invalid username or password");
-      console.log("Login failed!");
+  const handleLogin = async () => {
+    try {
+      // Your login validation logic here
+      // For demonstration, let's assume any non-empty credentials are valid
+      if (username.trim() && password.trim()) {
+        setLoggedIn(true); // Set logged in state to true
+      } else {
+        setError("Please enter valid credentials");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setError("An error occurred during login");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("./assets/HooperStarfish.jpg")} // Add the path to your login image
-        style={styles.loginImage}
-      />
-      <View style={styles.inputContainer}>
+    <LinearGradient
+      style={{ flex: 1 }}
+      colors={[COLORS.secondary, COLORS.primary]}
+    >
+      <Text style={Styles.textCenter}>Piggs Peak App</Text>
+      <View style={Styles.root}>
+        <Image
+          source={require("./assets/HooperStarfish.jpg")}
+          style={Styles.logo}
+        />
+      </View>
+      <View style={Styles.action}>
+        <FontAwesomeIcon
+          icon={faCircleUser}
+          style={{ marginTop: 5, marginRight: 7 }}
+        />
         <TextInput
-          style={styles.input}
           placeholder="Username"
           value={username}
           onChangeText={(text) => setUsername(text)}
         />
+      </View>
+      <View style={Styles.action}>
+        <FontAwesomeIcon
+          icon={faUnlock}
+          style={{ marginTop: 5, marginRight: 7 }}
+        />
         <TextInput
-          style={styles.input}
           placeholder="Password"
-          secureTextEntry
+          style={{ flex: 1, paddingVertical: 0 }}
+          secureTextEntry={true}
           value={password}
           onChangeText={(text) => setPassword(text)}
         />
+        <Pressable
+          onPress={() => {
+            Alert.alert("Forgot Password", "Implement forgot password logic");
+            console.log("Forgot Password", "Implement forgot password logic");
+          }}
+        >
+          <Text style={{ color: COLORS.primary, fontWeight: "700" }}>
+            Forgot?
+          </Text>
+        </Pressable>
       </View>
-      <View style={styles.buttonContainer}>
-        <Button title="Login" onPress={handleLogin} color="blue" />
-      </View>
-      <Text style={styles.errorText}>{error}</Text>
-    </View>
+      <Pressable onPress={handleLogin}>
+        <Text style={Styles.loginButton}>Login</Text>
+      </Pressable>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+    </LinearGradient>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ABEED8", // Use the same background color as in App.js
-    justifyContent: "center",
+const Styles = StyleSheet.create({
+  root: {
     alignItems: "center",
+    padding: 20,
+    marginTop: "10%", // Adjust the marginTop to bring components up
   },
-  loginImage: {
-    width: 200, // Adjust the width of the image as needed
-    height: 200, // Adjust the height of the image as needed
-    marginBottom: 100, // Adjust the marginBottom as needed
-    resizeMode: "contain", // Adjust the resizeMode as needed
-  },
-  inputContainer: {
-    backgroundColor: "#fff",
+  logo: {
+    width: 200,
+    height: 200,
     borderRadius: 10,
-    padding: 20, // Adjust the padding as needed
-    marginBottom: 20,
-    width: "80%", // Adjust the width as needed
+    marginTop: "-10%",
   },
-  input: {
-    height: 40,
-    borderColor: "gray",
+  action: {
+    flexDirection: "row",
+    paddingTop: 14,
+    paddingBottom: 14,
+    marginTop: 15,
+    paddingHorizontal: 15,
     borderWidth: 1,
-    marginBottom: 10,
-    paddingLeft: 10,
-    borderRadius: 5,
+    borderColor: COLORS.gray,
+    borderRadius: 50,
+    backgroundColor: COLORS.white,
+    width: "80%",
+    marginHorizontal: "10%",
   },
-  buttonContainer: {
-    borderRadius: 20,
-    width: 100,
-    overflow: "hidden", // This ensures the border radius is applied
+  textCenter: {
+    textAlign: "center",
+    fontSize: 28,
+    fontWeight: "500",
+    color: COLORS.black,
+    marginTop: "10%", // Adjust the marginTop to bring components up
   },
-  errorText: {
-    color: "red",
-    marginTop: 10,
+  loginButton: {
+    backgroundColor: "blue",
+    width: "50%",
+    marginHorizontal: "25%",
+    padding: 14,
+    marginTop: 25,
+    textAlign: "center",
+    fontWeight: "500",
+    color: COLORS.white,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: COLORS.white,
+    fontSize: 15,
   },
 });
 

@@ -1,121 +1,181 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
-import { getStudents } from "./StudentService";
-import { DataTable, Button, TextInput } from "react-native-paper";
+import { View, StyleSheet, Text, Pressable, ScrollView } from "react-native";
+import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowRight } from "@fortawesome/free-regular-svg-icons";
-import { faArrowLeft } from "@fortawesome/free-regular-svg-icons";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { getStudents } from "./StudentService";
+import COLORS from "./constants/colors";
+import { LinearGradient } from "expo-linear-gradient";
 
 const StudentPage = () => {
   const [allStudents, setAllStudents] = useState([]);
   const [students, setStudents] = useState([]);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const studentData = await getStudents();
+        setAllStudents(studentData);
+      } catch (error) {
+        console.error("Error loading students:", error.message);
+      }
+    };
     fetchStudents();
-  }, [currentPage, itemsPerPage]);
+  }, [itemsPerPage]);
 
-  const fetchStudents = async () => {
-    try {
-      const studentData = await getStudents();
-      setAllStudents(studentData);
-      applyFilter(currentPage);
-    } catch (error) {
-      console.error("Error loading students:", error.message);
-    }
-  };
-
-  const applyFilter = (page) => {
-    const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const filteredStudents = allStudents.slice(startIndex, endIndex);
-    setStudents(filteredStudents);
-  };
+  useEffect(() => {
+    const applyFilter = () => {
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const filteredStudents = allStudents.slice(startIndex, endIndex);
+      setStudents(filteredStudents);
+    };
+    applyFilter();
+  }, [currentPage, itemsPerPage, allStudents]);
 
   const goToNextPage = () => {
     const totalPages = Math.ceil(allStudents.length / itemsPerPage);
     if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
-      applyFilter(currentPage + 1);
+      setCurrentPage(currentPage + 1);
     }
   };
 
   const goToPrevPage = () => {
     if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-      applyFilter(currentPage - 1);
+      setCurrentPage(currentPage - 1);
     }
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query.trim() !== "") {
+      const filteredStudents = allStudents.filter((student) =>
+        student.studentName.toLowerCase().includes(query.toLowerCase())
+      );
+      setStudents(filteredStudents);
+    } else {
+      // If the search bar is cleared, show the original list based on pagination
+      applyFilter();
+    }
+  };
+
+  const applyFilter = () => {
+    let filteredStudents = allStudents;
+
+    if (searchQuery.trim() !== "") {
+      filteredStudents = filteredStudents.filter((student) =>
+        student.studentName.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    setStudents(filteredStudents.slice(startIndex, endIndex));
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <DataTable theme={{ colors: { text: "black" } }}>
-        <DataTable.Header>
-          <DataTable.Title>Name</DataTable.Title>
-        </DataTable.Header>
+    <LinearGradient
+      style={{ flex: 1 }}
+      colors={[COLORS.secondary, COLORS.primary]}
+    >
+      <View style={styles.container}>
+        <Text style={styles.textCenter}>Student List</Text>
+        <View style={styles.searchContainer}>
+          <TextInput
+            placeholder="Search by name"
+            onChangeText={handleSearch}
+            value={searchQuery}
+            style={styles.searchInput}
+          />
+        </View>
 
-        {students.map((item) => (
-          <DataTable.Row key={item.studentID}>
-            <DataTable.Cell>{item.studentName}</DataTable.Cell>
-          </DataTable.Row>
-        ))}
-      </DataTable>
-
-      {/* <View style={styles.navigationButtons}>
-        <Button onPress={goToPrevPage} mode="contained">
-          Prev
-        </Button>
-        <Button onPress={goToNextPage} mode="contained">
-          Next
-        </Button>
-      </View> */}
-
-      <View style={styles.navigationButtons}>
-        <Pressable onPress={goToPrevPage}>
-          <Text>
-            <FontAwesomeIcon icon={faArrowLeft} style={{ marginRight: 2 }} />
-            Prev
-          </Text>
-        </Pressable>
-        <Pressable onPress={goToNextPage}>
-          <Text>
-            <FontAwesomeIcon icon={faArrowRight} style={{ marginRight: 2 }} />
-            Next
-          </Text>
-        </Pressable>
+        <ScrollView style={styles.dataTableScroll}>
+          <DataTable
+            theme={{ colors: { text: COLORS.black } }}
+            style={styles.dataTable}
+          >
+            <DataTable.Header>
+              <DataTable.Title>Name</DataTable.Title>
+            </DataTable.Header>
+            {students.map((item) => (
+              <DataTable.Row key={item.studentID}>
+                <DataTable.Cell>{item.studentName}</DataTable.Cell>
+              </DataTable.Row>
+            ))}
+          </DataTable>
+        </ScrollView>
+        <View style={styles.filterAndButtonsContainer}>
+          <Pressable onPress={goToPrevPage}>
+            <Text>Prev</Text>
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              size={16}
+              style={{ marginLeft: 2 }}
+            />
+          </Pressable>
+          <TextInput
+            label="Limit:"
+            value={itemsPerPage.toString()}
+            keyboardType="numeric"
+            onChangeText={(value) => setItemsPerPage(parseInt(value) || 10)}
+            style={styles.filterInput}
+          />
+          <Pressable onPress={goToNextPage}>
+            <Text>Next</Text>
+            <FontAwesomeIcon
+              icon={faArrowRight}
+              size={16}
+              style={{ marginLeft: 2 }}
+            />
+          </Pressable>
+        </View>
       </View>
-
-      <View style={styles.filterContainer}>
-        <TextInput
-          label="Items Per Page"
-          value={itemsPerPage.toString()}
-          keyboardType="numeric"
-          onChangeText={(value) => setItemsPerPage(parseInt(value))}
-        />
-      </View>
-    </ScrollView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fafafa",
-    text: "black",
+    justifyContent: "center",
+    padding: 20,
   },
-  navigationButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginHorizontal: 20,
-    marginVertical: 10,
+  dataTableScroll: {
+    maxHeight: "85%", // Adjust this value based on your layout
   },
-  filterContainer: {
+  dataTable: {
+    backgroundColor: COLORS.gray,
+  },
+  filterAndButtonsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 20,
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 30,
+  },
+  filterInput: {
+    width: "20%",
+    backgroundColor: "white",
+    marginHorizontal: 10,
+  },
+  textCenter: {
+    textAlign: "center",
+    fontSize: 28,
+    fontWeight: "500",
+    color: COLORS.black,
+  },
+  searchContainer: {
+    marginVertical: 20,
+  },
+  searchInput: {
+    fontSize: 18,
+    backgroundColor: "white",
+    paddingHorizontal: 10,
+    height: 40,
+    borderRadius: 5,
   },
 });
 
