@@ -1,11 +1,10 @@
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import LoginScreen from "./LoginScreen";
-import StudentPage from "./StudentPage";
-import HomePage from "./HomePage";
-import { Image, View, Text, StyleSheet } from "react-native";
+import { LoginScreen, HomePage, StudentPage, AddStudentPage } from "./screens";
+import { Image, View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Context for managing authentication state
 const AuthContext = createContext();
@@ -20,9 +19,13 @@ const HomeScreen = () => (
   </View>
 );
 
-const StudentScreen = () => {
-  return <StudentPage />;
-};
+function StudentScreen({ navigation }) {
+  return <StudentPage navigation={navigation} />;
+}
+
+function AddStudentScreen() {
+  return <AddStudentPage />;
+}
 
 // InterviewScreen Component
 function InterviewScreen() {
@@ -104,26 +107,63 @@ function TabNavigator() {
 
 export default function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      try {
+        const value = await AsyncStorage.getItem("isLoggedIn");
+        if (value !== null) {
+          setLoggedIn(JSON.parse(value));
+        }
+      } catch (error) {
+        console.error("Error reading isLoggedIn from AsyncStorage", error);
+      }
+      setIsLoading(false); // Set loading to false after checking login status
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  if (isLoading) {
+    // While checking the login status, show a loading indicator
+    return <ActivityIndicator size="large" />;
+  }
+
+  const authContextValue = {
+    isLoggedIn,
+    setLoggedIn: async (loggedIn) => {
+      try {
+        await AsyncStorage.setItem("isLoggedIn", JSON.stringify(loggedIn));
+        setLoggedIn(loggedIn);
+      } catch (error) {
+        console.error("Error saving isLoggedIn to AsyncStorage", error);
+      }
+    },
+  };
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setLoggedIn }}>
       <NavigationContainer>
         <Stack.Navigator>
           {!isLoggedIn ? (
-            // Login screen should not have the tab navigator visible
             <Stack.Screen
               name="Login"
               component={LoginScreen}
               options={{ headerShown: false }}
             />
           ) : (
-            // Once logged in, the tab navigator becomes the main screen
             <Stack.Screen
               name="Main"
               component={TabNavigator}
               options={{ headerShown: false }}
             />
           )}
+          <Stack.Screen
+            name="AddStudent"
+            component={AddStudentScreen}
+            options={{ headerShown: true, title: "Add Student" }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>

@@ -4,7 +4,7 @@ import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import COLORS from "./constants/colors";
+import COLORS from "../constants/colors";
 
 const HomeScreen = () => {
   return (

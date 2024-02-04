@@ -9,9 +9,9 @@ import {
   Pressable,
 } from "react-native";
 import axios from "axios";
-import { AuthContext } from "./App"; // Import the AuthContext
+import { AuthContext } from "../App"; // Import the AuthContext
 import { LinearGradient } from "expo-linear-gradient";
-import COLORS from "./constants/colors";
+import COLORS from "../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
 import { faUnlock } from "@fortawesome/free-solid-svg-icons";
@@ -45,7 +45,7 @@ const LoginScreen = ({ navigation }) => {
       <Text style={Styles.textCenter}>Piggs Peak App</Text>
       <View style={Styles.root}>
         <Image
-          source={require("./assets/HooperStarfish.jpg")}
+          source={require("../assets/HooperStarfish.jpg")}
           style={Styles.logo}
         />
       </View>

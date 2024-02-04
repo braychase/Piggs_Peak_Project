@@ -10,66 +10,75 @@ import {
 import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { getStudents } from "./StudentService";
-import { getSchools } from "./SchoolService";
-import COLORS from "./constants/colors";
+import { getStudents } from "../services/StudentService";
+import { getSchools } from "../services/SchoolService";
+import COLORS from "../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
 const StudentPage = () => {
   const [allStudents, setAllStudents] = useState([]);
   const [students, setStudents] = useState([]);
-  const [schools, setSchools] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState("all");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredTotalPages, setFilteredTotalPages] = useState(0);
+  const [schoolCodeDescriptionMapping, setSchoolCodeDescriptionMapping] =
+    useState({});
+  const handleAddStudentPress = () => {
+    navigation.navigate("AddStudent"); // Make sure to set up this route in your navigation stack
+  };
 
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchData = async () => {
       try {
-        const studentData = await getStudents();
-        setAllStudents(studentData);
+        const studentsData = await getStudents();
+        const schoolsData = await getSchools();
+        const mapping = schoolsData.reduce((acc, school) => {
+          acc[school.schoolCode] = school.description;
+          return acc;
+        }, {});
+        setSchoolCodeDescriptionMapping(mapping);
+        setAllStudents(studentsData);
       } catch (error) {
-        console.error("Error loading students:", error.message);
+        console.error("Error loading data:", error.message);
       }
     };
 
-    const fetchSchools = async () => {
-      try {
-        const schoolsData = await getSchools(); // Assume this function is implemented
-        setSchools(schoolsData);
-      } catch (error) {
-        console.error("Error loading schools:", error.message);
-      }
-    };
-
-    fetchStudents();
-    fetchSchools();
-  }, [itemsPerPage]); // Assuming itemsPerPage affects student data fetching
+    fetchData();
+  }, [itemsPerPage]);
 
   useEffect(() => {
     applyFilter();
-  }, [currentPage, itemsPerPage, allStudents, selectedSchool, searchQuery]);
+  }, [
+    currentPage,
+    itemsPerPage,
+    allStudents,
+    selectedSchool,
+    searchQuery,
+    schoolCodeDescriptionMapping,
+  ]);
 
   const applyFilter = () => {
     let filteredStudents = allStudents.filter((student) => {
       const matchesName = student.studentName
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
+      const studentSchoolCode = student.studentCode.substring(0, 3);
       const matchesSchool =
-        selectedSchool === "all" ||
-        student.schoolID.toString() === selectedSchool;
+        selectedSchool === "all" || studentSchoolCode === selectedSchool;
       return matchesName && matchesSchool;
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     setStudents(filteredStudents.slice(startIndex, endIndex));
+
+    setFilteredTotalPages(Math.ceil(filteredStudents.length / itemsPerPage));
   };
 
   const goToNextPage = () => {
-    const totalPages = Math.ceil(allStudents.length / itemsPerPage);
-    if (currentPage < totalPages) {
+    if (currentPage < filteredTotalPages) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -82,7 +91,7 @@ const StudentPage = () => {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    setCurrentPage(1); // Reset to the first page on search
+    setCurrentPage(1);
   };
 
   const clearSearch = () => {
@@ -96,8 +105,6 @@ const StudentPage = () => {
       colors={[COLORS.secondary, COLORS.primary]}
     >
       <View style={styles.container}>
-        <Text style={styles.textCenter}>Student List</Text>
-
         <View style={styles.searchContainer}>
           <TextInput
             placeholder="Search by name"
@@ -115,18 +122,18 @@ const StudentPage = () => {
         <Picker
           selectedValue={selectedSchool}
           style={styles.schoolPicker}
-          onValueChange={(itemValue, itemIndex) => setSelectedSchool(itemValue)}
+          onValueChange={(itemValue) => setSelectedSchool(itemValue)}
         >
           <Picker.Item label="All Schools" value="all" />
-          {schools.map((school) => (
-            <Picker.Item
-              key={school.schoolID}
-              label={school.schoolCode}
-              value={school.schoolID.toString()}
-            />
-          ))}
+          {Object.entries(schoolCodeDescriptionMapping).map(
+            ([code, description]) => (
+              <Picker.Item key={code} label={description} value={code} />
+            )
+          )}
         </Picker>
-
+        <Pressable style={styles.addButton} onPress={handleAddStudentPress}>
+          <Text style={styles.addButtonText}>Add Student</Text>
+        </Pressable>
         <ScrollView style={styles.dataTableScroll}>
           <DataTable
             theme={{ colors: { text: COLORS.black } }}
@@ -134,38 +141,44 @@ const StudentPage = () => {
           >
             <DataTable.Header>
               <DataTable.Title>Name</DataTable.Title>
+              <DataTable.Title>School Code</DataTable.Title>
             </DataTable.Header>
             {students.map((student) => (
               <DataTable.Row key={student.studentID}>
                 <DataTable.Cell>{student.studentName}</DataTable.Cell>
+                <DataTable.Cell>
+                  {student.studentCode.substring(0, 3)}
+                </DataTable.Cell>
               </DataTable.Row>
             ))}
           </DataTable>
         </ScrollView>
 
         <View style={styles.filterAndButtonsContainer}>
-          <Pressable onPress={goToPrevPage}>
+          <Pressable
+            onPress={goToPrevPage}
+            disabled={currentPage === 1}
+            style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} size={16} />
             <Text>Prev</Text>
-            <FontAwesomeIcon
-              icon={faArrowLeft}
-              size={16}
-              style={{ marginLeft: 2 }}
-            />
           </Pressable>
+
           <TextInput
-            label="Limit:"
+            label="Items Per Page"
             value={itemsPerPage.toString()}
             keyboardType="numeric"
-            onChangeText={(value) => setItemsPerPage(parseInt(value) || 10)}
+            onChangeText={(text) => setItemsPerPage(parseInt(text))}
             style={styles.filterInput}
           />
-          <Pressable onPress={goToNextPage}>
+
+          <Pressable
+            onPress={goToNextPage}
+            disabled={currentPage >= filteredTotalPages}
+            style={{ opacity: currentPage >= filteredTotalPages ? 0.5 : 1 }}
+          >
             <Text>Next</Text>
-            <FontAwesomeIcon
-              icon={faArrowRight}
-              size={16}
-              style={{ marginLeft: 2 }}
-            />
+            <FontAwesomeIcon icon={faArrowRight} size={16} />
           </Pressable>
         </View>
       </View>
@@ -235,6 +248,21 @@ const styles = StyleSheet.create({
     width: "100%",
     color: "black",
     marginBottom: 20,
+  },
+  addButton: {
+    backgroundColor: "blue",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10, // Adjust the margin as needed
+    marginBottom: 10, // Adjust the margin as needed
+    width: "10%",
+  },
+  addButtonText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 });
 
