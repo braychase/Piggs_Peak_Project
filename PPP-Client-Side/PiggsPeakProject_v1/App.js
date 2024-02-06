@@ -1,53 +1,57 @@
-import React, { useState, createContext, useContext, useEffect } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { LoginScreen, HomePage, StudentPage, AddStudentPage } from "./screens";
-import { Image, View, Text, StyleSheet, ActivityIndicator } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-// Context for managing authentication state
-const AuthContext = createContext();
+import {
+  LoginScreen,
+  HomePage,
+  StudentPage,
+  AddStudentPage,
+  InterviewPage,
+  MorePage,
+} from "./screens";
+import { Image, View, Text } from "react-native";
+import { Provider as PaperProvider } from "react-native-paper";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 // HomeScreen Component
-const HomeScreen = () => (
-  <View>
-    <HomePage />
-  </View>
-);
+function HomeScreen() {
+  return <HomePage />;
+}
 
+// StudentScreen Component that now correctly passes the navigation prop
 function StudentScreen({ navigation }) {
   return <StudentPage navigation={navigation} />;
 }
 
-function AddStudentScreen() {
-  return <AddStudentPage />;
-}
-
-// InterviewScreen Component
 function InterviewScreen() {
-  return (
-    // Define your InterviewScreen content here
-    // You can replace this with your actual content
-    <View>
-      <Text>Welcome to Interview Screen!</Text>
-    </View>
-  );
+  return <InterviewPage />;
 }
 
 // MoreScreen Component
 function MoreScreen() {
-  return (
-    // Define your MoreScreen content here
-    // You can replace this with your actual content
-    <View>
-      <Text>Welcome to More Screen!</Text>
-    </View>
-  );
+  return <MorePage />;
 }
+
+// StudentStack Navigator for the Students tab, including AddStudentPage
+const StudentStack = () => {
+  return (
+    <Stack.Navigator initialRouteName="StudentMain">
+      <Stack.Screen
+        name="StudentMain"
+        component={StudentScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddStudent"
+        component={AddStudentPage}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 // Tab Navigator Component
 function TabNavigator() {
@@ -67,18 +71,14 @@ function TabNavigator() {
             iconName = require("./assets/more.png");
           }
 
+          // You can return any component that you like here!
           return <Image source={iconName} style={{ width: 24, height: 24 }} />;
         },
       })}
       tabBarOptions={{
-        tabBarActiveTintColor: "blue",
-        tabBarInactiveTintColor: "gray",
-        tabBarStyle: [
-          {
-            display: "flex",
-          },
-          null,
-        ],
+        activeTintColor: "blue",
+        inactiveTintColor: "gray",
+        style: { display: "flex" },
       }}
     >
       <Tab.Screen
@@ -88,7 +88,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Students"
-        component={StudentScreen}
+        component={StudentStack} // Use the StudentStack here
         options={{ headerShown: false }}
       />
       <Tab.Screen
@@ -106,69 +106,20 @@ function TabNavigator() {
 }
 
 export default function App() {
-  const [isLoggedIn, setLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const value = await AsyncStorage.getItem("isLoggedIn");
-        if (value !== null) {
-          setLoggedIn(JSON.parse(value));
-        }
-      } catch (error) {
-        console.error("Error reading isLoggedIn from AsyncStorage", error);
-      }
-      setIsLoading(false); // Set loading to false after checking login status
-    };
-
-    checkLoginStatus();
-  }, []);
-
-  if (isLoading) {
-    // While checking the login status, show a loading indicator
-    return <ActivityIndicator size="large" />;
-  }
-
-  const authContextValue = {
-    isLoggedIn,
-    setLoggedIn: async (loggedIn) => {
-      try {
-        await AsyncStorage.setItem("isLoggedIn", JSON.stringify(loggedIn));
-        setLoggedIn(loggedIn);
-      } catch (error) {
-        console.error("Error saving isLoggedIn to AsyncStorage", error);
-      }
-    },
-  };
-
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setLoggedIn }}>
-      <NavigationContainer>
-        <Stack.Navigator>
-          {!isLoggedIn ? (
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            />
-          ) : (
-            <Stack.Screen
-              name="Main"
-              component={TabNavigator}
-              options={{ headerShown: false }}
-            />
-          )}
-          <Stack.Screen
-            name="AddStudent"
-            component={AddStudentScreen}
-            options={{ headerShown: true, title: "Add Student" }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Main"
+          component={TabNavigator}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-// Export AuthContext to be used in other components, like LoginScreen
-export { AuthContext };

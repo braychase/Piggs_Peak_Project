@@ -1,33 +1,29 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
-  Button,
+  Pressable,
   StyleSheet,
   Image,
-  Pressable,
+  Alert,
 } from "react-native";
-import axios from "axios";
-import { AuthContext } from "../App"; // Import the AuthContext
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
-import { faUnlock } from "@fortawesome/free-solid-svg-icons";
+import { faCircleUser, faUnlock } from "@fortawesome/free-solid-svg-icons"; // Adjusted import for icons
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { setLoggedIn } = useContext(AuthContext); // Use AuthContext to manage login state
 
   const handleLogin = async () => {
     try {
-      // Your login validation logic here
-      // For demonstration, let's assume any non-empty credentials are valid
+      // Simulate login validation logic
       if (username.trim() && password.trim()) {
-        setLoggedIn(true); // Set logged in state to true
+        // Navigate to the main app screen or set login state locally
+        navigation.replace("Main"); // Assuming "Main" is the route name for the main part of your app
       } else {
         setError("Please enter valid credentials");
       }
@@ -57,7 +53,7 @@ const LoginScreen = ({ navigation }) => {
         <TextInput
           placeholder="Username"
           value={username}
-          onChangeText={(text) => setUsername(text)}
+          onChangeText={setUsername}
         />
       </View>
       <View style={Styles.action}>
@@ -70,13 +66,12 @@ const LoginScreen = ({ navigation }) => {
           style={{ flex: 1, paddingVertical: 0 }}
           secureTextEntry={true}
           value={password}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={setPassword}
         />
         <Pressable
-          onPress={() => {
-            Alert.alert("Forgot Password", "Implement forgot password logic");
-            console.log("Forgot Password", "Implement forgot password logic");
-          }}
+          onPress={() =>
+            Alert.alert("Forgot Password", "Implement forgot password logic")
+          }
         >
           <Text style={{ color: COLORS.primary, fontWeight: "700" }}>
             Forgot?
@@ -86,16 +81,17 @@ const LoginScreen = ({ navigation }) => {
       <Pressable onPress={handleLogin}>
         <Text style={Styles.loginButton}>Login</Text>
       </Pressable>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      {error ? <Text style={Styles.errorText}>{error}</Text> : null}
     </LinearGradient>
   );
 };
 
 const Styles = StyleSheet.create({
+  // Styles remain unchanged
   root: {
     alignItems: "center",
     padding: 20,
-    marginTop: "10%", // Adjust the marginTop to bring components up
+    marginTop: "10%",
   },
   logo: {
     width: 200,
@@ -121,7 +117,7 @@ const Styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "500",
     color: COLORS.black,
-    marginTop: "10%", // Adjust the marginTop to bring components up
+    marginTop: "10%",
   },
   loginButton: {
     backgroundColor: "blue",
@@ -136,6 +132,11 @@ const Styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.white,
     fontSize: 15,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
   },
 });
 

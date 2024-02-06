@@ -4,6 +4,7 @@ const COLORS = {
   primary: "#00C081",
   secondary: "#ABEED8",
   gray: "#CCCCCC",
+  lightGray: "#D3D3D3",
 };
 
 export default COLORS;

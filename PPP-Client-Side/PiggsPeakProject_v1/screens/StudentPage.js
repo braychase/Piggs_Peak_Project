@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  ScrollView,
-  Picker,
-} from "react-native";
+import { View, StyleSheet, Text, Pressable, ScrollView } from "react-native";
 import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -14,8 +7,9 @@ import { getStudents } from "../services/StudentService";
 import { getSchools } from "../services/SchoolService";
 import COLORS from "../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
+import { Picker } from "@react-native-picker/picker";
 
-const StudentPage = () => {
+const StudentPage = ({ navigation }) => {
   const [allStudents, setAllStudents] = useState([]);
   const [students, setStudents] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState("all");
@@ -132,7 +126,7 @@ const StudentPage = () => {
           )}
         </Picker>
         <Pressable style={styles.addButton} onPress={handleAddStudentPress}>
-          <Text style={styles.addButtonText}>Add Student</Text>
+          <Text style={styles.addButtonText}>Add</Text>
         </Pressable>
         <ScrollView style={styles.dataTableScroll}>
           <DataTable
@@ -257,7 +251,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: 10, // Adjust the margin as needed
     marginBottom: 10, // Adjust the margin as needed
-    width: "10%",
+    width: "20%",
   },
   addButtonText: {
     color: "white",
