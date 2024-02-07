@@ -9,12 +9,14 @@ create table GradeLevel (
 	Modified_by varchar(32), Modified_dt datetime, Modified_tz varchar(12))
 go
 
-
+/*
 -- STEP THREE
+DELETE FROM Student_Grade;
 insert into Student_Grade (Student_id, School_id, Program_id, Form_nb, Effective_dt, Notes_tx)
 SELECT Student_id, School_id, 1 as Program_id, Form_nb, Effective_dt, Notes_tx FROM GradeLevel G inner join School S on (G.School_tx = s.School_nm)
-
-
+DROP TABLE GradeLevel;
+go
+*/
 
 -- STEP TWO
 INSERT GradeLevel (GradeLevel_id, Student_id, Effective_dt,
