@@ -22,6 +22,17 @@ const StudentPage = ({ navigation }) => {
   const handleAddStudentPress = () => {
     navigation.navigate("AddStudent"); // Make sure to set up this route in your navigation stack
   };
+  const [selectedStudentId, setSelectedStudentId] = useState(null);
+
+  const handleEditPress = () => {
+    const studentToEdit = allStudents.find(
+      (student) => student.studentID === selectedStudentId
+    );
+    navigation.navigate("AddStudent", { student: studentToEdit });
+  };
+  const selectStudent = (studentId) => {
+    setSelectedStudentId(studentId);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,9 +136,21 @@ const StudentPage = ({ navigation }) => {
             )
           )}
         </Picker>
-        <Pressable style={styles.addButton} onPress={handleAddStudentPress}>
-          <Text style={styles.addButtonText}>Add</Text>
-        </Pressable>
+        <View style={styles.buttonContainer}>
+          <Pressable style={styles.addButton} onPress={handleAddStudentPress}>
+            <Text style={styles.buttonText}>Add Student</Text>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.editButton,
+              { opacity: selectedStudentId ? 1 : 0.5 },
+            ]}
+            onPress={handleEditPress}
+            disabled={!selectedStudentId}
+          >
+            <Text style={styles.buttonText}>Edit Student</Text>
+          </Pressable>
+        </View>
         <ScrollView style={styles.dataTableScroll}>
           <DataTable
             theme={{ colors: { text: COLORS.black } }}
@@ -138,7 +161,14 @@ const StudentPage = ({ navigation }) => {
               <DataTable.Title>School Code</DataTable.Title>
             </DataTable.Header>
             {students.map((student) => (
-              <DataTable.Row key={student.studentID}>
+              <DataTable.Row
+                key={student.studentID}
+                onPress={() => selectStudent(student.studentID)}
+                style={[
+                  styles.row,
+                  student.studentID === selectedStudentId && styles.selectedRow,
+                ]}
+              >
                 <DataTable.Cell>{student.studentName}</DataTable.Cell>
                 <DataTable.Cell>
                   {student.studentCode.substring(0, 3)}
@@ -243,21 +273,43 @@ const styles = StyleSheet.create({
     color: "black",
     marginBottom: 20,
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+  },
   addButton: {
-    backgroundColor: "blue",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10, // Adjust the margin as needed
-    marginBottom: 10, // Adjust the margin as needed
-    width: "20%",
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
   },
-  addButtonText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
+  editButton: {
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
   },
+  buttonText: {
+    color: COLORS.white,
+    textAlign: "center",
+  },
+  selectedRow: {
+    backgroundColor: COLORS.selected,
+  },
+  // addButton: {
+  //   backgroundColor: "blue",
+  //   padding: 15,
+  //   borderRadius: 10,
+  //   alignItems: "center",
+  //   justifyContent: "center",
+  //   marginTop: 10, // Adjust the margin as needed
+  //   marginBottom: 10, // Adjust the margin as needed
+  //   width: "20%",
+  // },
+  // addButtonText: {
+  //   color: "white",
+  //   fontSize: 12,
+  //   fontWeight: "bold",
+  // },
 });
 
 export default StudentPage;

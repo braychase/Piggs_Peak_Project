@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Pressable, CheckBox } from "react-native";
+import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { DatePickerInput } from "react-native-paper-dates";
 import COLORS from "../constants/colors";
-import { TextInput } from "react-native-paper";
+import { TextInput, DataTable } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
+import Slider from "@react-native-community/slider";
 
 const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
   return (
@@ -36,7 +37,7 @@ const AddStudentPage = () => {
   const [firstName, setFirstName] = useState("");
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState(new Date());
-  const [checked, setChecked] = useState(false);
+  //const [checked, setChecked] = useState(false);
   const [primarySchool, setPrimarySchool] = useState("");
   const [highSchool, setHighSchool] = useState("");
   const [yearFinished, setYearFinished] = useState("");
@@ -45,6 +46,34 @@ const AddStudentPage = () => {
   const [form, setForm] = useState("");
   const [ambitionAfterGraduation, setAmbitionAfterGraduation] = useState("");
   const [favoriteSubject, setFavoriteSubject] = useState("");
+  const [motherLiving, setMotherLiving] = useState("No");
+  const [motherAtHome, setMotherAtHome] = useState("No");
+  const [motherWorking, setMotherWorking] = useState("No");
+  const [motherUnknown, setMotherUnknown] = useState("No");
+
+  const [fatherLiving, setFatherLiving] = useState("No");
+  const [fatherAtHome, setFatherAtHome] = useState("No");
+  const [fatherWorking, setFatherWorking] = useState("No");
+  const [fatherUnknown, setFatherUnknown] = useState("No");
+  const [recommend, setRecommend] = useState("Yes");
+  const [priority, setPriority] = useState(10);
+  const [comments, setComments] = useState("");
+  // Placeholder for sibling data rows
+  const siblingRows = Array.from({ length: 3 }, (_, index) => ({
+    key: `sibling-${index}`, // Unique key for each row
+    name: "",
+    paysFee: "",
+    age: "",
+    school: "",
+    grade: "",
+  }));
+
+  const onSelectionChange = (cellKey, value) => {
+    setGridSelections((prevSelections) => ({
+      ...prevSelections,
+      [cellKey]: value,
+    }));
+  };
 
   const calculateAge = (dob) => {
     const today = new Date();
@@ -102,23 +131,16 @@ const AddStudentPage = () => {
               onChangeText={setFirstName}
               style={[styles.input]}
             />
-            <TextInput
-              mode="outlined"
-              label="M/F"
-              value={gender}
-              onChangeText={setGender}
-              style={[styles.smallTextInput]}
-            />
-            <View style={styles.checkboxContainer}>
-              <Text style={styles.label}>OVC</Text>
-              <CheckBox
-                value={checked}
-                onValueChange={(newValue) => {
-                  setChecked(newValue);
-                  console.log("Checked:", newValue);
-                }}
-                style={styles.checkbox}
-              />
+            {/* Gender Picker instead of CheckBox for M/F */}
+            <View style={[styles.input, styles.smallTextInput]}>
+              <Picker
+                selectedValue={gender}
+                onValueChange={(itemValue, itemIndex) => setGender(itemValue)}
+                style={styles.genderPicker}
+              >
+                <Picker.Item label="Male" value="Male" />
+                <Picker.Item label="Female" value="Female" />
+              </Picker>
             </View>
           </View>
           <View style={styles.row}>
@@ -208,15 +230,183 @@ const AddStudentPage = () => {
             label="Ambition After Graduation"
             value={ambitionAfterGraduation}
             onChangeText={setAmbitionAfterGraduation}
-            style={styles.input}
+            style={styles.longInput}
           />
           <TextInput
             mode="outlined"
             label="Favorite Subject"
             value={favoriteSubject}
             onChangeText={setFavoriteSubject}
-            style={styles.input}
+            style={styles.longInput}
           />
+        </View>
+      )}
+
+      {selectedTab === "Family" && (
+        <>
+          <View style={styles.formContainer}>
+            <View style={styles.gridRow}>
+              <Text style={styles.label}></Text>
+              <Text style={styles.gridLabel}>Living?</Text>
+              <Text style={styles.gridLabel}>At Home?</Text>
+              <Text style={styles.gridLabel}>Working?</Text>
+              <Text style={styles.gridLabel}>Unknown</Text>
+            </View>
+            <View style={styles.gridRow}>
+              <Text style={styles.label}>Mother</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={motherLiving}
+                  onValueChange={(itemValue) => setMotherLiving(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={motherAtHome}
+                  onValueChange={(itemValue) => setMotherAtHome(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={motherWorking}
+                  onValueChange={(itemValue) => setMotherWorking(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={motherUnknown}
+                  onValueChange={(itemValue) => setMotherUnknown(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+            </View>
+            <View style={styles.gridRow}>
+              <Text style={styles.label}>Father</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={fatherLiving}
+                  onValueChange={(itemValue) => setFatherLiving(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={fatherAtHome}
+                  onValueChange={(itemValue) => setFatherAtHome(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={fatherWorking}
+                  onValueChange={(itemValue) => setFatherWorking(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={fatherUnknown}
+                  onValueChange={(itemValue) => setFatherUnknown(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Yes" value="Y" />
+                  <Picker.Item label="No" value="N" />
+                </Picker>
+              </View>
+            </View>
+          </View>
+          {/* Data table for siblings */}
+          <ScrollView style={styles.tableContainer}>
+            <DataTable
+              theme={{ colors: { text: COLORS.black } }}
+              style={styles.dataTable}
+            >
+              <DataTable.Header>
+                <DataTable.Title>Brothers/Sisters</DataTable.Title>
+                <DataTable.Title>Who Pays Fees</DataTable.Title>
+                <DataTable.Title>Age</DataTable.Title>
+                <DataTable.Title>School</DataTable.Title>
+                <DataTable.Title>Grade/Form</DataTable.Title>
+              </DataTable.Header>
+
+              {/* Map over your sibling data here to create rows */}
+              {siblingRows.map((sibling, index) => (
+                <DataTable.Row key={index}>
+                  <DataTable.Cell>{sibling.name}</DataTable.Cell>
+                  <DataTable.Cell>{sibling.paysFee}</DataTable.Cell>
+                  <DataTable.Cell>{sibling.age}</DataTable.Cell>
+                  <DataTable.Cell>{sibling.school}</DataTable.Cell>
+                  <DataTable.Cell>{sibling.grade}</DataTable.Cell>
+                </DataTable.Row>
+              ))}
+            </DataTable>
+          </ScrollView>
+        </>
+      )}
+
+      {selectedTab === "Comments" && (
+        <View style={styles.formContainer}>
+          <View style={styles.row}>
+            <Text style={styles.label}>Recommend?</Text>
+            <Picker
+              selectedValue={recommend}
+              style={styles.picker}
+              onValueChange={(itemValue, itemIndex) => setRecommend(itemValue)}
+            >
+              <Picker.Item label="Yes" value="Yes" />
+              <Picker.Item label="No" value="No" />
+            </Picker>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Priority:</Text>
+            <Slider
+              style={styles.slider}
+              minimumValue={1}
+              maximumValue={10}
+              step={1}
+              value={priority}
+              onValueChange={setPriority}
+              minimumTrackTintColor={COLORS.primary}
+              maximumTrackTintColor={COLORS.secondary}
+              thumbTintColor={COLORS.white}
+            />
+            <Text style={styles.priorityValue}>{priority}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.label}>Comments:</Text>
+            <TextInput
+              style={styles.commentsInput}
+              multiline
+              numberOfLines={4}
+              onChangeText={setComments}
+              value={comments}
+              placeholder="Type your comment here..."
+            />
+          </View>
         </View>
       )}
       {/* ... Content for other selected tabs ... */}
@@ -300,7 +490,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 10,
     fontSize: 16,
-    width: "50%", // Input takes up the remaining space
+    width: "50%", // Input takes up half the remaining space
+    elevation: 0, // No shadow for the input fields
+    shadowOpacity: 0, // No shadow for the input fields
+    margin: 5,
+    height: 40,
+  },
+  longInput: {
+    marginBottom: 10,
+    borderRadius: 10,
+    fontSize: 16,
+    width: "100%", // Input takes up the remaining space
     elevation: 0, // No shadow for the input fields
     shadowOpacity: 0, // No shadow for the input fields
     margin: 5,
@@ -317,15 +517,17 @@ const styles = StyleSheet.create({
     margin: 5, // Spacing between this input and the next component
     height: 40,
   },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: "40%", // Set a minimum width for the container
-    marginHorizontal: 5, // Add some horizontal margin
+  genderPickerContainer: {
+    flex: 1, // Adjust based on layout
+    margin: 5,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#000", // Placeholder, adjust as needed
+    backgroundColor: "#fff", // Background color for picker
   },
-  checkbox: {
-    marginRight: 8,
+  genderPicker: {
+    width: "100%", // Ensure the picker fills the container
+    height: 40, // Adjust height as necessary
   },
   imagePlaceholder: {
     width: 90,
@@ -422,6 +624,77 @@ const styles = StyleSheet.create({
     color: "#ffffff", // Text color for the button
     fontSize: 18,
     fontWeight: "bold", // If you want the font to be bold
+  },
+  gridContainer: {
+    flexDirection: "column",
+    justifyContent: "space-evenly", // Distribute rows evenly within the container
+    margin: 20,
+  },
+  gridRow: {
+    flexDirection: "row",
+    justifyContent: "space-evenly", // Distribute cells evenly within the row
+    marginBottom: 10, // Space between rows
+  },
+  gridCell: {
+    width: "30%", // Divide width by number of cells per row, adjust as necessary
+    padding: 2, // Optional padding to reduce the size of the picker
+  },
+  gridPicker: {
+    width: "100%",
+    // If you need to style the Picker component itself, add styles here
+  },
+  tableContainer: {
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: COLORS.black,
+    backgroundColor: COLORS.white,
+    marginBottom: 10,
+    marginLeft: 10,
+    marginRight: 10,
+  },
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.black,
+  },
+  tableHeaderText: {
+    flex: 1,
+    padding: 10,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray,
+  },
+  tableCellText: {
+    flex: 1,
+    padding: 10,
+    textAlign: "center",
+    backgroundColor: COLORS.white,
+  },
+  picker: {
+    flex: 1,
+    // Style your picker as needed
+  },
+  slider: {
+    flex: 1,
+    // Style your slider as needed
+  },
+  priorityValue: {
+    width: 50,
+    textAlign: "center",
+    // Style the priority value text as needed
+  },
+  commentsInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: "gray",
+    padding: 10,
+    textAlignVertical: "top", // Aligns text to the top on Android
+    // Additional styles for the comments input box
   },
   // Add any additional styles for image placeholder and buttons if needed
 });
