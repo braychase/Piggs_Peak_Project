@@ -91,7 +91,7 @@ const AddStudentPage = () => {
       colors={[COLORS.secondary, COLORS.primary]}
     >
       <View style={styles.tabsContainer}>
-        {["Personal", "School", "Family", "Comments"].map(
+        {["Personal", "School", "Grades", "Family", "Comments"].map(
           (tab, index, array) => (
             <Tab
               key={tab}
