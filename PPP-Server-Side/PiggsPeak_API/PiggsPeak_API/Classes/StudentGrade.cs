@@ -19,5 +19,7 @@ namespace PiggsPeak_API.Classes
 
 		[Column("School_id")]
 		public int SchoolID { get; set; }
-	}
+
+        public School? School { get; set; }
+    }
 }

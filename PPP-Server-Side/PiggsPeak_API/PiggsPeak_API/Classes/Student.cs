@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PiggsPeak_API.Classes;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -37,9 +38,18 @@ namespace PiggsPeak_API
 
 		[Column("deleted_yn")]
 		public string Deleted { get; set; }
-
+			
 		[Column("active_yn")]
 		public string Active { get; set; }
+
+		//[ForeignKey("School")]
+		[Column("School_id")]
+		public int SchoolID { get; set; }
+
+		//[ForeignKey("School_id")]
+        public School School { get; set; }
+
+        //public ICollection<StudentGrade> Grades;
 
 		public Student()
 		{

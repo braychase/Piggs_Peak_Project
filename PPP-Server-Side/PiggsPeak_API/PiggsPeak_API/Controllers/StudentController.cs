@@ -24,14 +24,19 @@ namespace PiggsPeak_API.Controllers
 		{
 			var students = await _dbContext.Students.ToListAsync();
 
-			// Handle null BirthDate values
 			foreach (var student in students)
 			{
-				if (student.BirthDate == null || student.BirthDate == DateTime.MinValue)
-				{
+                // Handle null BirthDate values
+                if (student.BirthDate == null || student.BirthDate == DateTime.MinValue)
 					student.BirthDate = DateTime.Now;
-				}
-			}
+
+				//if (student.School == null)
+				//	student.School = await _dbContext.Schools.FindAsync(1);
+
+                //if (student.Grades == null)
+                //                student.Grades =
+                //	`
+            }
 
 			return students;
 		}
@@ -40,9 +45,13 @@ namespace PiggsPeak_API.Controllers
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Student>> Get(int id)
 		{
-			var student = await _dbContext.Students.FindAsync(id);
+			//var student = await _dbContext.Students.FindAsync(id);
 
-			if (student == null)
+            var student = _dbContext.Students
+                .Include(s => s.School)
+                .SingleOrDefault(s => s.StudentID == id);
+			
+            if (student == null)
 			{
 				return NotFound();
 			}

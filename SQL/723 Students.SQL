@@ -4,6 +4,11 @@ Alter table Student_Grade modify StudentGrade_id INT NOT NULL AUTO_INCREMENT;
 Alter table Student_Grade modify Program_id int not null default 1;
 select * from Student_Grade ;
 DELETE from Student_Grade where StudentGrade_id > 0;
+
+update S
+set S.School_id = G.School_id
+From Student S
+LEFT JOIN Student_Grade G ON (S.Student_id = G.Student_id AND G.Effective_dt = (SELECT MAX(Effective_dt) FROM Student_Grade G2 WHERE S.Student_id = G2.Student_id))
 */
 
 tweak

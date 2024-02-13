@@ -10,12 +10,25 @@ create table GradeLevel (
 go
 
 /*
+-- de-normalized field, referencing the MOST RECENT Grade
+ALTER TABLE Student ADD School_id int null;
+ALTER TABLE Student ADD Form_nb int null;
+
 -- STEP THREE
 DELETE FROM Student_Grade;
 insert into Student_Grade (Student_id, School_id, Program_id, Form_nb, Effective_dt, Notes_tx)
+
 SELECT Student_id, School_id, 1 as Program_id, Form_nb, Effective_dt, Notes_tx FROM GradeLevel G inner join School S on (G.School_tx = s.School_nm)
+
 DROP TABLE GradeLevel;
 go
+
+-- STEP FOUR
+update S
+set S.School_id = G.School_id, S.Form_nb=G.Form_nb
+From Student S
+LEFT JOIN Student_Grade G ON (S.Student_id = G.Student_id AND G.Effective_dt = (SELECT MAX(Effective_dt) FROM Student_Grade G2 WHERE S.Student_id = G2.Student_id))
+
 */
 
 -- STEP TWO
