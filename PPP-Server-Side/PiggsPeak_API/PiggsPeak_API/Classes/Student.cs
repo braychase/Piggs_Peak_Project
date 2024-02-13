@@ -44,10 +44,10 @@ namespace PiggsPeak_API
 
 		//[ForeignKey("School")]
 		[Column("School_id")]
-		public int SchoolID { get; set; }
+		public int? SchoolID { get; set; }
 
 		//[ForeignKey("School_id")]
-        public School School { get; set; }
+		public School School { get; set; }
 
         //public ICollection<StudentGrade> Grades;
 

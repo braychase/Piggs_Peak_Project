@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, Pressable, ScrollView } from "react-native";
 import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import { getStudents } from "../services/StudentService";
+import {
+  faArrowLeft,
+  faArrowRight,
+  faChevronDown,
+  faChevronUp,
+} from "@fortawesome/free-solid-svg-icons";
+import { getStudents } from "../services/StudentSearchService";
 import { getSchools } from "../services/SchoolService";
 import COLORS from "../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,23 +18,29 @@ const StudentPage = ({ navigation }) => {
   const [allStudents, setAllStudents] = useState([]);
   const [students, setStudents] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState("all");
+  const [selectedGender, setSelectedGender] = useState("all");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredTotalPages, setFilteredTotalPages] = useState(0);
   const [schoolCodeDescriptionMapping, setSchoolCodeDescriptionMapping] =
     useState({});
-  const handleAddStudentPress = () => {
-    navigation.navigate("AddStudent"); // Make sure to set up this route in your navigation stack
-  };
+  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+
+  const handleAddStudentPress = () => {
+    navigation.navigate("AddStudent");
+  };
 
   const handleEditPress = () => {
     const studentToEdit = allStudents.find(
       (student) => student.studentID === selectedStudentId
     );
-    navigation.navigate("AddStudent", { student: studentToEdit });
+    if (studentToEdit) {
+      navigation.navigate("AddStudent", { studentID: studentToEdit.studentID });
+    }
   };
+
   const selectStudent = (studentId) => {
     setSelectedStudentId(studentId);
   };
@@ -51,7 +62,7 @@ const StudentPage = ({ navigation }) => {
     };
 
     fetchData();
-  }, [itemsPerPage]);
+  }, []);
 
   useEffect(() => {
     applyFilter();
@@ -61,7 +72,7 @@ const StudentPage = ({ navigation }) => {
     allStudents,
     selectedSchool,
     searchQuery,
-    schoolCodeDescriptionMapping,
+    selectedGender,
   ]);
 
   const applyFilter = () => {
@@ -69,16 +80,17 @@ const StudentPage = ({ navigation }) => {
       const matchesName = student.studentName
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      const studentSchoolCode = student.studentCode.substring(0, 3);
       const matchesSchool =
-        selectedSchool === "all" || studentSchoolCode === selectedSchool;
-      return matchesName && matchesSchool;
+        selectedSchool === "all" || student.schoolCode === selectedSchool;
+      const matchesGender =
+        selectedGender === "all" ||
+        student.gender.toLowerCase() === selectedGender;
+      return matchesName && matchesSchool && matchesGender;
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     setStudents(filteredStudents.slice(startIndex, endIndex));
-
     setFilteredTotalPages(Math.ceil(filteredStudents.length / itemsPerPage));
   };
 
@@ -101,6 +113,7 @@ const StudentPage = ({ navigation }) => {
 
   const clearSearch = () => {
     setSearchQuery("");
+    setCurrentPage(1);
     applyFilter();
   };
 
@@ -110,32 +123,58 @@ const StudentPage = ({ navigation }) => {
       colors={[COLORS.secondary, COLORS.primary]}
     >
       <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            placeholder="Search by name"
-            onChangeText={handleSearch}
-            value={searchQuery}
-            style={styles.searchInput}
-          />
-          {searchQuery.length > 0 && (
-            <Pressable onPress={clearSearch} style={styles.clearButton}>
-              <Text style={styles.clearButtonText}>Clear</Text>
-            </Pressable>
-          )}
-        </View>
-
-        <Picker
-          selectedValue={selectedSchool}
-          style={styles.schoolPicker}
-          onValueChange={(itemValue) => setSelectedSchool(itemValue)}
+        <Pressable
+          onPress={() => setIsFiltersVisible(!isFiltersVisible)}
+          style={styles.filterToggle}
         >
-          <Picker.Item label="All Schools" value="all" />
-          {Object.entries(schoolCodeDescriptionMapping).map(
-            ([code, description]) => (
-              <Picker.Item key={code} label={description} value={code} />
-            )
-          )}
-        </Picker>
+          <Text style={styles.filterToggleText}>Filters</Text>
+          <FontAwesomeIcon
+            icon={isFiltersVisible ? faChevronUp : faChevronDown}
+            size={16}
+          />
+        </Pressable>
+
+        {isFiltersVisible && (
+          <>
+            <View style={styles.searchContainer}>
+              <TextInput
+                placeholder="Search by name"
+                onChangeText={handleSearch}
+                value={searchQuery}
+                style={styles.searchInput}
+              />
+              {searchQuery.length > 0 && (
+                <Pressable onPress={clearSearch} style={styles.clearButton}>
+                  <Text style={styles.clearButtonText}>Clear</Text>
+                </Pressable>
+              )}
+            </View>
+
+            <Picker
+              selectedValue={selectedSchool}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedSchool(itemValue)}
+            >
+              <Picker.Item label="All Schools" value="all" />
+              {Object.entries(schoolCodeDescriptionMapping).map(
+                ([code, description]) => (
+                  <Picker.Item key={code} label={description} value={code} />
+                )
+              )}
+            </Picker>
+
+            <Picker
+              selectedValue={selectedGender}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedGender(itemValue)}
+            >
+              <Picker.Item label="All Genders" value="all" />
+              <Picker.Item label="Male" value="m" />
+              <Picker.Item label="Female" value="f" />
+            </Picker>
+          </>
+        )}
+
         <View style={styles.buttonContainer}>
           <Pressable style={styles.addButton} onPress={handleAddStudentPress}>
             <Text style={styles.buttonText}>Add Student</Text>
@@ -151,6 +190,7 @@ const StudentPage = ({ navigation }) => {
             <Text style={styles.buttonText}>Edit Student</Text>
           </Pressable>
         </View>
+
         <ScrollView style={styles.dataTableScroll}>
           <DataTable
             theme={{ colors: { text: COLORS.black } }}
@@ -159,6 +199,7 @@ const StudentPage = ({ navigation }) => {
             <DataTable.Header>
               <DataTable.Title>Name</DataTable.Title>
               <DataTable.Title>School Code</DataTable.Title>
+              <DataTable.Title>Gender</DataTable.Title>
             </DataTable.Header>
             {students.map((student) => (
               <DataTable.Row
@@ -170,9 +211,8 @@ const StudentPage = ({ navigation }) => {
                 ]}
               >
                 <DataTable.Cell>{student.studentName}</DataTable.Cell>
-                <DataTable.Cell>
-                  {student.studentCode.substring(0, 3)}
-                </DataTable.Cell>
+                <DataTable.Cell>{student.schoolCode}</DataTable.Cell>
+                <DataTable.Cell>{student.gender}</DataTable.Cell>
               </DataTable.Row>
             ))}
           </DataTable>
@@ -295,21 +335,21 @@ const styles = StyleSheet.create({
   selectedRow: {
     backgroundColor: COLORS.selected,
   },
-  // addButton: {
-  //   backgroundColor: "blue",
-  //   padding: 15,
-  //   borderRadius: 10,
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   marginTop: 10, // Adjust the margin as needed
-  //   marginBottom: 10, // Adjust the margin as needed
-  //   width: "20%",
-  // },
-  // addButtonText: {
-  //   color: "white",
-  //   fontSize: 12,
-  //   fontWeight: "bold",
-  // },
+  filterToggle: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  filterToggleText: {
+    marginRight: 10,
+    color: "black",
+    fontSize: 18,
+  },
+  picker: {
+    backgroundColor: "white",
+    marginBottom: 15,
+  },
 });
 
 export default StudentPage;
