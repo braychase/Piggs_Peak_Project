@@ -19,6 +19,7 @@ const StudentPage = ({ navigation }) => {
   const [students, setStudents] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState("all");
   const [selectedGender, setSelectedGender] = useState("all");
+  const [selectedForm, setSelectedForm] = useState("all");
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,6 +74,7 @@ const StudentPage = ({ navigation }) => {
     selectedSchool,
     searchQuery,
     selectedGender,
+    selectedForm,
   ]);
 
   const applyFilter = () => {
@@ -85,7 +87,9 @@ const StudentPage = ({ navigation }) => {
       const matchesGender =
         selectedGender === "all" ||
         student.gender.toLowerCase() === selectedGender;
-      return matchesName && matchesSchool && matchesGender;
+      const matchesForm =
+        selectedForm === "all" || student.Form === selectedForm;
+      return matchesName && matchesSchool && matchesGender && matchesForm;
     });
 
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -172,6 +176,18 @@ const StudentPage = ({ navigation }) => {
               <Picker.Item label="Male" value="m" />
               <Picker.Item label="Female" value="f" />
             </Picker>
+            <Picker
+              selectedValue={selectedForm}
+              style={styles.picker}
+              onValueChange={(itemValue) => setSelectedForm(itemValue)}
+            >
+              <Picker.Item label="All" value="all" />
+              <Picker.Item label="None" value="null" />
+              <Picker.Item label="1" value="1" />
+              <Picker.Item label="2" value="2" />
+              <Picker.Item label="3" value="3" />
+              <Picker.Item label="4" value="4" />
+            </Picker>
           </>
         )}
 
@@ -200,6 +216,7 @@ const StudentPage = ({ navigation }) => {
               <DataTable.Title>Name</DataTable.Title>
               <DataTable.Title>School Code</DataTable.Title>
               <DataTable.Title>Gender</DataTable.Title>
+              <DataTable.Title>Form</DataTable.Title>
             </DataTable.Header>
             {students.map((student) => (
               <DataTable.Row
@@ -213,6 +230,7 @@ const StudentPage = ({ navigation }) => {
                 <DataTable.Cell>{student.studentName}</DataTable.Cell>
                 <DataTable.Cell>{student.schoolCode}</DataTable.Cell>
                 <DataTable.Cell>{student.gender}</DataTable.Cell>
+                <DataTable.Cell>{student.form}</DataTable.Cell>
               </DataTable.Row>
             ))}
           </DataTable>

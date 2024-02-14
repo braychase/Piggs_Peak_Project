@@ -43,5 +43,8 @@ namespace PiggsPeak_API
 		[Column("Age")]
 		public int? Age { get; set; }
 
+		[Column("Form_nb")]
+		public int? Form { get; set; }
+
 	}
 }

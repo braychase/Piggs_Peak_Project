@@ -42,6 +42,9 @@ namespace PiggsPeak_API
 		[Column("active_yn")]
 		public string Active { get; set; }
 
+		[Column("Form_nb")]
+		public int? Form { get; set; }
+
 		//[ForeignKey("School")]
 		[Column("School_id")]
 		public int? SchoolID { get; set; }
@@ -56,7 +59,7 @@ namespace PiggsPeak_API
 		}
 
 		public Student(int studentID, string studentName, string firstName, string lastName, string studentCode,
-			DateTime birthDate, string gender, string sponsored, string ovc, string deleted, string active)
+			DateTime birthDate, string gender, string sponsored, string ovc, string deleted, string active, int? form)
 		{
 			StudentID = studentID;
 			StudentName = studentName;
@@ -69,6 +72,7 @@ namespace PiggsPeak_API
 			OVC = ovc;
 			Deleted = deleted;
 			Active = active;
+			Form = form;
 		}
 	}
 }
