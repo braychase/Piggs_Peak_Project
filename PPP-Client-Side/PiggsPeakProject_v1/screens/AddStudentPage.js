@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { DatePickerInput } from "react-native-paper-dates";
@@ -6,6 +6,8 @@ import COLORS from "../constants/colors";
 import { TextInput, DataTable } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { getSchools } from "../services/SchoolService";
 
 const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
   return (
@@ -31,15 +33,19 @@ const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
 };
 
 const AddStudentPage = () => {
+  const [schools, setSchools] = useState([]);
+  const route = useRoute();
+  const studentID = route.params?.studentID;
   const [selectedTab, setSelectedTab] = useState("Personal");
   const [surname, setSurname] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [gender, setGender] = useState("");
+  const [ovc, setOVC] = useState("");
   const [dob, setDob] = useState(new Date());
   //const [checked, setChecked] = useState(false);
   const [primarySchool, setPrimarySchool] = useState("");
-  const [highSchool, setHighSchool] = useState("");
+  const [highSchool, setHighSchool] = useState("null");
   const [yearFinished, setYearFinished] = useState("");
   const [dateEnrolled, setDateEnrolled] = useState(new Date());
   const [year, setYear] = useState("");
@@ -50,7 +56,6 @@ const AddStudentPage = () => {
   const [motherAtHome, setMotherAtHome] = useState("No");
   const [motherWorking, setMotherWorking] = useState("No");
   const [motherUnknown, setMotherUnknown] = useState("No");
-
   const [fatherLiving, setFatherLiving] = useState("No");
   const [fatherAtHome, setFatherAtHome] = useState("No");
   const [fatherWorking, setFatherWorking] = useState("No");
@@ -84,6 +89,49 @@ const AddStudentPage = () => {
     }
     return age;
   };
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      if (studentID) {
+        try {
+          const response = await fetch(
+            `https://localhost:7208/api/Student/${studentID}`
+          );
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          const studentData = await response.json();
+
+          // Populate form fields with fetched data
+          setSurname(studentData.lastName || "");
+          setMiddleName(studentData.middleName || "");
+          setFirstName(studentData.firstName || "");
+          setGender(studentData.gender || "");
+          setOVC(studentData.ovc || "");
+
+          // Handle birthDate
+          if (studentData.birthDate) {
+            const parsedDob = new Date(studentData.birthDate);
+            setDob(parsedDob);
+          }
+        } catch (error) {
+          console.error("Failed to fetch student data:", error);
+        }
+      }
+    };
+
+    const fetchSchoolsData = async () => {
+      try {
+        const schoolsData = await getSchools(); // Assuming this returns an array of school objects
+        setSchools(schoolsData);
+      } catch (error) {
+        console.error("Failed to fetch schools data:", error);
+      }
+    };
+
+    fetchStudentData();
+    fetchSchoolsData();
+  }, [studentID]);
 
   return (
     <LinearGradient
@@ -135,22 +183,34 @@ const AddStudentPage = () => {
             <View style={[styles.input, styles.smallTextInput]}>
               <Picker
                 selectedValue={gender}
-                onValueChange={(itemValue, itemIndex) => setGender(itemValue)}
+                onValueChange={(itemValue) => setGender(itemValue)}
                 style={styles.genderPicker}
               >
-                <Picker.Item label="Male" value="Male" />
-                <Picker.Item label="Female" value="Female" />
+                <Picker.Item label="Male" value="M" />
+                <Picker.Item label="Female" value="F" />
+              </Picker>
+            </View>
+            {/* OVC Picker with Label */}
+            <View style={styles.horizontalRow}>
+              <Text style={[styles.ovcLabel, { marginLeft: 20 }]}>OVC:</Text>
+              <Picker
+                selectedValue={ovc}
+                onValueChange={(itemValue) => setOVC(itemValue)}
+                style={styles.ovcPicker} // Apply specific styling for the OVC Picker
+              >
+                <Picker.Item label="Yes" value="Y" />
+                <Picker.Item label="No" value="N" />
               </Picker>
             </View>
           </View>
           <View style={styles.row}>
             <DatePickerInput
               locale="en"
-              label=""
+              label="Date of Birth"
               value={dob}
-              onChange={setDob}
+              onChange={(newValue) => setDob(newValue)}
               inputMode="start"
-              style={[styles.input]}
+              style={styles.input}
               mode="outlined"
             />
             <TextInput
@@ -179,8 +239,8 @@ const AddStudentPage = () => {
             <TextInput
               mode="outlined"
               label="Primary School"
-              value={primarySchool}
-              onChangeText={setPrimarySchool}
+              value={form}
+              onChangeText={setForm}
               style={styles.input}
             />
             <TextInput
@@ -188,17 +248,25 @@ const AddStudentPage = () => {
               label="Year Finished"
               value={yearFinished}
               onChangeText={setYearFinished}
-              style={styles.input}
+              style={styles.mediumTextInput}
             />
           </View>
           <View style={styles.row}>
-            <TextInput
-              mode="outlined"
-              label="High School"
-              value={highSchool}
-              onChangeText={setHighSchool}
-              style={styles.input}
-            />
+            <Text style={styles.pickerLabel}>High School :</Text>
+            <Picker
+              selectedValue={highSchool}
+              style={styles.picker}
+              onValueChange={(itemValue, itemIndex) => setHighSchool(itemValue)}
+              placeholder="Select High School"
+            >
+              {schools.map((school, index) => (
+                <Picker.Item
+                  key={index}
+                  label={school.description}
+                  value={school.schoolCode}
+                />
+              ))}
+            </Picker>
             <TextInput
               mode="outlined"
               label="Year"
@@ -517,6 +585,17 @@ const styles = StyleSheet.create({
     margin: 5, // Spacing between this input and the next component
     height: 40,
   },
+  mediumTextInput: {
+    width: "25%", // Smaller width for short inputs like M/F and Age
+    marginRight: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+    fontSize: 16,
+    elevation: 0, // No shadow for the input fields
+    shadowOpacity: 0, // No shadow for the input fields
+    margin: 5, // Spacing between this input and the next component
+    height: 40,
+  },
   genderPickerContainer: {
     flex: 1, // Adjust based on layout
     margin: 5,
@@ -677,6 +756,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
+    height: 40,
     // Style your picker as needed
   },
   slider: {
@@ -696,7 +776,24 @@ const styles = StyleSheet.create({
     textAlignVertical: "top", // Aligns text to the top on Android
     // Additional styles for the comments input box
   },
-  // Add any additional styles for image placeholder and buttons if needed
+  horizontalRow: {
+    flexDirection: "row", // Align items horizontally
+    alignItems: "center", // Center items vertically in the container
+    marginBottom: 10, // Add some space below the row
+  },
+  ovcLabel: {
+    // Your existing label styling...
+    // Ensure it doesn't flex to take up all horizontal space
+    flex: 1,
+    marginRight: 5, // Adjust the width as needed to fit your layout
+  },
+  ovcPicker: {
+    flex: 1, // Allow the picker to expand and fill available space
+    height: 40, // Adjust the height as needed
+  },
+  pickerLabel: {
+    marginRight: 5,
+  },
 });
 
 export default AddStudentPage;

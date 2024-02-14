@@ -12,8 +12,8 @@ const HomeScreen = () => {
       style={{ flex: 1 }}
       colors={[COLORS.secondary, COLORS.primary]}
     >
-      <View>
-        <Text>Hello Interview Page!</Text>
+      <View style={styles.block}>
+        <Text style={styles.temp}>Interview Page</Text>
       </View>
     </LinearGradient>
   );
@@ -35,6 +35,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: 20,
     marginBottom: 10,
+  },
+  temp: {
+    justifyContent: "center",
+    marginTop: "25%",
+    fontWeight: "bold",
+    fontSize: 64,
+  },
+  block: {
+    alignItems: "center",
   },
 });
 

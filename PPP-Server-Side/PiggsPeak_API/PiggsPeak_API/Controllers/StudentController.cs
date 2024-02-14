@@ -22,7 +22,9 @@ namespace PiggsPeak_API.Controllers
 		[HttpGet]
 		public async Task<IEnumerable<Student>> Get()
 		{
-			var students = await _dbContext.Students.ToListAsync();
+			var students = await _dbContext.Students
+				.Include(s => s.School) // Eager loading of the School navigation property
+				.ToListAsync();
 
 			foreach (var student in students)
 			{
@@ -50,6 +52,7 @@ namespace PiggsPeak_API.Controllers
             var student = _dbContext.Students
                 .Include(s => s.School)
                 .SingleOrDefault(s => s.StudentID == id);
+			
 			
             if (student == null)
 			{

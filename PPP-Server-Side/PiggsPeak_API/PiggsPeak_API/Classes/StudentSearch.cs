@@ -11,34 +11,40 @@ namespace PiggsPeak_API
         public int StudentID { get; set; }
 
         [Column("Student_nm")]
-        public string StudentName { get; set; }
+        public string? StudentName { get; set; }
 
         [Column("First_nm")]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
         [Column("Last_nm")]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         [Column("StudentCode_tx")]
-        public string StudentCode { get; set; }
+        public string? StudentCode { get; set; }
 
         [Column("Birth_dt")]
         public DateTime? BirthDate { get; set; }
 
         [Column("Gender_tx")]
-        public string Gender { get; set; }
+        public string? Gender { get; set; }
 
         [Column("Sponsored_yn")]
-        public string Sponsored { get; set; }
+        public string? Sponsored { get; set; }
 
         [Column("OVC_yn")]
-        public string OVC { get; set; }
+        public string? OVC { get; set; }
 
         [Column("School_id")]
-        public int SchoolID { get; set; }
+        public int? SchoolID { get; set; }
 
         [Column("School_nm")]
-        public string SchoolCode { get; set; }
+        public string? SchoolCode { get; set; }
 
-    }
+		[Column("Age")]
+		public int? Age { get; set; }
+
+		[Column("Form_nb")]
+		public int? Form { get; set; }
+
+	}
 }
