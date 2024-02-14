@@ -236,15 +236,13 @@ const AddStudentPage = () => {
       {selectedTab === "School" && (
         <View style={styles.formContainer}>
           <View style={styles.row}>
-            <Text style={styles.pickerLabel}>Primary School :</Text>
-            <Picker
-              selectedValue={primarySchool}
-              style={styles.picker}
-              onValueChange={(itemValue, itemIndex) =>
-                setPrimarySchool(itemValue)
-              }
-              placeholder="Select Primary School"
-            ></Picker>
+            <TextInput
+              mode="outlined"
+              label="Primary School"
+              value={form}
+              onChangeText={setForm}
+              style={styles.input}
+            />
             <TextInput
               mode="outlined"
               label="Year Finished"

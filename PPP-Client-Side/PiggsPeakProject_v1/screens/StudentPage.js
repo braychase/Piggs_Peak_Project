@@ -87,15 +87,26 @@ const StudentPage = ({ navigation }) => {
       const matchesGender =
         selectedGender === "all" ||
         student.gender.toLowerCase() === selectedGender;
-      const matchesForm =
-        selectedForm === "all" || student.Form === selectedForm;
+
+      let matchesForm = true; // Default to true for "all"
+      if (selectedForm !== "all") {
+        if (selectedForm === "null") {
+          // Adjusts for when "None" is selected, comparing with both `null` and `undefined`
+          matchesForm = student.form === null || student.form === undefined;
+        } else {
+          // Direct comparison as numbers. Ensure `student.Form` is treated as a number.
+          matchesForm = Number(student.form) === Number(selectedForm);
+        }
+      }
+
       return matchesName && matchesSchool && matchesGender && matchesForm;
     });
 
+    const totalFilteredStudents = filteredStudents.length;
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     setStudents(filteredStudents.slice(startIndex, endIndex));
-    setFilteredTotalPages(Math.ceil(filteredStudents.length / itemsPerPage));
+    setFilteredTotalPages(Math.ceil(totalFilteredStudents / itemsPerPage));
   };
 
   const goToNextPage = () => {
@@ -181,12 +192,13 @@ const StudentPage = ({ navigation }) => {
               style={styles.picker}
               onValueChange={(itemValue) => setSelectedForm(itemValue)}
             >
-              <Picker.Item label="All" value="all" />
+              <Picker.Item label="All Forms" value="all" />
               <Picker.Item label="None" value="null" />
-              <Picker.Item label="1" value="1" />
-              <Picker.Item label="2" value="2" />
-              <Picker.Item label="3" value="3" />
-              <Picker.Item label="4" value="4" />
+              <Picker.Item label="1" value={1} />
+              <Picker.Item label="2" value={2} />
+              <Picker.Item label="3" value={3} />
+              <Picker.Item label="4" value={4} />
+              <Picker.Item label="5" value={5} />
             </Picker>
           </>
         )}
