@@ -1,0 +1,102 @@
+/*
+DROP TABLE Student_Sponsor;
+CREATE TABLE Student_Sponsor (
+    Student_id INT NOT NULL,
+    Effective_dt DATETIME NOT NULL,
+    Sponsor_nm VARCHAR(128) NOT NULL,
+    PRIMARY KEY (Student_id, Effective_dt),
+    FOREIGN KEY (Student_id) REFERENCES Student(Student_id) ON DELETE CASCADE
+);
+*/
+
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.09.18','Burdett, Kent and Marlene' FROM Student WHERE StudentCode_tx='PCH-2022-20';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.04.30','Harrison, Bev' FROM Student WHERE StudentCode_tx='FHS-2019-22';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.07','Harrison, Bev' FROM Student WHERE StudentCode_tx='EHS-2022-10';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.01.07','Szalma, Liz' FROM Student WHERE StudentCode_tx='PCH-2021-29';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Szalma, Liz' FROM Student WHERE StudentCode_tx='EUK-2022-17';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.02.16','Day, Georgie' FROM Student WHERE StudentCode_tx='FHS-2021-12';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.01.27','Hughes, Julie' FROM Student WHERE StudentCode_tx='EHS-2019-22';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.05.01','Bettle, Harold & Shirley' FROM Student WHERE StudentCode_tx='FHS-2021-06';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.03.19','Bettle, Harold & Shirley' FROM Student WHERE StudentCode_tx='FHS-2023-17';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.01.06','Darrah, Jill' FROM Student WHERE StudentCode_tx='EHS-2019-18';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','McNab, Judy' FROM Student WHERE StudentCode_tx='PCH-2023-17';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.05.01','Reid, Brock & Barbara' FROM Student WHERE StudentCode_tx='PCH-2021-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.05.08','Crowley, Doug' FROM Student WHERE StudentCode_tx='EHS-2019-01';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.23','Crowley, Doug' FROM Student WHERE StudentCode_tx='EHS-2022-03';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.04.02','Britt, Paul & Margaret' FROM Student WHERE StudentCode_tx='PCH-2022-10';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.10.31','Richard, Heather & Greg' FROM Student WHERE StudentCode_tx='EHS-2021-11';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.09.18','Rendell, Chris' FROM Student WHERE StudentCode_tx='PCH-2021-17';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Powning, Beth' FROM Student WHERE StudentCode_tx='EHS-2022-07';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','London, Jim' FROM Student WHERE StudentCode_tx='EHS-2022-01';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2019.07.18','Clark, Ron & Val' FROM Student WHERE StudentCode_tx='EHS-2019-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.12.23','Bettle, Mark & Lisa' FROM Student WHERE StudentCode_tx='PCH-2023-07';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Bettle, Mark & Lisa' FROM Student WHERE StudentCode_tx='EUK-2022-15';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.05.01','Moore, Gail & Kelley' FROM Student WHERE StudentCode_tx='EUK-2022-01';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2012.01.01','Northrup, Ethel' FROM Student WHERE StudentCode_tx='FHS-2011-04';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.09.18','Gerow, Warren & Sue' FROM Student WHERE StudentCode_tx='PCH-2022-21';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.08','Henderson, Ross & Mariya' FROM Student WHERE StudentCode_tx='EHS-2022-02';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Wanamaker, Charlie & Mary' FROM Student WHERE StudentCode_tx='EHS-2022-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.05.10','MacMackin, Steve & Barb' FROM Student WHERE StudentCode_tx='FHS-2021-04';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.03.19','Wallace, Carole & Bill' FROM Student WHERE StudentCode_tx='EHS-2023-11';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.02.16','Oliver, Margaret & Burton' FROM Student WHERE StudentCode_tx='PCH-2021-05';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.04.02','Mott, Cory' FROM Student WHERE StudentCode_tx='PCH-2019-04';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.01.07','Szalma, Gwen' FROM Student WHERE StudentCode_tx='EHS-2021-09';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.09.18','Collings, Brenda' FROM Student WHERE StudentCode_tx='PCH-2022-04';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Brittain, Judy' FROM Student WHERE StudentCode_tx='PCH-2022-07';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.12.31','McTiernan, Anne' FROM Student WHERE StudentCode_tx='PCH-2021-31';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.10.30','Rendell-Edinger, David, Joan, Evan, Jasper & Garnet' FROM Student WHERE StudentCode_tx='PCH-2023-19';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.05.10','McDonald, Todd' FROM Student WHERE StudentCode_tx='EHS-2019-10';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.25','Long, Dan & Denise' FROM Student WHERE StudentCode_tx='PCH-2023-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.05.01','Murphy, Susan (Pip)' FROM Student WHERE StudentCode_tx='FHS-2022-03';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.04.02','Tompkins, Kim' FROM Student WHERE StudentCode_tx='EUK-2022-18';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.10.31','Pollock, J Beth' FROM Student WHERE StudentCode_tx='EHS-2021-10';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.05.08','King, Josephine ' FROM Student WHERE StudentCode_tx='EHS-2021-07';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.03.19','Saindon, Anna' FROM Student WHERE StudentCode_tx='EHS-2023-03';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.08.29','Saindon, Anna' FROM Student WHERE StudentCode_tx='EHS-2023-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.03.19','Jenkins, Eugene & Dianne' FROM Student WHERE StudentCode_tx='EHS-2023-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.01.01','Cole, Lesley' FROM Student WHERE StudentCode_tx='EHS-2021-24';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Cole, Lesley' FROM Student WHERE StudentCode_tx='EHS-2019-16';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.05.07','Sisters of Charity' FROM Student WHERE StudentCode_tx='EHS-2021-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.04.02','Sisters of Charity' FROM Student WHERE StudentCode_tx='EHS-2021-04';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Sisters of Charity' FROM Student WHERE StudentCode_tx='EUK-2022-16';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.30','Sisters of Charity' FROM Student WHERE StudentCode_tx='EHS-2023-01';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.02.20','Sisters of Charity' FROM Student WHERE StudentCode_tx='PCH-2023-29';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.23','Sisters of Charity' FROM Student WHERE StudentCode_tx='EHS-2021-17';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.05.01','Hand, Audrey' FROM Student WHERE StudentCode_tx='EHS-2022-04';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.03.02','Law''s Horizon Egg Farm, Aaron' FROM Student WHERE StudentCode_tx='PCH-2021-01';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.03.21','Britt, Chelsea' FROM Student WHERE StudentCode_tx='EHS-2021-38';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.09.22','Donovan, Alvin and Olivia' FROM Student WHERE StudentCode_tx='PCH-2021-24';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.05.01','Beyea, Pam' FROM Student WHERE StudentCode_tx='PCH-2021-09';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.11','Brodie, Neil' FROM Student WHERE StudentCode_tx='PCH-2019-09';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Gamble, Shirley' FROM Student WHERE StudentCode_tx='FHS-2023-16';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2019.06.06','Lakefield Elementary' FROM Student WHERE StudentCode_tx='EHS-2019-15';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2019.06.06','Crossman, Gary and Marcia' FROM Student WHERE StudentCode_tx='FHS-2019-14';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='EHS-2022-13';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='PCH-2021-28';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='FHS-2021-11';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='PCH-2021-22';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='EHS-2022-16';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.29','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='PCH-2022-25';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='EHS-2022-14';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='EHS-2022-34';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='EHS-2022-10';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.07','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='EUK-2022-08';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.23','Congregation of Notre Dame' FROM Student WHERE StudentCode_tx='EHS-2021-27';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.09.18','Parent, Dennis and Carolyn' FROM Student WHERE StudentCode_tx='PCH-2022-23';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2019.11.16','Hamilton/Waberski, Ryan and Alanna' FROM Student WHERE StudentCode_tx='PCH-2019-09';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.01.10','Hamilton/Waberski, Ryan and Alanna' FROM Student WHERE StudentCode_tx='PCH-2022-05';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2020.11.14','Hadfield, Ann' FROM Student WHERE StudentCode_tx='EHS-2019-17';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.03.19','Hadfield, Amy' FROM Student WHERE StudentCode_tx='FHS-2023-03';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.12.07','Bettle, Katie' FROM Student WHERE StudentCode_tx='PCH-2021-06';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.04.08','Coleman, Laurie' FROM Student WHERE StudentCode_tx='FHS-2022-01';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.10.30','Jeffrey, Sharon' FROM Student WHERE StudentCode_tx='EHS-2022-33';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.05.29','Southfield United Church of Canada' FROM Student WHERE StudentCode_tx='EHS-2021-14';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2021.05.10','Forgrave, Otty' FROM Student WHERE StudentCode_tx='PCH-2019-05';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.09.18','Campbell, Deb and Robin' FROM Student WHERE StudentCode_tx='PCH-2021-19';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2024.01.06','Millstream United Church, c/o carolyn Crealock' FROM Student WHERE StudentCode_tx='EHS-2023-12';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2022.10.29','MacDonald, Duncan' FROM Student WHERE StudentCode_tx='PCH-2019-10';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.08.29','Briggs, Anita Lucia' FROM Student WHERE StudentCode_tx='FHS-2023-06';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.09.14','Arsenault, Lana' FROM Student WHERE StudentCode_tx='EHS-2022-22';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.09.14','Arsenault, Lana' FROM Student WHERE StudentCode_tx='FHS-2023-02';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.12.11','Davis, Dr Gary & Lana' FROM Student WHERE StudentCode_tx='EKU-2023-01';
+INSERT INTO Student_Sponsor (Student_id,Effective_dt,Sponsor_nm) SELECT Student_id,'2023.12.11','Davis, Dr Gary & Lana' FROM Student WHERE StudentCode_tx='EUK-2022-05';
