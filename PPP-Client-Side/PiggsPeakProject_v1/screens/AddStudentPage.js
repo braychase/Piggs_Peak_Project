@@ -15,6 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getSchools } from "../services/SchoolService";
+import { render } from "react-dom";
 
 const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
   return (
@@ -40,6 +41,7 @@ const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
 };
 
 const AddStudentPage = () => {
+  const [grades, setGrades] = useState([]);
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [schools, setSchools] = useState([]);
   const route = useRoute();
@@ -80,6 +82,14 @@ const AddStudentPage = () => {
     school: "",
     grade: "",
   }));
+
+  const renderStudentFullName = () => {
+    if (studentID && (firstName || surname)) {
+      const fullName = `${surname}, ${firstName}`.trim();
+      return <Text style={styles.studentFullName}>{fullName}</Text>;
+    }
+    return null;
+  };
 
   const onSelectionChange = (cellKey, value) => {
     setGridSelections((prevSelections) => ({
@@ -136,6 +146,24 @@ const AddStudentPage = () => {
         console.error("Failed to fetch schools data:", error);
       }
     };
+    const fetchGradesData = async () => {
+      try {
+        const response = await fetch(
+          `https://localhost:7208/api/GradeSearch/${studentID}`
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const gradesData = await response.json();
+        setGrades(gradesData);
+      } catch (error) {
+        console.error("Failed to fetch grades data:", error);
+      }
+    };
+
+    if (studentID) {
+      fetchGradesData();
+    }
 
     fetchStudentData();
     fetchSchoolsData();
@@ -160,7 +188,7 @@ const AddStudentPage = () => {
           )
         )}
       </View>
-
+      {renderStudentFullName()}
       {selectedTab === "Personal" && (
         <View style={styles.formContainer}>
           <View style={styles.row}>
@@ -323,6 +351,30 @@ const AddStudentPage = () => {
             style={styles.longInput}
           />
         </View>
+      )}
+
+      {selectedTab === "Grades" && (
+        <ScrollView style={styles.tableContainer}>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Effective Date</DataTable.Title>
+              <DataTable.Title>School Name</DataTable.Title>
+              <DataTable.Title>Result</DataTable.Title>
+              <DataTable.Title>Form Number</DataTable.Title>
+            </DataTable.Header>
+
+            {grades.map((grade, index) => (
+              <DataTable.Row key={index}>
+                <DataTable.Cell>
+                  {new Date(grade.effective_dt).toLocaleDateString()}
+                </DataTable.Cell>
+                <DataTable.Cell>{grade.school_nm}</DataTable.Cell>
+                <DataTable.Cell>{grade.result_tx}</DataTable.Cell>
+                <DataTable.Cell>{grade.form_nb}</DataTable.Cell>
+              </DataTable.Row>
+            ))}
+          </DataTable>
+        </ScrollView>
       )}
 
       {selectedTab === "Family" && (
@@ -808,6 +860,12 @@ const styles = StyleSheet.create({
   },
   pickerLabel: {
     marginRight: 5,
+  },
+  studentFullName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20, // Add some space below the name
   },
 });
 
