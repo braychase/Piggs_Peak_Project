@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Pressable, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+  Image,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { DatePickerInput } from "react-native-paper-dates";
 import COLORS from "../constants/colors";
@@ -33,6 +40,7 @@ const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
 };
 
 const AddStudentPage = () => {
+  const [studentPhoto, setStudentPhoto] = useState(null);
   const [schools, setSchools] = useState([]);
   const route = useRoute();
   const studentID = route.params?.studentID;
@@ -223,7 +231,14 @@ const AddStudentPage = () => {
           </View>
           {/* New row for the picture and buttons */}
           <View style={styles.imageRow}>
-            <View style={styles.imagePlaceholder}></View>
+            <View style={styles.imageRow}>
+              {studentPhoto ? (
+                <Image source={{ uri: studentPhoto }} style={styles.image} />
+              ) : (
+                <View style={styles.imagePlaceholder}></View>
+              )}
+              {/* Pressable components for changing/deleting the photo */}
+            </View>
             <Pressable style={styles.changeButton}>
               <Text style={styles.changeButtonText}>Change Picture</Text>
             </Pressable>
