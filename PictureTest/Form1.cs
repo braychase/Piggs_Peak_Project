@@ -21,7 +21,7 @@ namespace PictureTest
             InitializeComponent();
         }
 
-        string sConnectionString = "Server=.\\MIXED;Database=PiggsPeakProject;User ID=PPP_User;Password=PPP_Password;TrustServerCertificate=True;MultipleActiveResultSets=true";
+        string sConnectionString = "Server=.;Database=PPP_Web;User ID=PPP_User;Password=PPP_Password;TrustServerCertificate=True;MultipleActiveResultSets=true";
 
         void addMessage(string s)
         {
@@ -35,7 +35,7 @@ namespace PictureTest
             try
             {
                 SqlConnection conn = new SqlConnection(sConnectionString);
-                SqlCommand cmd = new SqlCommand("SELECT Photo_data, PhotoCrop_tx FROM Student_Photo WHERE Photo_id=10", conn);
+                SqlCommand cmd = new SqlCommand("SELECT TOP 1 Photo_data, PhotoCrop_tx FROM Student_Photo WHERE Photo_data IS NOT NULL AND PhotoCrop_tx IS NOT NULL  ", conn);
                 conn.Open();
 
                 string sPhotoCrop = "";

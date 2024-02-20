@@ -24,7 +24,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         s = "DefaultConnection-ChrisC";
     else if (Environment.MachineName == "SJ-CRENDEL-ZBG8")
         s = "DefaultConnection-ChrisR";
-
+    else if (Environment.MachineName == "SAMSERVER3")
+        s = "DefaultConnection-SAM";
+   
     options.UseSqlServer(builder.Configuration.GetConnectionString(s));
 });
 
