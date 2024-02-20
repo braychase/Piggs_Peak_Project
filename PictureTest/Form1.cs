@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,12 @@ namespace PictureTest
 
         string sConnectionString = "Server=.\\MIXED;Database=PiggsPeakProject;User ID=PPP_User;Password=PPP_Password;TrustServerCertificate=True;MultipleActiveResultSets=true";
 
+        void addMessage(string s)
+        {
+            tbMemo.Text += s + Environment.NewLine;
+            tbMemo.SelectionStart = tbMemo.Text.Length;
+            tbMemo.ScrollToCaret();
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -47,7 +54,7 @@ namespace PictureTest
             }
             catch (Exception ex)
             {
-                ;
+                addMessage(ex.Message);
             }
         }
 
@@ -88,15 +95,51 @@ namespace PictureTest
             return newImage;
         }
 
-
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
+        }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SqlConnection conn = new SqlConnection(sConnectionString);
+                SqlCommand cmd1 = new SqlCommand("SELECT Photo_id, Photo_data, PhotoCrop_tx FROM Student_Photo WHERE PhotoCrop_tx IS NOT NULL", conn);
+                conn.Open();
+
+                using (var reader = cmd1.ExecuteReader())
+                    while (reader.Read())
+                    {
+                        int photoID = reader.GetInt32(0);
+                        System.Data.SqlTypes.SqlBytes bytes = reader.GetSqlBytes(1);
+                        string sPhotoCrop = reader.GetString(2);
+                        if (string.IsNullOrEmpty(sPhotoCrop))
+                            continue;
+
+                        MemoryStream ms1 = new MemoryStream(bytes.Buffer);
+                        Image original = Image.FromStream(ms1);
+                        Image cropped = CropImage(original, sPhotoCrop);
+
+                        MemoryStream ms2 = new MemoryStream();
+                        cropped.Save(ms2, ImageFormat.Jpeg);
+                        byte[] data = ms2.ToArray();
+
+                        SqlCommand cmd2 = new SqlCommand("UPDATE Student_Photo SET CroppedPhoto_data=@crop WHERE Photo_id=@id", conn);
+                        cmd2.Parameters.Add("@crop", SqlDbType.Image, data.Length).Value = data;
+                        cmd2.Parameters.AddWithValue("@id", photoID);
+                        int nRows = cmd2.ExecuteNonQuery();
+                        if (nRows == 0)
+                            addMessage("update failed");
+                    }
+            }
+            catch (Exception ex)
+            {
+                addMessage(ex.Message);
+            }
         }
     }
 }
