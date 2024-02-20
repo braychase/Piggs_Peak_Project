@@ -46,5 +46,11 @@ namespace PiggsPeak_API
 		[Column("Form_nb")]
 		public int? Form { get; set; }
 
-	}
+        [Column("Photo_id")]
+        public int? PhotoId { get; set; }
+        
+        [Column("Photo_dt")]
+        public DateTime? PhotoDate { get; set; }
+
+    }
 }

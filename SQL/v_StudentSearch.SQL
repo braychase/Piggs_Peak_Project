@@ -4,7 +4,7 @@ go
 CREATE VIEW v_StudentSearch AS
 SELECT S.Student_id, S.StudentCode_tx,
 	S.Student_nm, S.First_nm, S.Last_nm, 
-	S.Birth_dt, -- AGE?
+	S.Birth_dt, DATEDIFF(YY, S.Birth_dt, GETDATE()) AS Age,
 	S.Gender_tx, S.Sponsored_yn, S.OVC_yn, 
 	S.School_id, Sc.School_nm, S.Form_nb,
 	P.Photo_id, P.Photo_dt

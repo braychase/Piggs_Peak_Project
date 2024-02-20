@@ -16,8 +16,11 @@ namespace PiggsPeak_API.Classes
 		[Column("Photo_data")]
 		public byte[]? PhotoData { get; set; }
 
+        [Column("CroppedPhoto_data")]
+        public byte[]? CroppedPhotoData { get; set; }
+        
 		// Foreign key to Student table
-		[ForeignKey("Student")]
+        [ForeignKey("Student")]
 		[Column("Student_id")]
 		public int StudentId { get; set; }
 
