@@ -798,29 +798,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
   },
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: COLORS.white,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.black,
-  },
-  tableHeaderText: {
-    flex: 1,
-    padding: 10,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  tableRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray,
-  },
-  tableCellText: {
-    flex: 1,
-    padding: 10,
-    textAlign: "center",
-    backgroundColor: COLORS.white,
-  },
   picker: {
     flex: 1,
     height: 40,

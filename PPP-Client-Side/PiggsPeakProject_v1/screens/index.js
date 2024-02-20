@@ -4,6 +4,7 @@ import StudentPage from "./StudentPage";
 import AddStudentPage from "./AddStudentPage";
 import InterviewPage from "./InterviewPage";
 import MorePage from "./MorePage";
+import SponsorPage from "./SponsorPage";
 
 // In screens/index.js
 export { default as HomePage } from "./HomePage";
@@ -12,3 +13,4 @@ export { default as LoginScreen } from "./LoginScreen";
 export { default as AddStudentPage } from "./AddStudentPage";
 export { default as InterviewPage } from "./InterviewPage";
 export { default as MorePage } from "./MorePage";
+export { default as SponsorPage } from "./SponsorPage";

@@ -9,9 +9,9 @@ import {
   AddStudentPage,
   InterviewPage,
   MorePage,
+  SponsorPage,
 } from "./screens";
-import { Image, View, Text } from "react-native";
-import { Provider as PaperProvider } from "react-native-paper";
+import { Image } from "react-native";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,6 +49,11 @@ const StudentStack = () => {
         component={AddStudentPage}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="SponsorPage"
+        component={SponsorPage}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
@@ -65,7 +70,7 @@ function TabNavigator() {
             iconName = require("./assets/home.png");
           } else if (route.name === "Students") {
             iconName = require("./assets/user.png");
-          } else if (route.name === "Interview") {
+          } else if (route.name === "Ranking") {
             iconName = require("./assets/clipboard.png");
           } else if (route.name === "More") {
             iconName = require("./assets/more.png");
@@ -92,7 +97,7 @@ function TabNavigator() {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Interview"
+        name="Ranking"
         component={InterviewScreen}
         options={{ headerShown: false }}
       />

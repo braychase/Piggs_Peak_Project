@@ -33,6 +33,10 @@ const StudentPage = ({ navigation }) => {
     navigation.navigate("AddStudent");
   };
 
+  const handleViewSponsorsPress = () => {
+    navigation.navigate("SponsorPage", { studentID: selectedStudentId });
+  };
+
   const handleEditPress = () => {
     const studentToEdit = allStudents.find(
       (student) => student.studentID === selectedStudentId
@@ -209,6 +213,16 @@ const StudentPage = ({ navigation }) => {
           </Pressable>
           <Pressable
             style={[
+              styles.viewSponsorsButton,
+              { opacity: selectedStudentId ? 1 : 0.5 },
+            ]}
+            onPress={handleViewSponsorsPress}
+            disabled={!selectedStudentId} // Button is disabled if no student is selected
+          >
+            <Text style={styles.buttonText}>View Sponsors</Text>
+          </Pressable>
+          <Pressable
+            style={[
               styles.editButton,
               { opacity: selectedStudentId ? 1 : 0.5 },
             ]}
@@ -379,6 +393,11 @@ const styles = StyleSheet.create({
   picker: {
     backgroundColor: "white",
     marginBottom: 15,
+  },
+  viewSponsorsButton: {
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
   },
 });
 

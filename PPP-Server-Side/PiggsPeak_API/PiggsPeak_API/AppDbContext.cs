@@ -19,6 +19,7 @@ namespace PiggsPeak_API
 		public DbSet<PartyPermission> PartyPermissions { get; set; }
 		public DbSet<StudentPhoto> StudentPhotos { get; set; }
 		public DbSet<GradeSearch> GradeSearch { get; set; }
+		public DbSet<StudentSponsor> StudentSponsors { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
