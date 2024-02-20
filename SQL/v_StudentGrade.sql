@@ -1,3 +1,6 @@
+DROP VIEW v_StudentGradeDetails 
+go
+
 CREATE VIEW v_StudentGradeDetails AS
 SELECT
     sg.Student_id,

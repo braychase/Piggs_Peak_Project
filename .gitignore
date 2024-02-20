@@ -5,3 +5,4 @@ Migrations
 *.lock
 package-lock.json
 
+SQL/StudentPhotos
