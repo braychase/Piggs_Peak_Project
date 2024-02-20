@@ -14,21 +14,6 @@ const SponsorPage = ({ route, navigation }) => {
   const [surname, setSurname] = useState("");
   const [firstName, setFirstName] = useState("");
 
-  // useEffect(() => {
-  //   const fetchSponsors = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `https://localhost:7208/api/StudentSponsor/${studentID}`
-  //       );
-  //       const data = await response.json();
-  //       setSponsors(Array.isArray(data) ? data : [data]); // Ensure data is in array form
-  //     } catch (error) {
-  //       console.error("Failed to fetch sponsors:", error);
-  //     }
-  //   };
-
-  //   fetchSponsors();
-  // }, [studentID]); // Dependency array to ensure the effect runs when studentId changes
   useEffect(() => {
     const fetchData = async () => {
       // Fetch student data
@@ -55,10 +40,17 @@ const SponsorPage = ({ route, navigation }) => {
         const sponsorsResponse = await fetch(
           `https://localhost:7208/api/StudentSponsor/${studentID}`
         );
+        if (!sponsorsResponse.ok) {
+          throw new Error("Network response was not ok");
+        }
         const sponsorsData = await sponsorsResponse.json();
-        setSponsors(
+
+        // Ensure data is in array form and sort
+        const sortedSponsors = (
           Array.isArray(sponsorsData) ? sponsorsData : [sponsorsData]
-        ); // Ensure data is in array form
+        ).sort((a, b) => new Date(b.effectiveDate) - new Date(a.effectiveDate));
+
+        setSponsors(sortedSponsors);
       } catch (error) {
         console.error("Failed to fetch sponsors:", error);
       }
@@ -109,33 +101,5 @@ const SponsorPage = ({ route, navigation }) => {
     </LinearGradient>
   );
 };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 10,
-//   },
-//   backButton: {
-//     margin: 10,
-//     width: 50,
-//     alignItems: "center",
-//   },
-//   studentFullName: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     textAlign: "center",
-//     marginBottom: 20, // Add some space below the name
-//   },
-//   tableContainer: {
-//     marginTop: 10,
-//     borderWidth: 1,
-//     borderColor: COLORS.black,
-//     backgroundColor: COLORS.white,
-//     marginBottom: 10,
-//     marginLeft: 10,
-//     marginRight: 10,
-//   },
-//   // Add other styles as needed
-// });
 
 export default SponsorPage;

@@ -7,17 +7,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
 import styles from "../styles/interviewPageStyles";
 
-const InterviewScreen = () => {
+const AuditTrailScreen = () => {
   return (
     <LinearGradient
       style={{ flex: 1 }}
       colors={[COLORS.secondary, COLORS.primary]}
     >
       <View style={styles.block}>
-        <Text style={styles.temp}>Ranking Page</Text>
+        <Text style={styles.temp}>Audit Trail Page</Text>
       </View>
     </LinearGradient>
   );
 };
 
-export default InterviewScreen;
+export default AuditTrailScreen;

@@ -4,22 +4,18 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   LoginScreen,
-  HomePage,
   StudentPage,
   AddStudentPage,
   InterviewPage,
   MorePage,
   SponsorPage,
+  AuditTrailPage,
+  MissingDataReportPage,
 } from "./screens";
 import { Image } from "react-native";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
-// HomeScreen Component
-function HomeScreen() {
-  return <HomePage />;
-}
 
 // StudentScreen Component that now correctly passes the navigation prop
 function StudentScreen({ navigation }) {
@@ -58,6 +54,28 @@ const StudentStack = () => {
   );
 };
 
+const MoreStack = () => {
+  return (
+    <Stack.Navigator initialRouteName="MoreMain">
+      <Stack.Screen
+        name="MoreMain"
+        component={MorePage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AuditTrail"
+        component={AuditTrailPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="MissingDataReport"
+        component={MissingDataReportPage}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 // Tab Navigator Component
 function TabNavigator() {
   return (
@@ -66,14 +84,12 @@ function TabNavigator() {
         tabBarIcon: ({ focused }) => {
           let iconName;
 
-          if (route.name === "Home") {
-            iconName = require("./assets/home.png");
-          } else if (route.name === "Students") {
+          if (route.name === "Students") {
             iconName = require("./assets/user.png");
           } else if (route.name === "Ranking") {
             iconName = require("./assets/clipboard.png");
           } else if (route.name === "More") {
-            iconName = require("./assets/more.png");
+            iconName = require("./assets/bars.png");
           }
 
           // You can return any component that you like here!
@@ -87,11 +103,6 @@ function TabNavigator() {
       }}
     >
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
         name="Students"
         component={StudentStack} // Use the StudentStack here
         options={{ headerShown: false }}
@@ -103,7 +114,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="More"
-        component={MoreScreen}
+        component={MoreStack}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>

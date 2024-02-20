@@ -45,7 +45,7 @@ namespace PiggsPeak_API.Controllers
 		public async Task<IActionResult> Get(int id)
 		{
             StudentPhoto? studentPhoto = await _dbContext.StudentPhotos
-				.FirstOrDefaultAsync(sp => sp.StudentId == id);
+				.FirstOrDefaultAsync(sp => sp.PhotoId == id);
 
             if (studentPhoto != null) {
                 if (studentPhoto.CroppedPhotoData != null)
