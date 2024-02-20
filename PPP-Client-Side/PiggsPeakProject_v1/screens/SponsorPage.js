@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
+import styles from "../styles/sponsorPageStyles";
 
 // Assume `route` is passed as a prop to `SponsorPage`
 const SponsorPage = ({ route, navigation }) => {
@@ -109,32 +110,32 @@ const SponsorPage = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-  },
-  backButton: {
-    margin: 10,
-    width: 50,
-    alignItems: "center",
-  },
-  studentFullName: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20, // Add some space below the name
-  },
-  tableContainer: {
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: COLORS.black,
-    backgroundColor: COLORS.white,
-    marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  // Add other styles as needed
-});
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 10,
+//   },
+//   backButton: {
+//     margin: 10,
+//     width: 50,
+//     alignItems: "center",
+//   },
+//   studentFullName: {
+//     fontSize: 20,
+//     fontWeight: "bold",
+//     textAlign: "center",
+//     marginBottom: 20, // Add some space below the name
+//   },
+//   tableContainer: {
+//     marginTop: 10,
+//     borderWidth: 1,
+//     borderColor: COLORS.black,
+//     backgroundColor: COLORS.white,
+//     marginBottom: 10,
+//     marginLeft: 10,
+//     marginRight: 10,
+//   },
+//   // Add other styles as needed
+// });
 
 export default SponsorPage;
