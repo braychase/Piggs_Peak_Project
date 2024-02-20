@@ -17,7 +17,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+	string s = "DefaultConnection";
+	if (Environment.MachineName == "BRAYDENSPC")
+		s = "DefaultConnection-Brayden";
+	else if (Environment.MachineName == "gordonCole")
+        s = "DefaultConnection-ChrisC";
+    else if (Environment.MachineName == "SJ-CRENDEL-ZBG8")
+        s = "DefaultConnection-ChrisR";
+
+    options.UseSqlServer(builder.Configuration.GetConnectionString(s));
 });
 
 // Configure CORS globally
