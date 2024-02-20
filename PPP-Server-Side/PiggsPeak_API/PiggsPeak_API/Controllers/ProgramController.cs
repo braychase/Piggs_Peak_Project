@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PiggsPeak_API.Classes;
+using PiggsPeak_API.Classes; // Ensure this namespace correctly contains the SchoolProgram class
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,47 +18,47 @@ namespace PiggsPeak_API.Controllers
 			_context = context;
 		}
 
-		// GET: api/Program
+		// GET: api/SchoolProgram
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Program>>> Get()
+		public async Task<ActionResult<IEnumerable<SchoolProgram>>> GetSchoolPrograms()
 		{
-			return await _context.Programs.ToListAsync();
+			return await _context.SchoolPrograms.ToListAsync();
 		}
 
-		// GET api/Program/5
+		// GET api/SchoolProgram/5
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Program>> Get(int id)
+		public async Task<ActionResult<SchoolProgram>> GetSchoolProgram(int id)
 		{
-			var program = await _context.Programs.FindAsync(id);
+			var schoolProgram = await _context.SchoolPrograms.FindAsync(id);
 
-			if (program == null)
+			if (schoolProgram == null)
 			{
 				return NotFound();
 			}
 
-			return program;
+			return schoolProgram;
 		}
 
-		// POST api/Program
+		// POST api/SchoolProgram
 		[HttpPost]
-		public async Task<ActionResult<Program>> Post([FromBody] Program program)
+		public async Task<ActionResult<SchoolProgram>> PostSchoolProgram([FromBody] SchoolProgram schoolProgram)
 		{
-			_context.Programs.Add(program);
+			_context.SchoolPrograms.Add(schoolProgram);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction(nameof(Get), new { id = program.ProgramID }, program);
+			return CreatedAtAction(nameof(GetSchoolProgram), new { id = schoolProgram.ProgramID }, schoolProgram);
 		}
 
-		// PUT api/Program/5
+		// PUT api/SchoolProgram/5
 		[HttpPut("{id}")]
-		public async Task<IActionResult> Put(int id, [FromBody] Program program)
+		public async Task<IActionResult> PutSchoolProgram(int id, [FromBody] SchoolProgram schoolProgram)
 		{
-			if (id != program.ProgramID)
+			if (id != schoolProgram.ProgramID)
 			{
 				return BadRequest();
 			}
 
-			_context.Entry(program).State = EntityState.Modified;
+			_context.Entry(schoolProgram).State = EntityState.Modified;
 
 			try
 			{
@@ -66,7 +66,7 @@ namespace PiggsPeak_API.Controllers
 			}
 			catch (DbUpdateConcurrencyException)
 			{
-				if (!_context.Programs.Any(e => e.ProgramID == id))
+				if (!_context.SchoolPrograms.Any(e => e.ProgramID == id))
 				{
 					return NotFound();
 				}
@@ -79,17 +79,17 @@ namespace PiggsPeak_API.Controllers
 			return NoContent();
 		}
 
-		// DELETE api/Program/5
+		// DELETE api/SchoolProgram/5
 		[HttpDelete("{id}")]
-		public async Task<IActionResult> Delete(int id)
+		public async Task<IActionResult> DeleteSchoolProgram(int id)
 		{
-			var program = await _context.Programs.FindAsync(id);
-			if (program == null)
+			var schoolProgram = await _context.SchoolPrograms.FindAsync(id);
+			if (schoolProgram == null)
 			{
 				return NotFound();
 			}
 
-			_context.Programs.Remove(program);
+			_context.SchoolPrograms.Remove(schoolProgram);
 			await _context.SaveChangesAsync();
 
 			return NoContent();

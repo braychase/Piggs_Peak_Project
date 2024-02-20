@@ -15,7 +15,7 @@ namespace PiggsPeak_API
         public DbSet<StudentGrade> StudentGrades { get; set; }
 		public DbSet<Party> Parties { get; set; }
 		public DbSet<Permission> Permissions { get; set; }
-		public DbSet<SchoolProgram> Programs { get; set; }
+		public DbSet<SchoolProgram> SchoolPrograms { get; set; }
 		public DbSet<PartyPermission> PartyPermissions { get; set; }
 		public DbSet<StudentPhoto> StudentPhotos { get; set; }
 		public DbSet<GradeSearch> GradeSearch { get; set; }

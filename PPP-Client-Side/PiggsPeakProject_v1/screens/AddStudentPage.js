@@ -161,8 +161,26 @@ const AddStudentPage = () => {
       }
     };
 
+    const fetchStudentPhoto = async (studentId) => {
+      if (studentId) {
+        try {
+          const response = await fetch(
+            `https://localhost:7208/api/StudentPhoto/${studentId}`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch student photo");
+          }
+          const blob = await response.blob();
+          const imageUrl = URL.createObjectURL(blob);
+          setStudentPhoto(imageUrl);
+        } catch (error) {
+          console.error("Error fetching student photo:", error);
+        }
+      }
+    };
     if (studentID) {
       fetchGradesData();
+      fetchStudentPhoto(studentID);
     }
 
     fetchStudentData();
@@ -259,20 +277,22 @@ const AddStudentPage = () => {
           </View>
           {/* New row for the picture and buttons */}
           <View style={styles.imageRow}>
-            <View style={styles.imageRow}>
-              {studentPhoto ? (
-                <Image source={{ uri: studentPhoto }} style={styles.image} />
-              ) : (
-                <View style={styles.imagePlaceholder}></View>
-              )}
-              {/* Pressable components for changing/deleting the photo */}
+            {/* Conditionally display the image or a placeholder */}
+            {studentPhoto ? (
+              <Image source={{ uri: studentPhoto }} style={styles.image} />
+            ) : (
+              <View style={styles.imagePlaceholder}></View>
+            )}
+
+            {/* Container for the buttons, applying the new buttonsContainer style */}
+            <View style={styles.buttonsContainer}>
+              <Pressable style={styles.changeButton}>
+                <Text style={styles.changeButtonText}>Change Picture</Text>
+              </Pressable>
+              <Pressable style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>Delete Picture</Text>
+              </Pressable>
             </View>
-            <Pressable style={styles.changeButton}>
-              <Text style={styles.changeButtonText}>Change Picture</Text>
-            </Pressable>
-            <Pressable style={styles.deleteButton}>
-              <Text style={styles.deleteButtonText}>Delete Picture</Text>
-            </Pressable>
           </View>
         </View>
       )}
@@ -686,7 +706,26 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderWidth: 1,
   },
-  // Style for the buttons
+  changeButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+  },
+  deleteButtonText: {
+    color: COLORS.black,
+    fontSize: 16,
+  },
+  // Additional row for the image and buttons
+  imageRow: {
+    alignItems: "center", // Center items vertically within the container
+    justifyContent: "center", // Center items horizontally
+    marginTop: 10,
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Adjust as needed
+    width: "100%", // Take up the full width of the container
+    marginTop: 10, // Add some space between the image and the buttons
+  },
   changeButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
@@ -694,16 +733,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 2,
-    marginHorizontal: 5,
     borderColor: COLORS.white,
     borderWidth: 1,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  changeButtonText: {
-    color: COLORS.white,
-    fontSize: 16,
+    elevation: 2,
+    // Removed marginHorizontal to control width directly
+    width: "45%", // Adjust the width as needed to make the button smaller
   },
   deleteButton: {
     paddingVertical: 10,
@@ -712,48 +746,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.gray,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 2,
-    marginHorizontal: 5,
     borderColor: COLORS.black,
     borderWidth: 1,
-  },
-  deleteButtonText: {
-    color: COLORS.black,
-    fontSize: 16,
-  },
-  // Additional row for the image and buttons
-  imageRow: {
-    imagePlaceholder: {
-      width: 90,
-      height: 90,
-      borderRadius: 45, // Half of the width and height to make it circular
-      backgroundColor: "#e1e4e8", // Placeholder color
-      justifyContent: "center",
-      alignItems: "center",
-      marginRight: 10,
-    },
-    // Style for the buttons
-    button: {
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      borderRadius: 5,
-      backgroundColor: COLORS.primary,
-      justifyContent: "center",
-      alignItems: "center",
-      elevation: 2,
-      marginHorizontal: 5,
-    },
-    buttonText: {
-      color: "#ffffff",
-      fontSize: 16,
-    },
-    // Additional row for the image and buttons
-    imageRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center", // Space out the image placeholder and buttons
-      marginTop: 10,
-    },
+    elevation: 2,
+    // Removed marginHorizontal to control width directly
+    width: "45%", // Adjust the width as needed to make the button smaller
   },
   saveButton: {
     paddingVertical: 12,
@@ -843,6 +840,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 20, // Add some space below the name
+  },
+  image: {
+    width: 110,
+    height: 110,
+    borderRadius: 10, // Adjust as needed
   },
 });
 

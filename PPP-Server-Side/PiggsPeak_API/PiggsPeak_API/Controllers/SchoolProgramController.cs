@@ -22,14 +22,14 @@ namespace PiggsPeak_API.Controllers
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<SchoolProgram>>> Get()
 		{
-			return await _dbcontext.Programs.ToListAsync();
+			return await _dbcontext.SchoolPrograms.ToListAsync();
 		}
 
 		// GET api/Program/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<SchoolProgram>> Get(int id)
 		{
-			var program = await _dbcontext.Programs.FindAsync(id);
+			var program = await _dbcontext.SchoolPrograms.FindAsync(id);
 
 			if (program == null)
 			{
