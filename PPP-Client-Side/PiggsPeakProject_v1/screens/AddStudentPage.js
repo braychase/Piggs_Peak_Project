@@ -15,7 +15,9 @@ import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getSchools } from "../services/SchoolService";
-import { getStudents } from "../services/StudentService";
+import { getStudentById } from "../services/StudentService";
+import { getStudentPhotoById } from "../services/StudentPhotoService";
+import { getStudentGradeById } from "../services/StudentGradeService";
 import { render } from "react-dom";
 import styles from "../styles/addStudentPageStyles";
 
@@ -114,13 +116,7 @@ const AddStudentPage = () => {
     const fetchStudentData = async () => {
       if (studentID) {
         try {
-          const response = await fetch(
-            `https://localhost:7208/api/Student/${studentID}`
-          );
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          const studentData = await response.json();
+          const studentData = await getStudentById(studentID);
 
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
@@ -149,40 +145,30 @@ const AddStudentPage = () => {
       }
     };
     const fetchGradesData = async () => {
-      try {
-        const response = await fetch(
-          `https://localhost:7208/api/GradeSearch/${studentID}`
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+      if (studentID) {
+        // Make sure studentID is defined
+        try {
+          const gradesData = await getStudentGradeById(studentID);
+          const sortedGrades = gradesData.sort((a, b) => {
+            // Convert string dates to Date objects for comparison
+            const dateA = new Date(a.effective_dt);
+            const dateB = new Date(b.effective_dt);
+            return dateB - dateA; // Sort in descending order
+          });
+          setGrades(sortedGrades);
+        } catch (error) {
+          console.error("Failed to fetch grades data:", error);
         }
-        const gradesData = await response.json();
-        const sortedGrades = gradesData.sort((a, b) => {
-          // Convert string dates to Date objects for comparison
-          const dateA = new Date(a.effective_dt);
-          const dateB = new Date(b.effective_dt);
-          return dateB - dateA; // Sort in descending order
-        });
-        setGrades(sortedGrades);
-      } catch (error) {
-        console.error("Failed to fetch grades data:", error);
       }
     };
-
     const fetchStudentPhoto = async () => {
-      // Use the photoID instead of studentID to fetch the student photo
       if (photoID) {
         // Check if photoID is available
         try {
-          const response = await fetch(
-            `https://localhost:7208/api/StudentPhoto/${photoID}` // Use photoID to fetch the photo
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch student photo");
-          }
-          const blob = await response.blob();
-          const imageUrl = URL.createObjectURL(blob);
-          setStudentPhoto(imageUrl);
+          // Using getStudentPhotoById to obtain the blob
+          const blob = await getStudentPhotoById(photoID);
+          const imageUrl = URL.createObjectURL(blob); // Create a URL from the blob
+          setStudentPhoto(imageUrl); // Update the state with the image URL
         } catch (error) {
           console.error("Error fetching student photo:", error);
         }

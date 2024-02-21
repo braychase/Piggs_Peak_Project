@@ -6,8 +6,9 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
 import styles from "../styles/sponsorPageStyles";
+import { getStudentById } from "../services/StudentService";
+import { getStudentSponsorById } from "../services/StudentSponsorService";
 
-// Assume `route` is passed as a prop to `SponsorPage`
 const SponsorPage = ({ route, navigation }) => {
   const { studentID } = route.params; // Destructure studentId from route.params
   const [sponsors, setSponsors] = useState([]);
@@ -19,13 +20,7 @@ const SponsorPage = ({ route, navigation }) => {
       // Fetch student data
       if (studentID) {
         try {
-          const studentResponse = await fetch(
-            `https://localhost:7208/api/Student/${studentID}`
-          );
-          if (!studentResponse.ok) {
-            throw new Error("Network response was not ok");
-          }
-          const studentData = await studentResponse.json();
+          const studentData = await getStudentById(studentID);
 
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
@@ -37,13 +32,7 @@ const SponsorPage = ({ route, navigation }) => {
 
       // Fetch sponsors
       try {
-        const sponsorsResponse = await fetch(
-          `https://localhost:7208/api/StudentSponsor/${studentID}`
-        );
-        if (!sponsorsResponse.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const sponsorsData = await sponsorsResponse.json();
+        const sponsorsData = await getStudentSponsorById(studentID);
 
         // Ensure data is in array form and sort
         const sortedSponsors = (

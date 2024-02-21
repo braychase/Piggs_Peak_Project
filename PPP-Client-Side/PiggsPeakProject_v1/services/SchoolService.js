@@ -1,4 +1,5 @@
-const BASE_URL = "https://localhost:7208/api";
+import CONSTANTS from "../constants/constants";
+const BASE_URL = CONSTANTS.baseURL;
 
 export const getSchools = async () => {
   try {
