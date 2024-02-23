@@ -18,28 +18,83 @@ namespace PiggsPeak_API.Controllers
 			_dbContext = dbContext;
 		}
 
-		// GET: api/StudentSearch
+		// GET: api/StudentSearch?pageNumber=1&pageSize=10&firstName=&lastName=&schoolCode=&gender=&form=
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<StudentSearch>>> Get()
+		public async Task<ActionResult<IEnumerable<StudentSearch>>> Get(
+			int pageNumber = 1,
+			int pageSize = 10,
+			string firstName = "",
+			string lastName = "",
+			string schoolCode = "",
+			string gender = "",
+			string form = "")
 		{
-			var studentsReduced = await _dbContext.StudentSearch
-				.ToListAsync();
+			if (pageNumber < 1 || pageSize < 1)
+			{
+				return BadRequest("PageNumber and PageSize must be greater than 0.");
+			}
 
-			return Ok(studentsReduced);
+			var query = _dbContext.StudentSearch.AsQueryable();
+
+			if (!string.IsNullOrWhiteSpace(firstName))
+			{
+				query = query.Where(s => EF.Functions.Like(s.FirstName, $"%{firstName}%"));
+			}
+
+			if (!string.IsNullOrWhiteSpace(lastName))
+			{
+				query = query.Where(s => EF.Functions.Like(s.LastName, $"%{lastName}%"));
+			}
+
+			if (!string.IsNullOrWhiteSpace(schoolCode) && schoolCode != "all")
+			{
+				query = query.Where(s => s.SchoolCode == schoolCode);
+			}
+
+			if (!string.IsNullOrWhiteSpace(gender) && gender != "all")
+			{
+				query = query.Where(s => s.Gender == gender);
+			}
+
+			if (!string.IsNullOrWhiteSpace(form) && form != "all")
+			{
+				if (int.TryParse(form, out int formValue))
+				{
+					query = query.Where(s => s.Form == formValue);
+				}
+			}
+
+			var totalCount = await query.CountAsync();
+			var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+			var students = await query
+								.Skip((pageNumber - 1) * pageSize)
+								.Take(pageSize)
+								.ToListAsync();
+
+			var response = new
+			{
+				TotalCount = totalCount,
+				TotalPages = totalPages,
+				CurrentPage = pageNumber,
+				PageSize = pageSize,
+				Students = students
+			};
+
+			return Ok(response);
 		}
 
 		// GET api/StudentSearch/5
 		[HttpGet("{id}")]
 		public async Task<ActionResult<StudentSearch>> Get(int id)
 		{
-			var StudentSearch = await _dbContext.StudentSearch.FindAsync(id);
+			var studentSearch = await _dbContext.StudentSearch.FindAsync(id);
 
-			if (StudentSearch == null)
+			if (studentSearch == null)
 			{
 				return NotFound();
 			}
 
-			return Ok(StudentSearch);
+			return Ok(studentSearch);
 		}
 	}
 }

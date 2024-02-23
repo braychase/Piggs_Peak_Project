@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
@@ -8,26 +8,27 @@ import {
   faChevronDown,
   faChevronUp,
 } from "@fortawesome/free-solid-svg-icons";
-import { getStudents } from "../services/StudentSearchService";
 import { getSchools } from "../services/SchoolService";
-import COLORS from "../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import { Picker } from "@react-native-picker/picker";
 import styles from "../styles/studentPageStyles";
+import CONSTANTS from "../constants/constants";
+import COLORS from "../constants/colors";
+
+const BASE_URL = CONSTANTS.baseURL;
 
 const StudentPage = ({ navigation }) => {
-  const [allStudents, setAllStudents] = useState([]);
   const [students, setStudents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedSchool, setSelectedSchool] = useState("all");
   const [selectedGender, setSelectedGender] = useState("all");
   const [selectedForm, setSelectedForm] = useState("all");
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [firstNameQuery, setFirstNameQuery] = useState("");
+  const [lastNameQuery, setLastNameQuery] = useState("");
   const [filteredTotalPages, setFilteredTotalPages] = useState(0);
   const [schoolCodeDescriptionMapping, setSchoolCodeDescriptionMapping] =
     useState({});
-  const [isFiltersVisible, setIsFiltersVisible] = useState(false);
+  const [isFiltersVisible, setIsFiltersVisible] = useState(true);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
 
   const handleAddStudentPress = () => {
@@ -39,11 +40,10 @@ const StudentPage = ({ navigation }) => {
   };
 
   const handleEditPress = () => {
-    const studentToEdit = allStudents.find(
+    const studentToEdit = students.find(
       (student) => student.studentID === selectedStudentId
     );
     if (studentToEdit) {
-      // Assuming studentToEdit contains a property named PhotoID
       navigation.navigate("AddStudent", {
         studentID: studentToEdit.studentID,
         photoID: studentToEdit.photoId,
@@ -56,89 +56,72 @@ const StudentPage = ({ navigation }) => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSchoolsData = async () => {
       try {
-        const studentsData = await getStudents();
         const schoolsData = await getSchools();
         const mapping = schoolsData.reduce((acc, school) => {
           acc[school.schoolCode] = school.description;
           return acc;
         }, {});
         setSchoolCodeDescriptionMapping(mapping);
-        setAllStudents(studentsData);
       } catch (error) {
-        console.error("Error loading data:", error.message);
+        console.error("Error loading school data:", error.message);
       }
     };
 
-    fetchData();
+    fetchSchoolsData();
   }, []);
-
-  useEffect(() => {
-    applyFilter();
-  }, [
-    currentPage,
-    itemsPerPage,
-    allStudents,
-    selectedSchool,
-    searchQuery,
-    selectedGender,
-    selectedForm,
-  ]);
-
-  const applyFilter = () => {
-    let filteredStudents = allStudents.filter((student) => {
-      const matchesName = student.studentName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesSchool =
-        selectedSchool === "all" || student.schoolCode === selectedSchool;
-      const matchesGender =
-        selectedGender === "all" ||
-        student.gender.toLowerCase() === selectedGender;
-
-      let matchesForm = true; // Default to true for "all"
-      if (selectedForm !== "all") {
-        if (selectedForm === "null") {
-          // Adjusts for when "None" is selected, comparing with both `null` and `undefined`
-          matchesForm = student.form === null || student.form === undefined;
-        } else {
-          // Direct comparison as numbers. Ensure `student.Form` is treated as a number.
-          matchesForm = Number(student.form) === Number(selectedForm);
-        }
-      }
-
-      return matchesName && matchesSchool && matchesGender && matchesForm;
-    });
-
-    const totalFilteredStudents = filteredStudents.length;
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    setStudents(filteredStudents.slice(startIndex, endIndex));
-    setFilteredTotalPages(Math.ceil(totalFilteredStudents / itemsPerPage));
-  };
 
   const goToNextPage = () => {
     if (currentPage < filteredTotalPages) {
       setCurrentPage(currentPage + 1);
+      handleSearchPress(currentPage + 1);
     }
   };
 
   const goToPrevPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+      handleSearchPress(currentPage - 1);
     }
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
+  const handleClearPress = () => {
+    setFirstNameQuery("");
+    setLastNameQuery("");
+    setSelectedSchool("all");
+    setSelectedGender("all");
+    setSelectedForm("all");
     setCurrentPage(1);
+    setStudents([]);
   };
 
-  const clearSearch = () => {
-    setSearchQuery("");
-    setCurrentPage(1);
-    applyFilter();
+  const handleSearchPress = async (page) => {
+    try {
+      const queryParams = new URLSearchParams({
+        pageNumber: page || currentPage,
+        pageSize: 8,
+        firstName: firstNameQuery,
+        lastName: lastNameQuery,
+        schoolCode: selectedSchool !== "all" ? selectedSchool : "",
+        gender: selectedGender !== "all" ? selectedGender : "",
+        form: selectedForm !== "all" ? selectedForm : "",
+      }).toString();
+
+      const response = await fetch(`${BASE_URL}/StudentSearch?${queryParams}`);
+      if (response.ok) {
+        const data = await response.json();
+        setStudents(data.students);
+        setFilteredTotalPages(data.totalPages);
+        setIsFiltersVisible(false);
+      } else {
+        console.error("Failed to fetch students");
+        setStudents([]);
+        setFilteredTotalPages(0);
+      }
+    } catch (error) {
+      console.error("Error loading student data:", error.message);
+    }
   };
 
   return (
@@ -162,16 +145,20 @@ const StudentPage = ({ navigation }) => {
           <>
             <View style={styles.searchContainer}>
               <TextInput
-                placeholder="Search by name"
-                onChangeText={handleSearch}
-                value={searchQuery}
+                placeholder="Search by first name"
+                onChangeText={setFirstNameQuery}
+                value={firstNameQuery}
                 style={styles.searchInput}
               />
-              {searchQuery.length > 0 && (
-                <Pressable onPress={clearSearch} style={styles.clearButton}>
-                  <Text style={styles.clearButtonText}>Clear</Text>
-                </Pressable>
-              )}
+            </View>
+
+            <View style={styles.searchContainer}>
+              <TextInput
+                placeholder="Search by last name"
+                onChangeText={setLastNameQuery}
+                value={lastNameQuery}
+                style={styles.searchInput}
+              />
             </View>
 
             <Picker
@@ -209,6 +196,26 @@ const StudentPage = ({ navigation }) => {
               <Picker.Item label="4" value={4} />
               <Picker.Item label="5" value={5} />
             </Picker>
+
+            <View style={styles.buttonContainer}>
+              <View style={styles.searchContainer}>
+                <Pressable
+                  onPress={() => handleSearchPress(1)}
+                  style={styles.searchButton}
+                >
+                  <Text style={styles.buttonText}>Search</Text>
+                </Pressable>
+              </View>
+
+              <View style={styles.searchContainer}>
+                <Pressable
+                  onPress={handleClearPress}
+                  style={styles.clearButton}
+                >
+                  <Text style={styles.buttonText}>Clear</Text>
+                </Pressable>
+              </View>
+            </View>
           </>
         )}
 
@@ -222,7 +229,7 @@ const StudentPage = ({ navigation }) => {
               { opacity: selectedStudentId ? 1 : 0.5 },
             ]}
             onPress={handleViewSponsorsPress}
-            disabled={!selectedStudentId} // Button is disabled if no student is selected
+            disabled={!selectedStudentId}
           >
             <Text style={styles.buttonText}>View Sponsors</Text>
           </Pressable>
@@ -267,28 +274,23 @@ const StudentPage = ({ navigation }) => {
           </DataTable>
         </ScrollView>
 
-        <View style={styles.filterAndButtonsContainer}>
+        <View style={styles.buttonContainer}>
           <Pressable
             onPress={goToPrevPage}
             disabled={currentPage === 1}
-            style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+            style={[styles.navButton, { opacity: currentPage === 1 ? 0.5 : 1 }]}
           >
             <FontAwesomeIcon icon={faArrowLeft} size={16} />
             <Text>Prev</Text>
           </Pressable>
 
-          <TextInput
-            label="Items Per Page"
-            value={itemsPerPage.toString()}
-            keyboardType="numeric"
-            onChangeText={(text) => setItemsPerPage(parseInt(text))}
-            style={styles.filterInput}
-          />
-
           <Pressable
             onPress={goToNextPage}
             disabled={currentPage >= filteredTotalPages}
-            style={{ opacity: currentPage >= filteredTotalPages ? 0.5 : 1 }}
+            style={[
+              styles.navButton,
+              { opacity: currentPage >= filteredTotalPages ? 0.5 : 1 },
+            ]}
           >
             <Text>Next</Text>
             <FontAwesomeIcon icon={faArrowRight} size={16} />

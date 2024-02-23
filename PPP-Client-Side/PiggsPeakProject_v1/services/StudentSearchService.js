@@ -26,7 +26,6 @@ export const getStudents = async () => {
 export const getStudentBySearch = async (searchCriteria) => {
   try {
     // Adjusting the URL to include search criteria
-    // This could be a query string or a path parameter, depending on API design
     const url = new URL(`${BASE_URL}/StudentSearch`);
     Object.keys(searchCriteria).forEach((key) =>
       url.searchParams.append(key, searchCriteria[key])

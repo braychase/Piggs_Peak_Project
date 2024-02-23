@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   dataTableScroll: {
-    maxHeight: "60%",
+    maxHeight: "90%",
   },
   dataTable: {
     backgroundColor: COLORS.gray,
@@ -49,10 +49,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   clearButton: {
-    marginLeft: 10,
-    justifyContent: "center",
-    paddingHorizontal: 10,
-    height: 40,
+    backgroundColor: COLORS.alert,
+    padding: 10,
+    borderRadius: 5,
+    borderColor: COLORS.black,
+    borderWidth: 1,
+    marginRight: "15%",
   },
   clearButtonText: {
     color: "white",
@@ -105,6 +107,21 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     padding: 10,
     borderRadius: 5,
+  },
+  searchButton: {
+    backgroundColor: COLORS.primary,
+    padding: 10,
+    borderRadius: 5,
+    borderColor: COLORS.white,
+    borderWidth: 1,
+    marginLeft: "15%",
+  },
+  navButton: {
+    backgroundColor: COLORS.lightGray,
+    padding: 10,
+    borderRadius: 5,
+    borderColor: COLORS.white,
+    borderWidth: 1,
   },
 });
 

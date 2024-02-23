@@ -13,6 +13,8 @@ import COLORS from "../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleUser, faUnlock } from "@fortawesome/free-solid-svg-icons";
 import styles from "../styles/loginScreenStyles";
+import CONSTANTS from "../constants/constants";
+const BASE_URL = CONSTANTS.baseURL;
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -21,16 +23,37 @@ const LoginScreen = ({ navigation }) => {
 
   const handleLogin = async () => {
     try {
-      // Simulate login validation logic
-      if (username.trim() && password.trim()) {
-        // Navigate to the main app screen or set login state locally
-        navigation.replace("Main"); // Assuming "Main" is the route name for the main part of your app
-      } else {
+      if (!username.trim() || !password.trim()) {
         setError("Please enter valid credentials");
+        return;
+      }
+
+      const response = await fetch(BASE_URL + "/Login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          LoginID: username,
+          PasswordHash: password, // Assuming you're sending the plaintext password and hashing server-side
+        }),
+      });
+
+      if (response.ok) {
+        // Login successful
+        navigation.replace("Main");
+      } else if (response.status === 401) {
+        // Unauthorized
+        setError("Invalid credentials. Please try again.");
+      } else {
+        // Other errors
+        setError("An error occurred during login. Please try again later.");
       }
     } catch (error) {
       console.error("Login error:", error);
-      setError("An error occurred during login");
+      setError(
+        "An error occurred during login. Please check your connection and try again."
+      );
     }
   };
 
