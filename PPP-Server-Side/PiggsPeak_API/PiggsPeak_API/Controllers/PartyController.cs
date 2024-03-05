@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiggsPeak_API.Classes;
 using System;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
+	[Authorize]
 	[Route("api/Party")]
 	[ApiController]
 	public class PartyController : ControllerBase

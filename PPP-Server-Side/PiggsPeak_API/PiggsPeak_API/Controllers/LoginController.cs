@@ -1,50 +1,90 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
 using PiggsPeak_API.Classes;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/Login")]
+	[AllowAnonymous]
 	[ApiController]
+	[Route("/api/Login")]
 	public class LoginController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
+		private readonly IPasswordHasher<Party> _passwordHasher;
 
-		public LoginController(AppDbContext dbContext)
+		public LoginController(AppDbContext dbContext, IPasswordHasher<Party> passwordHasher)
 		{
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			_passwordHasher = passwordHasher;
 		}
 
-		// POST api/Login
-		[HttpPost]
-		public async Task<IActionResult> Post([FromBody] LoginModel model)
+		[HttpPost()]
+		public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] LoginRequestDTO credentials)
 		{
-			// Validate the request
-			if (model == null || string.IsNullOrEmpty(model.LoginID) || string.IsNullOrEmpty(model.PasswordHash))
+			if (string.IsNullOrEmpty(credentials.LoginID) || string.IsNullOrEmpty(credentials.Password))
 			{
-				return BadRequest("Invalid login request.");
+				return BadRequest(new { message = "Username and password are required" });
 			}
 
-			// Attempt to find the user (Party) by the provided LoginID
 			var user = await _dbContext.Parties
-				.FirstOrDefaultAsync(p => p.LoginID == model.LoginID && p.IsDeleted != "Y" && p.IsDisabled != "Y");
+									   .AsNoTracking()
+									   .FirstOrDefaultAsync(u => u.LoginID == credentials.LoginID);
 
-			// Check if the user was not found or the password does not match
-			if (user == null || user.PasswordHash != model.PasswordHash)
+			if (user == null)
 			{
-				return Unauthorized("Invalid credentials.");
+				return Unauthorized(new { message = "Username or password is incorrect" });
 			}
 
-			// Successfully authenticated
-			return Ok("Login successful.");
+			var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, credentials.Password);
+
+			if (result != PasswordVerificationResult.Success)
+			{
+				return Unauthorized(new { message = "Username or password is incorrect" });
+			}
+
+			// Upon successful authentication, generate claims for the user
+			var claims = new List<Claim>
+			{
+				new Claim(ClaimTypes.Name, user.LoginID),
+				new Claim(ClaimTypes.NameIdentifier, user.PartyID.ToString()),
+				new Claim("FullName", user.PartyName),
+                // Consider adding roles or other claims as needed
+            };
+
+			var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+
+			// Return a DTO with necessary user information and authentication details
+			return Ok(new LoginResponseDTO { LoginID = user.LoginID, PartyName = user.PartyName, /* Token = generatedToken */ });
 		}
 
-		public class LoginModel
+		[HttpGet]
+		[Route("/api/Logout")]
+		public async Task<IActionResult> Logout()
+		{
+			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+			return Redirect("/Login.html"); // Adjust redirect as needed based on your application's routing
+		}
+
+		public class LoginRequestDTO
 		{
 			public string LoginID { get; set; }
-			public string PasswordHash { get; set; }
+			public string Password { get; set; }
+		}
+
+		public class LoginResponseDTO
+		{
+			public string LoginID { get; set; }
+			public string PartyName { get; set; }
+			// Consider adding a Token property if using token-based authentication
 		}
 	}
 }

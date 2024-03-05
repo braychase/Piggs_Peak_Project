@@ -34,8 +34,8 @@ const LoginScreen = ({ navigation }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          LoginID: username,
-          PasswordHash: password, // Assuming you're sending the plaintext password and hashing server-side
+          loginID: username,
+          password: password, // Assuming you're sending the plaintext password and hashing server-side
         }),
       });
 

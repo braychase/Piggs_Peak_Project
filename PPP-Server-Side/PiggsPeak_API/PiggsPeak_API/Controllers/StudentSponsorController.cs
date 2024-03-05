@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
+	[Authorize]
 	[Route("api/StudentSponsor")]
 	[ApiController]
 	public class StudentSponsorController : ControllerBase

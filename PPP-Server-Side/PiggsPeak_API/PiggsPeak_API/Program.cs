@@ -5,11 +5,22 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using PiggsPeak_API;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
+using PiggsPeak_API.Classes;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Add authentication services
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+	.AddCookie(options =>
+	{
+		options.LoginPath = "/LoginScreen"; // Specify the path to your login page
+	});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -40,6 +51,8 @@ builder.Services.AddCors(options =>
 			.AllowAnyMethod()
 			.AllowCredentials());
 });
+// Add this inside ConfigureServices method of Startup.cs
+builder.Services.AddScoped<IPasswordHasher<Party>, PasswordHasher<Party>>();
 
 var app = builder.Build();
 
@@ -55,6 +68,8 @@ app.UseHttpsRedirection();
 // Enable CORS globally
 app.UseCors("AllowReactNative");
 
+// Authentication & Authorization middleware
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

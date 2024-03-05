@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiggsPeak_API.Classes; // Make sure this is the correct namespace for your entities
 using System;
@@ -10,6 +11,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace PiggsPeak_API.Controllers
 {
+	[Authorize]
 	[Route("api/[controller]")]
 	[ApiController]
 	public class StudentPhotoController : ControllerBase
