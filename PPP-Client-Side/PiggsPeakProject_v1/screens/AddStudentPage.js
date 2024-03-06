@@ -15,7 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getSchools } from "../services/SchoolService";
-import { getStudentById } from "../services/StudentService";
+import { getStudentById, updateStudentById } from "../services/StudentService";
 import { getStudentPhotoById } from "../services/StudentPhotoService";
 import { getStudentGradeById } from "../services/StudentGradeService";
 import { render } from "react-dom";
@@ -183,6 +183,45 @@ const AddStudentPage = () => {
     fetchStudentData();
     fetchSchoolsData();
   }, [studentID, photoID]);
+
+  const handleSaveStudent = async () => {
+    const studentData = {
+      lastName: surname,
+      middleName: middleName,
+      firstName: firstName,
+      gender: gender,
+      ovc: ovc,
+      birthDate: dob.toISOString(),
+      primarySchool: primarySchool,
+      highSchool: highSchool,
+      yearFinished: yearFinished,
+      dateEnrolled: dateEnrolled.toISOString(),
+      year: year,
+      form: form,
+      ambitionAfterGraduation: ambitionAfterGraduation,
+      favoriteSubject: favoriteSubject,
+      motherLiving: motherLiving,
+      motherAtHome: motherAtHome,
+      motherWorking: motherWorking,
+      motherUnknown: motherUnknown,
+      fatherLiving: fatherLiving,
+      fatherAtHome: fatherAtHome,
+      fatherWorking: fatherWorking,
+      fatherUnknown: fatherUnknown,
+      recommend: recommend,
+      priority: priority,
+      comments: comments,
+    };
+
+    try {
+      await updateStudentById(studentID, studentData);
+      // Optionally, you can navigate the user away from the page or show a success message
+      alert("Student updated successfully");
+    } catch (error) {
+      // Handle errors, such as by showing an error message to the user
+      alert("Failed to update student");
+    }
+  };
 
   return (
     <LinearGradient
@@ -564,7 +603,7 @@ const AddStudentPage = () => {
       {/* ... Content for other selected tabs ... */}
 
       {/* Save Student button */}
-      <Pressable style={styles.saveButton}>
+      <Pressable style={styles.saveButton} onPress={handleSaveStudent}>
         <Text style={styles.saveButtonText}>Save Student</Text>
       </Pressable>
     </LinearGradient>

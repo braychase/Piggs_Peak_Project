@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Authorize]
 	[Route("api/Party")]
 	[ApiController]
 	public class PartyController : ControllerBase

@@ -52,3 +52,28 @@ export const getStudentById = async (studentId) => {
     throw error;
   }
 };
+
+export const updateStudentById = async (studentId, studentData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/Student/${studentId}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Include cookies in the request if your API requires it
+      body: JSON.stringify(studentData),
+    });
+
+    if (!response.ok) {
+      // If the server response is not ok, throw an error with the status text
+      throw new Error(`Failed to update student: ${response.statusText}`);
+    }
+
+    const data = await response.json(); // Assuming the server responds with the updated student data
+    return data; // You might want to return the updated student data or a success message
+  } catch (error) {
+    console.error(`Error updating student with ID ${studentId}:`, error);
+    throw error; // Re-throw the error so it can be caught and handled in the component
+  }
+};

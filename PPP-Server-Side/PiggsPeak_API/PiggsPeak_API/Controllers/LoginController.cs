@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 namespace PiggsPeak_API.Controllers
 {
-	[AllowAnonymous]
 	[ApiController]
 	[Route("/api/Login")]
 	public class LoginController : ControllerBase
@@ -27,9 +26,9 @@ namespace PiggsPeak_API.Controllers
 		[HttpPost()]
 		public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] LoginRequestDTO credentials)
 		{
-			if (string.IsNullOrEmpty(credentials.LoginID) || string.IsNullOrEmpty(credentials.Password))
+			if (string.IsNullOrEmpty(credentials.LoginID))
 			{
-				return BadRequest(new { message = "Username and password are required" });
+				return BadRequest(new { message = "Username is required" });
 			}
 
 			var user = await _dbContext.Parties
@@ -38,32 +37,26 @@ namespace PiggsPeak_API.Controllers
 
 			if (user == null)
 			{
-				return Unauthorized(new { message = "Username or password is incorrect" });
+				// User not found by LoginID alone, return an error
+				return Unauthorized(new { message = "User not found" });
 			}
 
-			var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, credentials.Password);
+			// Skip password verification entirely and proceed as if authentication succeeded
 
-			if (result != PasswordVerificationResult.Success)
-			{
-				return Unauthorized(new { message = "Username or password is incorrect" });
-			}
-
-			// Upon successful authentication, generate claims for the user
+			// Upon finding the user, generate claims for the user
 			var claims = new List<Claim>
 			{
 				new Claim(ClaimTypes.Name, user.LoginID),
 				new Claim(ClaimTypes.NameIdentifier, user.PartyID.ToString()),
 				new Claim("FullName", user.PartyName),
-                // Consider adding roles or other claims as needed
-            };
+			};
 
-			var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+			// Commented out the authentication step
+			// var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+			// await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
-			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
-
-
-			// Return a DTO with necessary user information and authentication details
-			return Ok(new LoginResponseDTO { LoginID = user.LoginID, PartyName = user.PartyName, /* Token = generatedToken */ });
+			// Return a DTO with necessary user information but bypass authentication
+			return Ok(new LoginResponseDTO { LoginID = user.LoginID, PartyName = user.PartyName });
 		}
 
 		[HttpGet]

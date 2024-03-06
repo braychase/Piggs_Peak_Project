@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Authorize]
 	[Route("api/Permission")]
 	[ApiController]
 	public class PermissionController : ControllerBase
