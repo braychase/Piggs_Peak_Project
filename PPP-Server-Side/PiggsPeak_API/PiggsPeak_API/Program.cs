@@ -8,6 +8,9 @@ using PiggsPeak_API;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using PiggsPeak_API.Classes;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +22,7 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	.AddCookie(options =>
 	{
-		options.LoginPath = "/LoginScreen"; // Specify the path to your login page
+		options.LoginPath = "/api/Login";
 	});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -40,6 +43,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
    
     options.UseSqlServer(builder.Configuration.GetConnectionString(s));
 });
+
 
 // Configure CORS globally
 builder.Services.AddCors(options =>

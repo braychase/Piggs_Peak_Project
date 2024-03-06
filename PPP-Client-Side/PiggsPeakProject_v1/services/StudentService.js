@@ -9,6 +9,7 @@ export const getStudents = async () => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -32,6 +33,7 @@ export const getStudentById = async (studentId) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {

@@ -9,6 +9,7 @@ export const getStudentPhoto = async () => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -32,6 +33,7 @@ export const getStudentPhotoById = async (photoId) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {

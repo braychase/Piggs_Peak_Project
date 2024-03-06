@@ -35,13 +35,12 @@ class Program
 
 			foreach (var user in users)
 			{
-				// Assuming user.PasswordHash currently contains the plaintext password
-				// It's crucial to verify this assumption to avoid double-hashing or other issues
-				var plaintextPassword = user.PasswordHash; // Assuming this is the plaintext password
-				user.PasswordHash = passwordHasher.HashPassword(user, plaintextPassword);
-
-				// If you had a separate field for plaintext passwords, clear it here
-				// e.g., user.PlaintextPassword = null;
+				if (user.PasswordHash == null || user.PasswordHash.Length <= 60)
+				{
+					var plaintextPassword = user.PasswordHash;
+					user.PasswordHash = passwordHasher.HashPassword(user, plaintextPassword);
+					//AQAAAAIAAYagAAAAELprNbZzQFOVaHCaQUPM9qw9ztxrucH5AylKUOPJdwcji8y1K9SvZdTZ9aGKONwHYA==
+				}
 			}
 
 			await dbContext.SaveChangesAsync();

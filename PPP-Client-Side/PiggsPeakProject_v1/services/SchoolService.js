@@ -8,6 +8,7 @@ export const getSchools = async () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        credentials: "include",
       },
     });
 

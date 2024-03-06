@@ -12,6 +12,7 @@ export const getAllStudentSponsors = async () => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -35,6 +36,7 @@ export const getStudentSponsorById = async (studentId) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {

@@ -9,6 +9,7 @@ export const getStudents = async () => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -37,6 +38,7 @@ export const getStudentBySearch = async (searchCriteria) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
