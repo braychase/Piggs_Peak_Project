@@ -49,7 +49,7 @@ const AddStudentPage = () => {
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [schools, setSchools] = useState([]);
   const route = useRoute();
-  const { studentID, photoID } = route.params;
+  const { studentID = null, photoID = null } = route.params || {};
   const [selectedTab, setSelectedTab] = useState("Personal");
   const [surname, setSurname] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -177,13 +177,12 @@ const AddStudentPage = () => {
 
     if (studentID) {
       fetchGradesData();
-      fetchStudentPhoto(); // Call fetchStudentPhoto with photoID
+      fetchStudentPhoto(); // Only if photoID is available
+      fetchStudentData();
     }
-
-    fetchStudentData();
     fetchSchoolsData();
   }, [studentID, photoID]);
-
+  /*
   const handleSaveStudent = async () => {
     const studentData = {
       lastName: surname,
@@ -220,7 +219,7 @@ const AddStudentPage = () => {
       alert("Failed to update student");
     }
   };
-
+*/
   return (
     <LinearGradient
       style={styles.container}
@@ -601,7 +600,7 @@ const AddStudentPage = () => {
       {/* ... Content for other selected tabs ... */}
 
       {/* Save Student button */}
-      <Pressable style={styles.saveButton} onPress={handleSaveStudent}>
+      <Pressable style={styles.saveButton}>
         <Text style={styles.saveButtonText}>Save Student</Text>
       </Pressable>
     </LinearGradient>
