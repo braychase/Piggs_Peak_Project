@@ -187,16 +187,16 @@ const AddStudentPage = () => {
   const handleSaveStudent = async () => {
     const studentData = {
       lastName: surname,
-      middleName: middleName,
+      //middleName: middleName, // not in database
       firstName: firstName,
       gender: gender,
       ovc: ovc,
       birthDate: dob.toISOString(),
-      primarySchool: primarySchool,
+      //primarySchool: primarySchool, // not in database
       highSchool: highSchool,
-      yearFinished: yearFinished,
-      dateEnrolled: dateEnrolled.toISOString(),
-      year: year,
+      yearFinished: yearFinished, // not in database
+      //dateEnrolled: dateEnrolled.toISOString(), // not in database
+      //year: year, // not in database
       form: form,
       ambitionAfterGraduation: ambitionAfterGraduation,
       favoriteSubject: favoriteSubject,
@@ -208,17 +208,15 @@ const AddStudentPage = () => {
       fatherAtHome: fatherAtHome,
       fatherWorking: fatherWorking,
       fatherUnknown: fatherUnknown,
-      recommend: recommend,
-      priority: priority,
+      //recommend: recommend, // not in database
+      //priority: priority, // not in database
       comments: comments,
     };
 
     try {
       await updateStudentById(studentID, studentData);
-      // Optionally, you can navigate the user away from the page or show a success message
       alert("Student updated successfully");
     } catch (error) {
-      // Handle errors, such as by showing an error message to the user
       alert("Failed to update student");
     }
   };

@@ -73,7 +73,6 @@ namespace PiggsPeak_API.Controllers
 			return CreatedAtAction(nameof(Get), new { id = student.StudentID }, student);
 		}
 
-		// PUT api/Student/5
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] Student updatedStudent)
 		{
@@ -94,11 +93,34 @@ namespace PiggsPeak_API.Controllers
 			existingStudent.OVC = updatedStudent.OVC;
 			existingStudent.Deleted = updatedStudent.Deleted;
 			existingStudent.Active = updatedStudent.Active;
+			existingStudent.Form = updatedStudent.Form;
+			existingStudent.SchoolID = updatedStudent.SchoolID;
+			existingStudent.SponsorStart = updatedStudent.SponsorStart;
+			existingStudent.FatherLiving = updatedStudent.FatherLiving;
+			existingStudent.FatherAtHome = updatedStudent.FatherAtHome;
+			existingStudent.FatherWorking = updatedStudent.FatherWorking;
+			existingStudent.FatherUnknown = updatedStudent.FatherUnknown;
+			existingStudent.MotherLiving = updatedStudent.MotherLiving;
+			existingStudent.MotherAtHome = updatedStudent.MotherAtHome;
+			existingStudent.MotherWorking = updatedStudent.MotherWorking;
+			existingStudent.MotherUnknown = updatedStudent.MotherUnknown;
+			existingStudent.FavouriteSubject = updatedStudent.FavouriteSubject;
+			existingStudent.Narritave = updatedStudent.Narritave;
+			existingStudent.Aspirations = updatedStudent.Aspirations;
+			existingStudent.Notes = updatedStudent.Notes;
+			existingStudent.Version = updatedStudent.Version;
+			existingStudent.CreatedBy = updatedStudent.CreatedBy;
+			existingStudent.CreatedDate = updatedStudent.CreatedDate;
+			existingStudent.CreatedTimeZone = updatedStudent.CreatedTimeZone;
+			existingStudent.ModifiedBy = updatedStudent.ModifiedBy;
+			existingStudent.ModifiedDate = updatedStudent.ModifiedDate;
+			existingStudent.ModifiedTimeZone = updatedStudent.ModifiedTimeZone;
 
 			await _dbContext.SaveChangesAsync();
 
 			return NoContent();
 		}
+
 
 		// DELETE api/Student/5
 		[HttpDelete("{id}")]
