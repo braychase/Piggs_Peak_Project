@@ -49,7 +49,7 @@ const AddStudentPage = () => {
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [schools, setSchools] = useState([]);
   const route = useRoute();
-  const { studentID, photoID } = route.params;
+  const { studentID = null, photoID = null } = route.params || {};
   const [selectedTab, setSelectedTab] = useState("Personal");
   const [surname, setSurname] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -177,26 +177,25 @@ const AddStudentPage = () => {
 
     if (studentID) {
       fetchGradesData();
-      fetchStudentPhoto(); // Call fetchStudentPhoto with photoID
+      fetchStudentPhoto(); // Only if photoID is available
+      fetchStudentData();
     }
-
-    fetchStudentData();
     fetchSchoolsData();
   }, [studentID, photoID]);
-
+  /*
   const handleSaveStudent = async () => {
     const studentData = {
       lastName: surname,
-      middleName: middleName,
+      //middleName: middleName, // not in database
       firstName: firstName,
       gender: gender,
       ovc: ovc,
       birthDate: dob.toISOString(),
-      primarySchool: primarySchool,
+      //primarySchool: primarySchool, // not in database
       highSchool: highSchool,
-      yearFinished: yearFinished,
-      dateEnrolled: dateEnrolled.toISOString(),
-      year: year,
+      yearFinished: yearFinished, // not in database
+      //dateEnrolled: dateEnrolled.toISOString(), // not in database
+      //year: year, // not in database
       form: form,
       ambitionAfterGraduation: ambitionAfterGraduation,
       favoriteSubject: favoriteSubject,
@@ -208,21 +207,19 @@ const AddStudentPage = () => {
       fatherAtHome: fatherAtHome,
       fatherWorking: fatherWorking,
       fatherUnknown: fatherUnknown,
-      recommend: recommend,
-      priority: priority,
+      //recommend: recommend, // not in database
+      //priority: priority, // not in database
       comments: comments,
     };
 
     try {
       await updateStudentById(studentID, studentData);
-      // Optionally, you can navigate the user away from the page or show a success message
       alert("Student updated successfully");
     } catch (error) {
-      // Handle errors, such as by showing an error message to the user
       alert("Failed to update student");
     }
   };
-
+*/
   return (
     <LinearGradient
       style={styles.container}
@@ -603,7 +600,7 @@ const AddStudentPage = () => {
       {/* ... Content for other selected tabs ... */}
 
       {/* Save Student button */}
-      <Pressable style={styles.saveButton} onPress={handleSaveStudent}>
+      <Pressable style={styles.saveButton}>
         <Text style={styles.saveButtonText}>Save Student</Text>
       </Pressable>
     </LinearGradient>
