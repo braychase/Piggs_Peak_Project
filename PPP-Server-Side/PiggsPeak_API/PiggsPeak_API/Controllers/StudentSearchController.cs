@@ -39,12 +39,12 @@ namespace PiggsPeak_API.Controllers
 
 			if (!string.IsNullOrWhiteSpace(firstName))
 			{
-				query = query.Where(s => EF.Functions.Like(s.FirstName, $"%{firstName}%"));
+				query = query.Where(s => EF.Functions.Like(s.FirstName, $"{firstName}%"));
 			}
 
 			if (!string.IsNullOrWhiteSpace(lastName))
 			{
-				query = query.Where(s => EF.Functions.Like(s.LastName, $"%{lastName}%"));
+				query = query.Where(s => EF.Functions.Like(s.LastName, $"{lastName}%"));
 			}
 
 			if (!string.IsNullOrWhiteSpace(schoolCode) && schoolCode != "all")
