@@ -61,19 +61,48 @@ export const updateStudentById = async (studentId, studentData) => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      credentials: "include", // Include cookies in the request if your API requires it
+      credentials: "include",
       body: JSON.stringify(studentData),
     });
 
     if (!response.ok) {
-      // If the server response is not ok, throw an error with the status text
       throw new Error(`Failed to update student: ${response.statusText}`);
     }
 
-    const data = await response.json(); // Assuming the server responds with the updated student data
-    return data; // You might want to return the updated student data or a success message
+    // Check if the response has content before parsing it
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
+
+    return data;
   } catch (error) {
     console.error(`Error updating student with ID ${studentId}:`, error);
-    throw error; // Re-throw the error so it can be caught and handled in the component
+    throw error;
+  }
+};
+
+export const addStudent = async (studentData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/Student`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(studentData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to add new student: ${response.statusText}`);
+    }
+
+    // Check if the response has content before parsing it
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
+
+    return data;
+  } catch (error) {
+    console.error("Error adding new student:", error);
+    throw error;
   }
 };

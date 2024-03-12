@@ -16,12 +16,16 @@ const MoreScreen = () => {
 
   // Navigate to Audit Trail Screen
   const navigateToAuditTrail = () => {
-    navigation.navigate("AuditTrail"); // Adjust the screen name as needed
+    navigation.navigate("AuditTrail");
   };
 
   // Navigate to Missing Data Report Screen
   const navigateToMissingDataReport = () => {
-    navigation.navigate("MissingDataReport"); // Adjust the screen name as needed
+    navigation.navigate("MissingDataReport");
+  };
+
+  const navigateToPreference = () => {
+    navigation.navigate("Preference");
   };
 
   return (
@@ -47,6 +51,12 @@ const MoreScreen = () => {
           style={styles.fullWidthButton}
         >
           <Text style={styles.buttonText}>Missing Data Report</Text>
+        </Pressable>
+        <Pressable
+          onPress={navigateToPreference}
+          style={styles.fullWidthButton}
+        >
+          <Text style={styles.buttonText}>Preferences</Text>
         </Pressable>
       </ScrollView>
     </LinearGradient>

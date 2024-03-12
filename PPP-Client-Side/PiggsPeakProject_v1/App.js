@@ -11,6 +11,7 @@ import {
   SponsorPage,
   AuditTrailPage,
   MissingDataReportPage,
+  PreferencePage,
 } from "./screens";
 import { Image } from "react-native";
 
@@ -70,6 +71,11 @@ const MoreStack = () => {
       <Stack.Screen
         name="MissingDataReport"
         component={MissingDataReportPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Preference"
+        component={PreferencePage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

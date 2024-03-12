@@ -76,6 +76,7 @@ const LoginScreen = ({ navigation }) => {
         />
         <TextInput
           placeholder="Username"
+          style={{ flex: 1, paddingVertical: 0 }}
           value={username}
           onChangeText={setUsername}
         />

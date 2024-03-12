@@ -33,18 +33,20 @@ const SponsorPage = ({ route, navigation }) => {
       // Fetch sponsors
       try {
         const sponsorsData = await getStudentSponsorById(studentID);
-
         // Ensure data is in array form and sort
         const sortedSponsors = (
           Array.isArray(sponsorsData) ? sponsorsData : [sponsorsData]
         ).sort((a, b) => new Date(b.effectiveDate) - new Date(a.effectiveDate));
-
         setSponsors(sortedSponsors);
       } catch (error) {
-        console.error("Failed to fetch sponsors:", error);
+        if (error.response && error.response.status === 404) {
+          // No sponsors found for the student
+          setSponsors([]); // Set sponsors to an empty array to indicate no sponsors
+        } else {
+          console.error("Failed to fetch sponsors:", error);
+        }
       }
     };
-
     fetchData();
   }, [studentID]);
 

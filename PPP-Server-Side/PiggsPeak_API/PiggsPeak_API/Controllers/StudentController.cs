@@ -63,15 +63,39 @@ namespace PiggsPeak_API.Controllers
 			return student;
 		}
 
-		// POST api/Student
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] Student student)
 		{
+			// Assuming the client sends only the schoolCode
+			if (!string.IsNullOrWhiteSpace(student.School?.SchoolCode))
+			{
+				// Find the school in the database by the provided schoolCode
+				var school = await _dbContext.Schools.FirstOrDefaultAsync(s => s.SchoolCode == student.School.SchoolCode);
+				if (school != null)
+				{
+					// Set the schoolID and description based on the found school
+					student.SchoolID = school.SchoolID; // Ensure the student is linked to the correct school ID
+														// Optionally, if you want to keep the school entity updated in student
+					student.School = school;
+				}
+				else
+				{
+					// Handle case where the schoolCode does not match any school in the database
+					return BadRequest("Invalid school code.");
+				}
+			}
+			else
+			{
+				return BadRequest("School code is required.");
+			}
+
+			// Proceed to add the student now that the school information has been filled in
 			_dbContext.Students.Add(student);
 			await _dbContext.SaveChangesAsync();
 
 			return CreatedAtAction(nameof(Get), new { id = student.StudentID }, student);
 		}
+
 
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] Student updatedStudent)
@@ -113,8 +137,8 @@ namespace PiggsPeak_API.Controllers
 			existingStudent.CreatedDate = updatedStudent.CreatedDate;
 			existingStudent.CreatedTimeZone = updatedStudent.CreatedTimeZone;
 			existingStudent.ModifiedBy = updatedStudent.ModifiedBy;
-			existingStudent.ModifiedDate = updatedStudent.ModifiedDate;
-			existingStudent.ModifiedTimeZone = updatedStudent.ModifiedTimeZone;
+			existingStudent.ModifiedDate = DateTime.UtcNow;
+			//existingStudent.ModifiedTimeZone = TimeZoneInfo.Local.Id;
 
 			await _dbContext.SaveChangesAsync();
 

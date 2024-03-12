@@ -39,9 +39,17 @@ namespace PiggsPeak_API.Controllers
 			{
 				// User not found by LoginID alone, return an error
 				return Unauthorized(new { message = "User not found" });
+			} else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
+			{
+				return Unauthorized(new { message = "Unable to login with this User." });
 			}
 
-			// Skip password verification entirely and proceed as if authentication succeeded
+			// Verify the hashed password
+			var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, credentials.Password);
+			if (passwordVerificationResult != PasswordVerificationResult.Success)
+			{
+				return Unauthorized(new { message = "Invalid credentials" });
+			}
 
 			// Upon finding the user, generate claims for the user
 			var claims = new List<Claim>
