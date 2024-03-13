@@ -3,7 +3,7 @@ const BASE_URL = CONSTANTS.baseURL;
 
 export const getStudentGrade = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/GradeSearch`, {
+    const response = await fetch(`${BASE_URL}/api/GradeSearch`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -26,7 +26,7 @@ export const getStudentGrade = async () => {
 
 export const getStudentGradeById = async (studentId) => {
   try {
-    const response = await fetch(`${BASE_URL}/GradeSearch/${studentId}`, {
+    const response = await fetch(`${BASE_URL}/api/GradeSearch/${studentId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",

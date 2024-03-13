@@ -66,5 +66,8 @@ namespace PiggsPeak_API.Classes
 
 		[Column("Modified_tz")]
 		public string? ModifiedTimeZone { get; set; }
+
+		[Column("DefaultSchool_id")]
+		public int? DefaultSchool { get; set; }
 	}
 }

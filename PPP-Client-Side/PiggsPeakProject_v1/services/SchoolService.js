@@ -3,7 +3,7 @@ const BASE_URL = CONSTANTS.baseURL;
 
 export const getSchools = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/School`, {
+    const response = await fetch(`${BASE_URL}/api/School`, {
       method: "GET",
       headers: {
         Accept: "application/json",

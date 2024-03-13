@@ -3,7 +3,7 @@ const BASE_URL = CONSTANTS.baseURL;
 
 export const getStudents = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/Student`, {
+    const response = await fetch(`${BASE_URL}/api/Student`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -26,7 +26,7 @@ export const getStudents = async () => {
 
 export const getStudentById = async (studentId) => {
   try {
-    const response = await fetch(`${BASE_URL}/Student/${studentId}`, {
+    const response = await fetch(`${BASE_URL}/api/Student/${studentId}`, {
       // Adjust the URL to include the student ID
       method: "GET",
       headers: {
@@ -55,7 +55,7 @@ export const getStudentById = async (studentId) => {
 
 export const updateStudentById = async (studentId, studentData) => {
   try {
-    const response = await fetch(`${BASE_URL}/Student/${studentId}`, {
+    const response = await fetch(`${BASE_URL}/api/Student/${studentId}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -82,7 +82,7 @@ export const updateStudentById = async (studentId, studentData) => {
 
 export const addStudent = async (studentData) => {
   try {
-    const response = await fetch(`${BASE_URL}/Student`, {
+    const response = await fetch(`${BASE_URL}/api/Student`, {
       method: "POST",
       headers: {
         Accept: "application/json",

@@ -24,6 +24,7 @@ import { getStudentPhotoById } from "../services/StudentPhotoService";
 import { getStudentGradeById } from "../services/StudentGradeService";
 import { render } from "react-dom";
 import styles from "../styles/addStudentPageStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
   return (
@@ -201,12 +202,24 @@ const AddStudentPage = () => {
 
     const fetchSchoolsData = async () => {
       try {
-        const schoolsData = await getSchools(); // Assuming this returns an array of school objects
+        const schoolsData = await getSchools();
         setSchools(schoolsData);
+        // If adding a new student, and there's no studentCode, set the default school
+        if (studentCode === "") {
+          const defaultSchoolID = await AsyncStorage.getItem("defaultSchoolID");
+          // Find and set the default school's code if it exists
+          const defaultSchool = schoolsData.find(
+            (school) => school.schoolID.toString() === defaultSchoolID
+          );
+          if (defaultSchool) {
+            setSchoolCode(defaultSchool.schoolCode);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch schools data:", error);
       }
     };
+
     const fetchGradesData = async () => {
       if (studentID) {
         // Make sure studentID is defined

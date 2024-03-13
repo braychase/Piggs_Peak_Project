@@ -57,6 +57,8 @@ namespace PiggsPeak_API.Controllers
 				new Claim(ClaimTypes.Name, user.LoginID),
 				new Claim(ClaimTypes.NameIdentifier, user.PartyID.ToString()),
 				new Claim("FullName", user.PartyName),
+				new Claim("School ID", user.DefaultSchool?.ToString() ?? null),
+
 			};
 
 			// Commented out the authentication step
@@ -64,7 +66,7 @@ namespace PiggsPeak_API.Controllers
 			// await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
 			// Return a DTO with necessary user information but bypass authentication
-			return Ok(new LoginResponseDTO { LoginID = user.LoginID, PartyName = user.PartyName });
+			return Ok(new LoginResponseDTO { LoginID = user.LoginID, PartyName = user.PartyName, DefaultSchoolID = user.DefaultSchool });
 		}
 
 		[HttpGet]
@@ -85,7 +87,7 @@ namespace PiggsPeak_API.Controllers
 		{
 			public string LoginID { get; set; }
 			public string PartyName { get; set; }
-			// Consider adding a Token property if using token-based authentication
+			public int? DefaultSchoolID { get; set; }
 		}
 	}
 }

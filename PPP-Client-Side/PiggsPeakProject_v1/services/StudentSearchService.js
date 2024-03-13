@@ -3,7 +3,7 @@ const BASE_URL = CONSTANTS.baseURL;
 
 export const getStudents = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentSearch`, {
+    const response = await fetch(`${BASE_URL}/api/StudentSearch`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -27,7 +27,7 @@ export const getStudents = async () => {
 export const getStudentBySearch = async (searchCriteria) => {
   try {
     // Adjusting the URL to include search criteria
-    const url = new URL(`${BASE_URL}/StudentSearch`);
+    const url = new URL(`${BASE_URL}/api/StudentSearch`);
     Object.keys(searchCriteria).forEach((key) =>
       url.searchParams.append(key, searchCriteria[key])
     );

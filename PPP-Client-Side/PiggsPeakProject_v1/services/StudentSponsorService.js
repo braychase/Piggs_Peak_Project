@@ -6,7 +6,7 @@ const BASE_URL = CONSTANTS.baseURL;
 // Function to fetch sponsor information for all students
 export const getAllStudentSponsors = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentSponsor`, {
+    const response = await fetch(`${BASE_URL}/api/StudentSponsor`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -30,12 +30,15 @@ export const getAllStudentSponsors = async () => {
 // Function to fetch sponsor information for a single student by their ID
 export const getStudentSponsorById = async (studentId) => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentSponsor/${studentId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${BASE_URL}/api/StudentSponsor/${studentId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       if (response.status === 404) {

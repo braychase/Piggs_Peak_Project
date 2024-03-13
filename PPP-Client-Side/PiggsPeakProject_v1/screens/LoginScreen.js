@@ -11,9 +11,14 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCircleUser, faUnlock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleUser,
+  faUnlock,
+  faLink,
+} from "@fortawesome/free-solid-svg-icons";
 import styles from "../styles/loginScreenStyles";
 import CONSTANTS from "../constants/constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const BASE_URL = CONSTANTS.baseURL;
 
 const LoginScreen = ({ navigation }) => {
@@ -28,19 +33,27 @@ const LoginScreen = ({ navigation }) => {
         return;
       }
 
-      const response = await fetch(BASE_URL + "/Login", {
+      const response = await fetch(BASE_URL + "/api/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           loginID: username,
-          password: password, // Assuming you're sending the plaintext password and hashing server-side
+          password: password,
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        // Login successful
+        // Login successful, store the DefaultSchoolId
+        if (data.defaultSchoolID) {
+          await AsyncStorage.setItem(
+            "defaultSchoolID",
+            data.defaultSchoolID.toString()
+          );
+        }
         navigation.replace("Main");
       } else if (response.status === 401) {
         // Unauthorized
@@ -102,6 +115,18 @@ const LoginScreen = ({ navigation }) => {
             Forgot?
           </Text>
         </Pressable>
+      </View>
+      <View style={styles.action}>
+        <FontAwesomeIcon
+          icon={faLink}
+          style={{ marginTop: 5, marginRight: 7 }}
+        />
+        <TextInput
+          placeholder="Username"
+          style={{ flex: 1, paddingVertical: 0 }}
+          value="https:localhost:"
+          onChangeText={setUsername}
+        />
       </View>
       <Pressable onPress={handleLogin}>
         <Text style={styles.loginButton}>Login</Text>

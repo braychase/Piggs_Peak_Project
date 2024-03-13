@@ -3,7 +3,7 @@ const BASE_URL = CONSTANTS.baseURL;
 
 export const getStudentPhoto = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentPhoto`, {
+    const response = await fetch(`${BASE_URL}/api/StudentPhoto`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -27,7 +27,7 @@ export const getStudentPhoto = async () => {
 // Inside your service file
 export const getStudentPhotoById = async (photoId) => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentPhoto/${photoId}`, {
+    const response = await fetch(`${BASE_URL}/api/StudentPhoto/${photoId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",

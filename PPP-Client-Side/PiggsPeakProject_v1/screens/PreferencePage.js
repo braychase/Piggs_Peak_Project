@@ -1,33 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, Pressable, Text, View } from "react-native";
+import { View, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { DataTable, TextInput } from "react-native-paper";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
 import styles from "../styles/interviewPageStyles";
 import { getSchools } from "../services/SchoolService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const PreferenceScreen = () => {
   const [schools, setSchools] = useState([]);
-  const [selectedSchool, setSelectedSchool] = useState();
+  const [selectedSchool, setSelectedSchool] = useState("");
 
   useEffect(() => {
-    const fetchSchoolsData = async () => {
+    const fetchSchoolsAndSetDefault = async () => {
       try {
-        const schoolsData = await getSchools(); // Assuming this returns an array of school objects
+        // Simulate fetching the array of school objects
+        const schoolsData = await getSchools(); // Placeholder for your actual data fetching function
         setSchools(schoolsData);
-        // Optionally set an initial value for selectedSchool
-        if (schoolsData.length > 0) {
-          setSelectedSchool(schoolsData[0].schoolCode);
+
+        const defaultSchoolID = await AsyncStorage.getItem("defaultSchoolID");
+        if (defaultSchoolID) {
+          // Find the school that matches the defaultSchoolID
+          const defaultSchool = schoolsData.find(
+            (school) => school.schoolID.toString() === defaultSchoolID
+          );
+          // If found, set it as the selectedSchool, otherwise default to the first school's schoolCode
+          if (defaultSchool) {
+            setSelectedSchool(defaultSchool.schoolCode);
+          } else if (schoolsData.length > 0) {
+            setSelectedSchool(schoolsData[0].schoolCode);
+          }
         }
       } catch (error) {
-        console.error("Failed to fetch schools data:", error);
+        console.error(
+          "Failed to fetch schools data or set default school:",
+          error
+        );
       }
     };
 
-    fetchSchoolsData();
+    fetchSchoolsAndSetDefault();
   }, []);
 
   return (
@@ -39,18 +51,16 @@ const PreferenceScreen = () => {
         <Text style={styles.temp}>Preference Page</Text>
         <Picker
           selectedValue={selectedSchool}
-          placeholder="Select Default School"
-          onValueChange={(itemValue, itemIndex) => setSelectedSchool(itemValue)}
+          onValueChange={(itemValue) => setSelectedSchool(itemValue)}
           style={{
             height: 50,
             width: 400,
             marginBottom: 10,
           }}
-          itemStyle={{ fontSize: 16, flex: 1 }}
         >
-          {schools.map((school, index) => (
+          {schools.map((school) => (
             <Picker.Item
-              key={index}
+              key={school.schoolID}
               label={school.description}
               value={school.schoolCode}
             />
