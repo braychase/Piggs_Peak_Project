@@ -25,6 +25,7 @@ import { getStudentGradeById } from "../services/StudentGradeService";
 import { render } from "react-dom";
 import styles from "../styles/addStudentPageStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApi } from "../ApiContext";
 
 const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
   return (
@@ -50,6 +51,7 @@ const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
 };
 
 const AddStudentPage = () => {
+  const { baseUrl } = useApi();
   const [grades, setGrades] = useState([]);
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [schools, setSchools] = useState([]);
@@ -128,7 +130,7 @@ const AddStudentPage = () => {
     const fetchStudentData = async () => {
       if (studentID) {
         try {
-          const studentData = await getStudentById(studentID);
+          const studentData = await getStudentById(baseUrl, studentID);
 
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
@@ -202,7 +204,7 @@ const AddStudentPage = () => {
 
     const fetchSchoolsData = async () => {
       try {
-        const schoolsData = await getSchools();
+        const schoolsData = await getSchools(baseUrl);
         setSchools(schoolsData);
         // If adding a new student, and there's no studentCode, set the default school
         if (studentCode === "") {
@@ -224,7 +226,7 @@ const AddStudentPage = () => {
       if (studentID) {
         // Make sure studentID is defined
         try {
-          const gradesData = await getStudentGradeById(studentID);
+          const gradesData = await getStudentGradeById(baseUrl, studentID);
           const sortedGrades = gradesData.sort((a, b) => {
             // Convert string dates to Date objects for comparison
             const dateA = new Date(a.effective_dt);
@@ -242,7 +244,7 @@ const AddStudentPage = () => {
         // Check if photoID is available
         try {
           // Using getStudentPhotoById to obtain the blob
-          const blob = await getStudentPhotoById(photoID);
+          const blob = await getStudentPhotoById(baseUrl, photoID);
           const imageUrl = URL.createObjectURL(blob); // Create a URL from the blob
           setStudentPhoto(imageUrl); // Update the state with the image URL
         } catch (error) {
@@ -297,11 +299,11 @@ const AddStudentPage = () => {
 
       // Determine whether to add or update the student based on the presence of studentCode
       if (studentCode === null || studentCode.trim() === "") {
-        const newStudent = await addStudent(studentData);
+        const newStudent = await addStudent(baseUrl, studentData);
         console.log("New student added:", newStudent);
         alert("Student added successfully");
       } else {
-        await updateStudentById(studentID, studentData);
+        await updateStudentById(baseUrl, studentID, studentData);
         alert("Student updated successfully");
       }
     } catch (error) {

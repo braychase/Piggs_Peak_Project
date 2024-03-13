@@ -1,9 +1,9 @@
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
-export const getStudents = async () => {
+export const getStudents = async (baseUrl) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/Student`, {
+    const response = await fetch(`${baseUrl}api/Student`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -24,9 +24,9 @@ export const getStudents = async () => {
   }
 };
 
-export const getStudentById = async (studentId) => {
+export const getStudentById = async (baseUrl, studentId) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/Student/${studentId}`, {
+    const response = await fetch(`${baseUrl}api/Student/${studentId}`, {
       // Adjust the URL to include the student ID
       method: "GET",
       headers: {
@@ -53,9 +53,9 @@ export const getStudentById = async (studentId) => {
   }
 };
 
-export const updateStudentById = async (studentId, studentData) => {
+export const updateStudentById = async (baseUrl, studentId, studentData) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/Student/${studentId}`, {
+    const response = await fetch(`${baseUrl}api/Student/${studentId}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -80,9 +80,9 @@ export const updateStudentById = async (studentId, studentData) => {
   }
 };
 
-export const addStudent = async (studentData) => {
+export const addStudent = async (baseUrl, studentData) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/Student`, {
+    const response = await fetch(`${baseUrl}api/Student`, {
       method: "POST",
       headers: {
         Accept: "application/json",

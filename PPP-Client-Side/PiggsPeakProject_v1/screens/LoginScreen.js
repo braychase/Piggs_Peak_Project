@@ -19,21 +19,33 @@ import {
 import styles from "../styles/loginScreenStyles";
 import CONSTANTS from "../constants/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
 const LoginScreen = ({ navigation }) => {
+  const { setBaseUrl } = useApi();
+  const { baseUrl } = useApi();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [baseUrlInput, setBaseUrlInput] = useState("https://localhost:");
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
-      if (!username.trim() || !password.trim()) {
+      setBaseUrl(baseUrlInput);
+      if (
+        !username.trim() ||
+        !password.trim() ||
+        baseUrlInput === "https://localhost:"
+      ) {
         setError("Please enter valid credentials");
         return;
       }
 
-      const response = await fetch(BASE_URL + "/api/Login", {
+      // Update baseUrl in context and AsyncStorage for persistence
+      setBaseUrl(baseUrlInput);
+      await AsyncStorage.setItem("baseUrl", baseUrlInput);
+
+      const response = await fetch(baseUrl + "api/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,10 +134,10 @@ const LoginScreen = ({ navigation }) => {
           style={{ marginTop: 5, marginRight: 7 }}
         />
         <TextInput
-          placeholder="Username"
+          placeholder="API EndPoint"
           style={{ flex: 1, paddingVertical: 0 }}
-          value="https:localhost:"
-          onChangeText={setUsername}
+          value={baseUrlInput}
+          onChangeText={setBaseUrlInput}
         />
       </View>
       <Pressable onPress={handleLogin}>

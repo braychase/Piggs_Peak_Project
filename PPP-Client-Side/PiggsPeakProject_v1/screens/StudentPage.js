@@ -15,10 +15,10 @@ import styles from "../styles/studentPageStyles";
 import CONSTANTS from "../constants/constants";
 import COLORS from "../constants/colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
 const StudentPage = ({ navigation }) => {
+  const { baseUrl } = useApi();
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSchool, setSelectedSchool] = useState("all");
@@ -59,7 +59,7 @@ const StudentPage = ({ navigation }) => {
   useEffect(() => {
     const fetchSchoolsData = async () => {
       try {
-        const schoolsData = await getSchools();
+        const schoolsData = await getSchools(baseUrl);
         const mapping = schoolsData.reduce((acc, school) => {
           acc[school.schoolCode] = school.description;
           return acc;
@@ -120,7 +120,7 @@ const StudentPage = ({ navigation }) => {
       }).toString();
 
       const response = await fetch(
-        `${BASE_URL}/api/StudentSearch?${queryParams}`
+        `${baseUrl}api/StudentSearch?${queryParams}`
       );
       if (response.ok) {
         const data = await response.json();

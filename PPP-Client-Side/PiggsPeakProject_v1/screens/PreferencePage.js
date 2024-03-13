@@ -6,8 +6,10 @@ import COLORS from "../constants/colors";
 import styles from "../styles/interviewPageStyles";
 import { getSchools } from "../services/SchoolService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApi } from "../ApiContext";
 
 const PreferenceScreen = () => {
+  const { baseUrl } = useApi();
   const [schools, setSchools] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState("");
 
@@ -15,7 +17,7 @@ const PreferenceScreen = () => {
     const fetchSchoolsAndSetDefault = async () => {
       try {
         // Simulate fetching the array of school objects
-        const schoolsData = await getSchools(); // Placeholder for your actual data fetching function
+        const schoolsData = await getSchools(baseUrl); // Placeholder for your actual data fetching function
         setSchools(schoolsData);
 
         const defaultSchoolID = await AsyncStorage.getItem("defaultSchoolID");

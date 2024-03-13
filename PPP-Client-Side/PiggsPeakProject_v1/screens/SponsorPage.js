@@ -8,8 +8,10 @@ import COLORS from "../constants/colors";
 import styles from "../styles/sponsorPageStyles";
 import { getStudentById } from "../services/StudentService";
 import { getStudentSponsorById } from "../services/StudentSponsorService";
+import { useApi } from "../ApiContext";
 
 const SponsorPage = ({ route, navigation }) => {
+  const { baseUrl } = useApi();
   const { studentID } = route.params; // Destructure studentId from route.params
   const [sponsors, setSponsors] = useState([]);
   const [surname, setSurname] = useState("");
@@ -20,7 +22,7 @@ const SponsorPage = ({ route, navigation }) => {
       // Fetch student data
       if (studentID) {
         try {
-          const studentData = await getStudentById(studentID);
+          const studentData = await getStudentById(baseUrl, studentID);
 
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
@@ -32,7 +34,7 @@ const SponsorPage = ({ route, navigation }) => {
 
       // Fetch sponsors
       try {
-        const sponsorsData = await getStudentSponsorById(studentID);
+        const sponsorsData = await getStudentSponsorById(baseUrl, studentID);
         // Ensure data is in array form and sort
         const sortedSponsors = (
           Array.isArray(sponsorsData) ? sponsorsData : [sponsorsData]

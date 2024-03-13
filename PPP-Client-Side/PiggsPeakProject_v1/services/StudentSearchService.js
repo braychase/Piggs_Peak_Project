@@ -1,9 +1,9 @@
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
-export const getStudents = async () => {
+export const getStudents = async (baseUrl) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/StudentSearch`, {
+    const response = await fetch(`${baseUrl}api/StudentSearch`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -24,10 +24,10 @@ export const getStudents = async () => {
   }
 };
 
-export const getStudentBySearch = async (searchCriteria) => {
+export const getStudentBySearch = async (baseUrl, searchCriteria) => {
   try {
     // Adjusting the URL to include search criteria
-    const url = new URL(`${BASE_URL}/api/StudentSearch`);
+    const url = new URL(`${baseUrl}api/StudentSearch`);
     Object.keys(searchCriteria).forEach((key) =>
       url.searchParams.append(key, searchCriteria[key])
     );

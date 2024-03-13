@@ -1,12 +1,12 @@
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
 // StudentSponsorService.js
 
 // Function to fetch sponsor information for all students
-export const getAllStudentSponsors = async () => {
+export const getAllStudentSponsors = async (baseUrl) => {
   try {
-    const response = await fetch(`${BASE_URL}/api/StudentSponsor`, {
+    const response = await fetch(`${baseUrl}api/StudentSponsor`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -28,17 +28,14 @@ export const getAllStudentSponsors = async () => {
 };
 
 // Function to fetch sponsor information for a single student by their ID
-export const getStudentSponsorById = async (studentId) => {
+export const getStudentSponsorById = async (baseUrl, studentId) => {
   try {
-    const response = await fetch(
-      `${BASE_URL}/api/StudentSponsor/${studentId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await fetch(`${baseUrl}api/StudentSponsor/${studentId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
     if (!response.ok) {
       if (response.status === 404) {
