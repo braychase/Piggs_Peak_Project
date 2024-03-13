@@ -27,6 +27,23 @@ namespace PiggsPeak_API.Controllers
         public async Task<ActionResult<LoginResponseDTO>> LoginGet(string username, string password = "")
         { return await LoginPost(new LoginRequestDTO() { LoginID = username, Password = password }); }
 
+        public static bool IsBase64(string s)
+        {
+            // Credit: oybek https://stackoverflow.com/users/794764/oybek
+            if (string.IsNullOrEmpty(s) || s.Length % 4 != 0
+               || s.Contains(" ") || s.Contains("\t") || s.Contains("\r") || s.Contains("\n"))
+                return false;
+
+            try
+            {
+                Convert.FromBase64String(s);
+                return true;
+            }
+            catch (Exception exception)
+            { return false; }
+            
+        }
+
         [HttpPost]
 		public async Task<ActionResult<LoginResponseDTO>> LoginPost([FromBody] LoginRequestDTO credentials)
 		{
@@ -35,25 +52,24 @@ namespace PiggsPeak_API.Controllers
 				return BadRequest(new { message = "Username is required" });
 			}
 
-			var user = await _dbContext.Parties
-									   .AsNoTracking()
-									   .FirstOrDefaultAsync(u => u.LoginID == credentials.LoginID);
+            Party? user = await _dbContext.Parties
+						.AsNoTracking()
+						.FirstOrDefaultAsync(u => u.LoginID == credentials.LoginID);
 
-			if (user == null)
-			{
-				// User not found by LoginID alone, return an error
+			if (user == null)				
 				return Unauthorized(new { message = "User not found" });
-			} else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
-			{
+            else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
 				return Unauthorized(new { message = "Unable to login with this User" });
-			}
 
-			// Verify the hashed password
-			var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, credentials.Password);
-			if (passwordVerificationResult != PasswordVerificationResult.Success)
-			{
+			// Verify the password
+			bool bPasswordValid;
+			if (IsBase64(user.PasswordHash))
+				bPasswordValid = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, credentials.Password) != PasswordVerificationResult.Success;
+			else
+                // used when database has not yet run the hasher program ...
+                bPasswordValid = user.PasswordHash == credentials.Password;
+            if (!bPasswordValid)
 				return Unauthorized(new { message = "Invalid credentials" });
-			}
 
 			// Upon finding the user, generate claims for the user
 			var claims = new List<Claim>
@@ -61,8 +77,7 @@ namespace PiggsPeak_API.Controllers
 				new Claim(ClaimTypes.Name, user.LoginID),
 				new Claim(ClaimTypes.NameIdentifier, user.PartyID.ToString()),
 				new Claim("FullName", user.PartyName),
-				new Claim("School ID", user.DefaultSchool?.ToString() ?? null),
-
+				new Claim("School ID", user.DefaultSchool?.ToString() ?? null)
 			};
 
 			// this step sets the Cookie used for Auth
