@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiggsPeak_API.Classes;
 using System.Collections.Generic;
@@ -7,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/PartyPermission")]
+    [Authorize]
 	[ApiController]
-	public class PartyPermissionController : ControllerBase
+    [Route("api/PartyPermission")]
+    public class PartyPermissionController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
 

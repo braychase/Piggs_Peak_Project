@@ -1,50 +1,112 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
 using PiggsPeak_API.Classes;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/Login")]
 	[ApiController]
+	[Route("/api/Login")]
 	public class LoginController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
+		private readonly IPasswordHasher<Party> _passwordHasher;
 
-		public LoginController(AppDbContext dbContext)
+		public LoginController(AppDbContext dbContext, IPasswordHasher<Party> passwordHasher)
 		{
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			_passwordHasher = passwordHasher;
 		}
 
-		// POST api/Login
-		[HttpPost]
-		public async Task<IActionResult> Post([FromBody] LoginModel model)
+        [HttpGet]				// this endpoint can be used browser testing
+        public async Task<ActionResult<LoginResponseDTO>> LoginGet(string username, string password = "")
+        { return await LoginPost(new LoginRequestDTO() { LoginID = username, Password = password }); }
+
+        public static bool IsBase64(string s)
+        {
+            // Credit: oybek https://stackoverflow.com/users/794764/oybek
+            if (string.IsNullOrEmpty(s) || s.Length % 4 != 0
+               || s.Contains(" ") || s.Contains("\t") || s.Contains("\r") || s.Contains("\n"))
+                return false;
+
+            try
+            {
+                Convert.FromBase64String(s);
+                return true;
+            }
+            catch (Exception exception)
+            { return false; }
+            
+        }
+
+        [HttpPost]
+		public async Task<ActionResult<LoginResponseDTO>> LoginPost([FromBody] LoginRequestDTO credentials)
 		{
-			// Validate the request
-			if (model == null || string.IsNullOrEmpty(model.LoginID) || string.IsNullOrEmpty(model.PasswordHash))
+			if (string.IsNullOrEmpty(credentials.LoginID))
 			{
-				return BadRequest("Invalid login request.");
+				return BadRequest(new { message = "Username is required" });
 			}
 
-			// Attempt to find the user (Party) by the provided LoginID
-			var user = await _dbContext.Parties
-				.FirstOrDefaultAsync(p => p.LoginID == model.LoginID && p.IsDeleted != "Y" && p.IsDisabled != "Y");
+            Party? user = await _dbContext.Parties
+						.AsNoTracking()
+						.FirstOrDefaultAsync(u => u.LoginID == credentials.LoginID);
 
-			// Check if the user was not found or the password does not match
-			if (user == null || user.PasswordHash != model.PasswordHash)
+			if (user == null)				
+				return Unauthorized(new { message = "User not found" });
+            else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
+				return Unauthorized(new { message = "Unable to login with this User" });
+
+			// Verify the password
+			bool bPasswordValid;
+			if (IsBase64(user.PasswordHash))
+				bPasswordValid = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, credentials.Password) != PasswordVerificationResult.Success;
+			else
+                // used when database has not yet run the hasher program ...
+                bPasswordValid = user.PasswordHash == credentials.Password;
+            if (!bPasswordValid)
+				return Unauthorized(new { message = "Invalid credentials" });
+
+			// Upon finding the user, generate claims for the user
+			var claims = new List<Claim>
 			{
-				return Unauthorized("Invalid credentials.");
-			}
+				new Claim(ClaimTypes.Name, user.LoginID),
+				new Claim(ClaimTypes.NameIdentifier, user.PartyID.ToString()),
+				new Claim("FullName", user.PartyName),
+				new Claim("School ID", user.DefaultSchool?.ToString() ?? null)
+			};
 
-			// Successfully authenticated
-			return Ok("Login successful.");
+			// this step sets the Cookie used for Auth
+			var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+			// Return a DTO with necessary user information but bypass authentication
+			return Ok(new LoginResponseDTO { LoginID = user.LoginID, PartyName = user.PartyName, DefaultSchoolID = user.DefaultSchool });
 		}
 
-		public class LoginModel
+		[HttpGet]
+		[Route("/api/Logout")]
+		public async Task<IActionResult> Logout()
+		{
+			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+			return Redirect("/Login.html"); // Adjust redirect as needed based on your application's routing
+		}
+
+		public class LoginRequestDTO
 		{
 			public string LoginID { get; set; }
-			public string PasswordHash { get; set; }
+			public string Password { get; set; }
+		}
+
+		public class LoginResponseDTO
+		{
+			public string LoginID { get; set; }
+			public string PartyName { get; set; }
+			public int? DefaultSchoolID { get; set; }
 		}
 	}
 }

@@ -11,8 +11,10 @@ import {
   SponsorPage,
   AuditTrailPage,
   MissingDataReportPage,
+  PreferencePage,
 } from "./screens";
 import { Image } from "react-native";
+import { ApiProvider } from "./ApiContext";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -72,6 +74,11 @@ const MoreStack = () => {
         component={MissingDataReportPage}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="Preference"
+        component={PreferencePage}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
@@ -123,19 +130,21 @@ function TabNavigator() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Main"
-          component={TabNavigator}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ApiProvider>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Main"
+            component={TabNavigator}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ApiProvider>
   );
 }

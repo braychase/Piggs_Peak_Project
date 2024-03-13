@@ -1,14 +1,15 @@
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
-export const getStudentPhoto = async () => {
+export const getStudentPhoto = async (baseUrl) => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentPhoto`, {
+    const response = await fetch(`${baseUrl}api/StudentPhoto`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -24,14 +25,15 @@ export const getStudentPhoto = async () => {
 };
 
 // Inside your service file
-export const getStudentPhotoById = async (photoId) => {
+export const getStudentPhotoById = async (baseUrl, photoId) => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentPhoto/${photoId}`, {
+    const response = await fetch(`${baseUrl}api/StudentPhoto/${photoId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {

@@ -1,10 +1,12 @@
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
 
-export const getSchools = async () => {
+export const getSchools = async (baseUrl) => {
   try {
-    const response = await fetch(`${BASE_URL}/School`, {
+    baseUrl = "https://localHost:7208/";
+
+    const response = await fetch(`${baseUrl}api/School`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

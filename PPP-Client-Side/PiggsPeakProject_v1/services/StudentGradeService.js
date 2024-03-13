@@ -1,14 +1,15 @@
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
-export const getStudentGrade = async () => {
+export const getStudentGrade = async (baseUrl) => {
   try {
-    const response = await fetch(`${BASE_URL}/GradeSearch`, {
+    const response = await fetch(`${baseUrl}api/GradeSearch`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -23,14 +24,15 @@ export const getStudentGrade = async () => {
   }
 };
 
-export const getStudentGradeById = async (studentId) => {
+export const getStudentGradeById = async (baseUrl, studentId) => {
   try {
-    const response = await fetch(`${BASE_URL}/GradeSearch/${studentId}`, {
+    const response = await fetch(`${baseUrl}api/GradeSearch/${studentId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {

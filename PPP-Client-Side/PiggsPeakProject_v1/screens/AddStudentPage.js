@@ -15,11 +15,17 @@ import { Picker } from "@react-native-picker/picker";
 import Slider from "@react-native-community/slider";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { getSchools } from "../services/SchoolService";
-import { getStudentById } from "../services/StudentService";
+import {
+  getStudentById,
+  updateStudentById,
+  addStudent,
+} from "../services/StudentService";
 import { getStudentPhotoById } from "../services/StudentPhotoService";
 import { getStudentGradeById } from "../services/StudentGradeService";
 import { render } from "react-dom";
 import styles from "../styles/addStudentPageStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApi } from "../ApiContext";
 
 const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
   return (
@@ -45,38 +51,46 @@ const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
 };
 
 const AddStudentPage = () => {
+  const { baseUrl } = useApi();
   const [grades, setGrades] = useState([]);
   const [studentPhoto, setStudentPhoto] = useState(null);
   const [schools, setSchools] = useState([]);
   const route = useRoute();
-  const { studentID, photoID } = route.params;
+  const { studentID = null, photoID = null } = route.params || {};
   const [selectedTab, setSelectedTab] = useState("Personal");
   const [surname, setSurname] = useState("");
   const [middleName, setMiddleName] = useState("");
   const [firstName, setFirstName] = useState("");
-  const [gender, setGender] = useState("");
+  const [gender, setGender] = useState("M");
   const [ovc, setOVC] = useState("");
+  const [active, setActive] = useState("");
+  const [deleted, setDeleted] = useState("");
+  const [version, setVersion] = useState("");
+  const [studentCode, setStudentCode] = useState("");
   const [dob, setDob] = useState(new Date());
   //const [checked, setChecked] = useState(false);
   const [primarySchool, setPrimarySchool] = useState("");
-  const [highSchool, setHighSchool] = useState("null");
+  const [schoolID, setSchoolID] = useState("");
+  const [schoolCode, setSchoolCode] = useState("");
+  const [schoolDescription, setSchoolDescription] = useState("");
   const [yearFinished, setYearFinished] = useState("");
   const [dateEnrolled, setDateEnrolled] = useState(new Date());
   const [year, setYear] = useState("");
   const [form, setForm] = useState("");
   const [ambitionAfterGraduation, setAmbitionAfterGraduation] = useState("");
-  const [favoriteSubject, setFavoriteSubject] = useState("");
-  const [motherLiving, setMotherLiving] = useState("No");
-  const [motherAtHome, setMotherAtHome] = useState("No");
-  const [motherWorking, setMotherWorking] = useState("No");
-  const [motherUnknown, setMotherUnknown] = useState("No");
-  const [fatherLiving, setFatherLiving] = useState("No");
-  const [fatherAtHome, setFatherAtHome] = useState("No");
-  const [fatherWorking, setFatherWorking] = useState("No");
-  const [fatherUnknown, setFatherUnknown] = useState("No");
-  const [recommend, setRecommend] = useState("Yes");
+  const [favouriteSubject, setFavouriteSubject] = useState("");
+  const [motherLiving, setMotherLiving] = useState("unspecified");
+  const [motherAtHome, setMotherAtHome] = useState("unspecified");
+  const [motherWorking, setMotherWorking] = useState("unspecified");
+  const [motherUnknown, setMotherUnknown] = useState("unspecified");
+  const [fatherLiving, setFatherLiving] = useState("unspecified");
+  const [fatherAtHome, setFatherAtHome] = useState("unspecified");
+  const [fatherWorking, setFatherWorking] = useState("unspecified");
+  const [fatherUnknown, setFatherUnknown] = useState("unspecified");
+  const [recommend, setRecommend] = useState("");
   const [priority, setPriority] = useState(10);
   const [comments, setComments] = useState("");
+
   // Placeholder for sibling data rows
   const siblingRows = Array.from({ length: 3 }, (_, index) => ({
     key: `sibling-${index}`, // Unique key for each row
@@ -116,7 +130,7 @@ const AddStudentPage = () => {
     const fetchStudentData = async () => {
       if (studentID) {
         try {
-          const studentData = await getStudentById(studentID);
+          const studentData = await getStudentById(baseUrl, studentID);
 
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
@@ -124,6 +138,58 @@ const AddStudentPage = () => {
           setFirstName(studentData.firstName || "");
           setGender(studentData.gender || "");
           setOVC(studentData.ovc || "");
+          setStudentCode(studentData.studentCode || "");
+          setActive(studentData.active || "");
+          setDeleted(studentData.deleted || "");
+          setVersion(studentData.version || "");
+          setSchoolID(studentData.schoolID || "");
+          setSchoolCode(studentData.school.schoolCode || "");
+          setSchoolDescription(studentData.school.description || "");
+          setPrimarySchool(studentData.primarySchool || "");
+          setAmbitionAfterGraduation(studentData.aspirations || "");
+          setFavouriteSubject(studentData.favouriteSubject || "");
+          setYearFinished(studentData.yearFinished || "");
+          setForm(studentData.form || "");
+          const motherLivingValue =
+            studentData.motherLiving === null
+              ? "unspecified"
+              : studentData.motherLiving;
+          setMotherLiving(motherLivingValue);
+          const motherAtHomeValue =
+            studentData.motherAtHome === null
+              ? "unspecified"
+              : studentData.motherAtHome;
+          setMotherAtHome(motherAtHomeValue);
+          const motherWorkingValue =
+            studentData.motherWorking === null
+              ? "unspecified"
+              : studentData.motherWorking;
+          setMotherWorking(motherWorkingValue);
+          const motherUnknownValue =
+            studentData.motherUnknown === null
+              ? "unspecified"
+              : studentData.motherUnknown;
+          setMotherUnknown(motherUnknownValue);
+          const fatherLivingValue =
+            studentData.fatherLiving === null
+              ? "unspecified"
+              : studentData.fatherLiving;
+          setFatherLiving(fatherLivingValue);
+          const fatherAtHomeValue =
+            studentData.fatherAtHome === null
+              ? "unspecified"
+              : studentData.fatherAtHome;
+          setFatherAtHome(fatherAtHomeValue);
+          const fatherWorkingValue =
+            studentData.fatherWorking === null
+              ? "unspecified"
+              : studentData.fatherWorking;
+          setFatherWorking(fatherWorkingValue);
+          const fatherUnknownValue =
+            studentData.fatherUnknown === null
+              ? "unspecified"
+              : studentData.fatherUnknown;
+          setFatherUnknown(fatherUnknownValue);
 
           // Handle birthDate
           if (studentData.birthDate) {
@@ -138,17 +204,29 @@ const AddStudentPage = () => {
 
     const fetchSchoolsData = async () => {
       try {
-        const schoolsData = await getSchools(); // Assuming this returns an array of school objects
+        const schoolsData = await getSchools(baseUrl);
         setSchools(schoolsData);
+        // If adding a new student, and there's no studentCode, set the default school
+        if (studentCode === "") {
+          const defaultSchoolID = await AsyncStorage.getItem("defaultSchoolID");
+          // Find and set the default school's code if it exists
+          const defaultSchool = schoolsData.find(
+            (school) => school.schoolID.toString() === defaultSchoolID
+          );
+          if (defaultSchool) {
+            setSchoolCode(defaultSchool.schoolCode);
+          }
+        }
       } catch (error) {
         console.error("Failed to fetch schools data:", error);
       }
     };
+
     const fetchGradesData = async () => {
       if (studentID) {
         // Make sure studentID is defined
         try {
-          const gradesData = await getStudentGradeById(studentID);
+          const gradesData = await getStudentGradeById(baseUrl, studentID);
           const sortedGrades = gradesData.sort((a, b) => {
             // Convert string dates to Date objects for comparison
             const dateA = new Date(a.effective_dt);
@@ -166,7 +244,7 @@ const AddStudentPage = () => {
         // Check if photoID is available
         try {
           // Using getStudentPhotoById to obtain the blob
-          const blob = await getStudentPhotoById(photoID);
+          const blob = await getStudentPhotoById(baseUrl, photoID);
           const imageUrl = URL.createObjectURL(blob); // Create a URL from the blob
           setStudentPhoto(imageUrl); // Update the state with the image URL
         } catch (error) {
@@ -177,13 +255,62 @@ const AddStudentPage = () => {
 
     if (studentID) {
       fetchGradesData();
-      fetchStudentPhoto(); // Call fetchStudentPhoto with photoID
+      fetchStudentPhoto(); // Only if photoID is available
+      fetchStudentData();
     }
-
-    fetchStudentData();
     fetchSchoolsData();
   }, [studentID, photoID]);
+  const handleSaveStudent = async () => {
+    console.log();
+    const studentData = {
+      studentID: studentID,
+      studentName: surname + ", " + firstName,
+      studentCode: studentCode,
+      lastName: surname,
+      firstName: firstName.trim(), // Ensure no trailing spaces and correct spelling
+      gender: gender,
+      ovc: ovc === "Y" ? "Y" : "N",
+      birthDate: dob.toISOString().split("T")[0] + "T00:00:00", // Format to match the successful payload
+      schoolID: schoolID,
+      school: {
+        schoolID: schoolID,
+        schoolCode: schoolCode,
+        description: schoolDescription,
+      },
+      form: form ? parseInt(form) : 4, // Provide a valid form number, adjust logic as needed
+      aspirations: ambitionAfterGraduation || null,
+      favouriteSubject: favouriteSubject || null, // Use null for optional fields if they're empty
+      motherLiving: motherLiving === "unspecified" ? null : motherLiving,
+      motherAtHome: motherAtHome === "unspecified" ? null : motherAtHome,
+      motherWorking: motherWorking === "unspecified" ? null : motherWorking,
+      motherUnknown: motherUnknown === "unspecified" ? null : motherUnknown,
+      fatherLiving: fatherLiving === "unspecified" ? null : fatherLiving,
+      fatherAtHome: fatherAtHome === "unspecified" ? null : fatherAtHome,
+      fatherWorking: fatherWorking === "unspecified" ? null : fatherWorking,
+      fatherUnknown: fatherUnknown === "unspecified" ? null : fatherUnknown,
+      notes: comments || null,
+      active: active,
+      version: version,
+      deleted: deleted,
+    };
 
+    try {
+      console.log(studentData);
+
+      // Determine whether to add or update the student based on the presence of studentCode
+      if (studentCode === null || studentCode.trim() === "") {
+        const newStudent = await addStudent(baseUrl, studentData);
+        console.log("New student added:", newStudent);
+        alert("Student added successfully");
+      } else {
+        await updateStudentById(baseUrl, studentID, studentData);
+        alert("Student updated successfully");
+      }
+    } catch (error) {
+      console.error("Failed to save student:", error);
+      alert("Failed to save student. Please check the details and try again.");
+    }
+  };
   return (
     <LinearGradient
       style={styles.container}
@@ -299,8 +426,8 @@ const AddStudentPage = () => {
             <TextInput
               mode="outlined"
               label="Primary School"
-              value={form}
-              onChangeText={setForm}
+              value={primarySchool}
+              onChangeText={setPrimarySchool}
               style={styles.input}
             />
             <TextInput
@@ -314,9 +441,9 @@ const AddStudentPage = () => {
           <View style={styles.row}>
             <Text style={styles.pickerLabel}>High School :</Text>
             <Picker
-              selectedValue={highSchool}
+              selectedValue={schoolCode}
               style={styles.picker}
-              onValueChange={(itemValue, itemIndex) => setHighSchool(itemValue)}
+              onValueChange={(itemValue, itemIndex) => setSchoolCode(itemValue)}
               placeholder="Select High School"
             >
               {schools.map((school, index) => (
@@ -362,9 +489,9 @@ const AddStudentPage = () => {
           />
           <TextInput
             mode="outlined"
-            label="Favorite Subject"
-            value={favoriteSubject}
-            onChangeText={setFavoriteSubject}
+            label="Favourite Subject"
+            value={favouriteSubject}
+            onChangeText={setFavouriteSubject}
             style={styles.longInput}
           />
         </View>
@@ -414,6 +541,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
@@ -424,6 +552,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
@@ -434,6 +563,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
@@ -444,6 +574,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
             </View>
@@ -457,6 +588,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
@@ -467,6 +599,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
@@ -477,6 +610,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
               <View style={styles.pickerContainer}>
@@ -487,6 +621,7 @@ const AddStudentPage = () => {
                 >
                   <Picker.Item label="Yes" value="Y" />
                   <Picker.Item label="No" value="N" />
+                  <Picker.Item label="N/A" value="unspecified" />
                 </Picker>
               </View>
             </View>
@@ -564,7 +699,7 @@ const AddStudentPage = () => {
       {/* ... Content for other selected tabs ... */}
 
       {/* Save Student button */}
-      <Pressable style={styles.saveButton}>
+      <Pressable style={styles.saveButton} onPress={handleSaveStudent}>
         <Text style={styles.saveButtonText}>Save Student</Text>
       </Pressable>
     </LinearGradient>

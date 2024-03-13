@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiggsPeak_API;
 using System.Collections.Generic;
@@ -7,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
 	public class StudentSearchController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
@@ -38,12 +40,12 @@ namespace PiggsPeak_API.Controllers
 
 			if (!string.IsNullOrWhiteSpace(firstName))
 			{
-				query = query.Where(s => EF.Functions.Like(s.FirstName, $"%{firstName}%"));
+				query = query.Where(s => EF.Functions.Like(s.FirstName, $"{firstName}%"));
 			}
 
 			if (!string.IsNullOrWhiteSpace(lastName))
 			{
-				query = query.Where(s => EF.Functions.Like(s.LastName, $"%{lastName}%"));
+				query = query.Where(s => EF.Functions.Like(s.LastName, $"{lastName}%"));
 			}
 
 			if (!string.IsNullOrWhiteSpace(schoolCode) && schoolCode != "all")

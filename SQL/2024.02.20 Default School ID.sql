@@ -1,0 +1,1 @@
+ALTER TABLE Party ADD DefaultSchool_id int not null default 1;

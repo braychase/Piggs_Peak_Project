@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiggsPeak_API.Classes;
 using System;
@@ -7,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/StudentGrade")]
-	[ApiController]
-	public class StudentGradeController : ControllerBase
+    [Authorize]
+    [ApiController]
+    [Route("api/StudentGrade")]
+    public class StudentGradeController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
 

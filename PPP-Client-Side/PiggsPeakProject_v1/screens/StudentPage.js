@@ -14,10 +14,11 @@ import { Picker } from "@react-native-picker/picker";
 import styles from "../styles/studentPageStyles";
 import CONSTANTS from "../constants/constants";
 import COLORS from "../constants/colors";
-
-const BASE_URL = CONSTANTS.baseURL;
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApi } from "../ApiContext";
 
 const StudentPage = ({ navigation }) => {
+  const { baseUrl } = useApi();
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSchool, setSelectedSchool] = useState("all");
@@ -58,12 +59,22 @@ const StudentPage = ({ navigation }) => {
   useEffect(() => {
     const fetchSchoolsData = async () => {
       try {
-        const schoolsData = await getSchools();
+        const schoolsData = await getSchools(baseUrl);
         const mapping = schoolsData.reduce((acc, school) => {
           acc[school.schoolCode] = school.description;
           return acc;
         }, {});
         setSchoolCodeDescriptionMapping(mapping);
+
+        // Fetching the defaultSchoolID when adding a new student
+        // Assuming studentID is null or undefined when adding a new student
+        const defaultSchoolID = await AsyncStorage.getItem("defaultSchoolID");
+        const defaultSchool = schoolsData.find(
+          (school) => school.schoolID.toString() === defaultSchoolID
+        );
+        if (defaultSchool) {
+          setSelectedSchool(defaultSchool.schoolCode);
+        }
       } catch (error) {
         console.error("Error loading school data:", error.message);
       }
@@ -108,7 +119,10 @@ const StudentPage = ({ navigation }) => {
         form: selectedForm !== "all" ? selectedForm : "",
       }).toString();
 
-      const response = await fetch(`${BASE_URL}/StudentSearch?${queryParams}`);
+      const response = await fetch(
+        `${baseUrl}api/StudentSearch?${queryParams}`,
+        { credentials: "include"}
+      );
       if (response.ok) {
         const data = await response.json();
         setStudents(data.students);

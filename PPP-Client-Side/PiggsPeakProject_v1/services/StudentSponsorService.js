@@ -1,17 +1,18 @@
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
+import { useApi } from "../ApiContext";
 
 // StudentSponsorService.js
 
 // Function to fetch sponsor information for all students
-export const getAllStudentSponsors = async () => {
+export const getAllStudentSponsors = async (baseUrl) => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentSponsor`, {
+    const response = await fetch(`${baseUrl}api/StudentSponsor`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     if (!response.ok) {
@@ -27,29 +28,30 @@ export const getAllStudentSponsors = async () => {
 };
 
 // Function to fetch sponsor information for a single student by their ID
-export const getStudentSponsorById = async (studentId) => {
+export const getStudentSponsorById = async (baseUrl, studentId) => {
   try {
-    const response = await fetch(`${BASE_URL}/StudentSponsor/${studentId}`, {
+    const response = await fetch(`${baseUrl}api/StudentSponsor/${studentId}`, {
       method: "GET",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
       },
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to retrieve sponsor data for student with ID ${studentId}`
-      );
+      if (response.status === 404) {
+        // No sponsors found for the student, return an empty array
+        return [];
+      } else {
+        // For other errors, throw an error to be caught by the catch block
+        throw new Error(
+          `Failed to retrieve sponsor data for student with ID ${studentId}`
+        );
+      }
     }
 
     const data = await response.json();
-    return data; // Returns sponsor information for the specified student
+    return data; // Return the data as is, or you might adjust this part to fit your needs
   } catch (error) {
-    console.error(
-      `Error fetching sponsor for student ID ${studentId}:`,
-      error.message
-    );
-    throw error;
+    throw error; // Rethrow the error for further handling
   }
 };

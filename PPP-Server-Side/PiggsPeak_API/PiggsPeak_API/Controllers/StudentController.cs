@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/Student")]
-	[ApiController]
-	public class StudentController : ControllerBase
+    [Authorize]
+    [ApiController]
+    [Route("api/Student")]
+    public class StudentController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
 
@@ -62,17 +64,40 @@ namespace PiggsPeak_API.Controllers
 			return student;
 		}
 
-		// POST api/Student
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] Student student)
 		{
+			// Assuming the client sends only the schoolCode
+			if (!string.IsNullOrWhiteSpace(student.School?.SchoolCode))
+			{
+				// Find the school in the database by the provided schoolCode
+				var school = await _dbContext.Schools.FirstOrDefaultAsync(s => s.SchoolCode == student.School.SchoolCode);
+				if (school != null)
+				{
+					// Set the schoolID and description based on the found school
+					student.SchoolID = school.SchoolID; // Ensure the student is linked to the correct school ID
+														// Optionally, if you want to keep the school entity updated in student
+					student.School = school;
+				}
+				else
+				{
+					// Handle case where the schoolCode does not match any school in the database
+					return BadRequest("Invalid school code.");
+				}
+			}
+			else
+			{
+				return BadRequest("School code is required.");
+			}
+
+			// Proceed to add the student now that the school information has been filled in
 			_dbContext.Students.Add(student);
 			await _dbContext.SaveChangesAsync();
 
 			return CreatedAtAction(nameof(Get), new { id = student.StudentID }, student);
 		}
 
-		// PUT api/Student/5
+
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] Student updatedStudent)
 		{
@@ -93,11 +118,34 @@ namespace PiggsPeak_API.Controllers
 			existingStudent.OVC = updatedStudent.OVC;
 			existingStudent.Deleted = updatedStudent.Deleted;
 			existingStudent.Active = updatedStudent.Active;
+			existingStudent.Form = updatedStudent.Form;
+			existingStudent.SchoolID = updatedStudent.SchoolID;
+			existingStudent.SponsorStart = updatedStudent.SponsorStart;
+			existingStudent.FatherLiving = updatedStudent.FatherLiving;
+			existingStudent.FatherAtHome = updatedStudent.FatherAtHome;
+			existingStudent.FatherWorking = updatedStudent.FatherWorking;
+			existingStudent.FatherUnknown = updatedStudent.FatherUnknown;
+			existingStudent.MotherLiving = updatedStudent.MotherLiving;
+			existingStudent.MotherAtHome = updatedStudent.MotherAtHome;
+			existingStudent.MotherWorking = updatedStudent.MotherWorking;
+			existingStudent.MotherUnknown = updatedStudent.MotherUnknown;
+			existingStudent.FavouriteSubject = updatedStudent.FavouriteSubject;
+			existingStudent.Narritave = updatedStudent.Narritave;
+			existingStudent.Aspirations = updatedStudent.Aspirations;
+			existingStudent.Notes = updatedStudent.Notes;
+			existingStudent.Version = updatedStudent.Version;
+			existingStudent.CreatedBy = updatedStudent.CreatedBy;
+			existingStudent.CreatedDate = updatedStudent.CreatedDate;
+			existingStudent.CreatedTimeZone = updatedStudent.CreatedTimeZone;
+			existingStudent.ModifiedBy = updatedStudent.ModifiedBy;
+			existingStudent.ModifiedDate = DateTime.UtcNow;
+			//existingStudent.ModifiedTimeZone = TimeZoneInfo.Local.Id;
 
 			await _dbContext.SaveChangesAsync();
 
 			return NoContent();
 		}
+
 
 		// DELETE api/Student/5
 		[HttpDelete("{id}")]

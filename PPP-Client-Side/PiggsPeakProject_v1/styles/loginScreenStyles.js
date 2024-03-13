@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "500",
     color: COLORS.white,
-    borderRadius: 50,
     borderWidth: 2,
     borderColor: COLORS.white,
     fontSize: 15,

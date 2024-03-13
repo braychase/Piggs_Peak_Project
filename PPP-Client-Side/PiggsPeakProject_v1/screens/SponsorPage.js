@@ -8,8 +8,10 @@ import COLORS from "../constants/colors";
 import styles from "../styles/sponsorPageStyles";
 import { getStudentById } from "../services/StudentService";
 import { getStudentSponsorById } from "../services/StudentSponsorService";
+import { useApi } from "../ApiContext";
 
 const SponsorPage = ({ route, navigation }) => {
+  const { baseUrl } = useApi();
   const { studentID } = route.params; // Destructure studentId from route.params
   const [sponsors, setSponsors] = useState([]);
   const [surname, setSurname] = useState("");
@@ -20,7 +22,7 @@ const SponsorPage = ({ route, navigation }) => {
       // Fetch student data
       if (studentID) {
         try {
-          const studentData = await getStudentById(studentID);
+          const studentData = await getStudentById(baseUrl, studentID);
 
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
@@ -32,19 +34,21 @@ const SponsorPage = ({ route, navigation }) => {
 
       // Fetch sponsors
       try {
-        const sponsorsData = await getStudentSponsorById(studentID);
-
+        const sponsorsData = await getStudentSponsorById(baseUrl, studentID);
         // Ensure data is in array form and sort
         const sortedSponsors = (
           Array.isArray(sponsorsData) ? sponsorsData : [sponsorsData]
         ).sort((a, b) => new Date(b.effectiveDate) - new Date(a.effectiveDate));
-
         setSponsors(sortedSponsors);
       } catch (error) {
-        console.error("Failed to fetch sponsors:", error);
+        if (error.response && error.response.status === 404) {
+          // No sponsors found for the student
+          setSponsors([]); // Set sponsors to an empty array to indicate no sponsors
+        } else {
+          console.error("Failed to fetch sponsors:", error);
+        }
       }
     };
-
     fetchData();
   }, [studentID]);
 

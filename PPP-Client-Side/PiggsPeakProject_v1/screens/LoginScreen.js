@@ -11,36 +11,61 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faCircleUser, faUnlock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircleUser,
+  faUnlock,
+  faLink,
+} from "@fortawesome/free-solid-svg-icons";
 import styles from "../styles/loginScreenStyles";
 import CONSTANTS from "../constants/constants";
-const BASE_URL = CONSTANTS.baseURL;
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useApi } from "../ApiContext";
 
 const LoginScreen = ({ navigation }) => {
+  const { setBaseUrl } = useApi();
+  const { baseUrl } = useApi();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [baseUrlInput, setBaseUrlInput] = useState("https://localhost:");
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
-      if (!username.trim() || !password.trim()) {
+      setBaseUrl(baseUrlInput);
+      if (
+        !username.trim() ||
+        !password.trim() ||
+        baseUrlInput === "https://localhost:"
+      ) {
         setError("Please enter valid credentials");
         return;
       }
 
-      const response = await fetch(BASE_URL + "/Login", {
+      // Update baseUrl in context and AsyncStorage for persistence
+      setBaseUrl(baseUrlInput);
+      await AsyncStorage.setItem("baseUrl", baseUrlInput);
+
+      const response = await fetch(baseUrl + "api/Login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          LoginID: username,
-          PasswordHash: password, // Assuming you're sending the plaintext password and hashing server-side
+          loginID: username,
+          password: password,
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
-        // Login successful
+        // Login successful, store the DefaultSchoolId
+        if (data.defaultSchoolID) {
+          await AsyncStorage.setItem(
+            "defaultSchoolID",
+            data.defaultSchoolID.toString()
+          );
+        }
         navigation.replace("Main");
       } else if (response.status === 401) {
         // Unauthorized
@@ -76,6 +101,7 @@ const LoginScreen = ({ navigation }) => {
         />
         <TextInput
           placeholder="Username"
+          style={{ flex: 1, paddingVertical: 0 }}
           value={username}
           onChangeText={setUsername}
         />
@@ -101,6 +127,18 @@ const LoginScreen = ({ navigation }) => {
             Forgot?
           </Text>
         </Pressable>
+      </View>
+      <View style={styles.action}>
+        <FontAwesomeIcon
+          icon={faLink}
+          style={{ marginTop: 5, marginRight: 7 }}
+        />
+        <TextInput
+          placeholder="API EndPoint"
+          style={{ flex: 1, paddingVertical: 0 }}
+          value={baseUrlInput}
+          onChangeText={setBaseUrlInput}
+        />
       </View>
       <Pressable onPress={handleLogin}>
         <Text style={styles.loginButton}>Login</Text>
