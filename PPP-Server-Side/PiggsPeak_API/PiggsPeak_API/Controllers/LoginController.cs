@@ -23,8 +23,12 @@ namespace PiggsPeak_API.Controllers
 			_passwordHasher = passwordHasher;
 		}
 
-		[HttpPost()]
-		public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] LoginRequestDTO credentials)
+        [HttpGet]				// this endpoint can be used browser testing
+        public async Task<ActionResult<LoginResponseDTO>> LoginGet(string username, string password = "")
+        { return await LoginPost(new LoginRequestDTO() { LoginID = username, Password = password }); }
+
+        [HttpPost]
+		public async Task<ActionResult<LoginResponseDTO>> LoginPost([FromBody] LoginRequestDTO credentials)
 		{
 			if (string.IsNullOrEmpty(credentials.LoginID))
 			{
@@ -41,7 +45,7 @@ namespace PiggsPeak_API.Controllers
 				return Unauthorized(new { message = "User not found" });
 			} else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
 			{
-				return Unauthorized(new { message = "Unable to login with this User." });
+				return Unauthorized(new { message = "Unable to login with this User" });
 			}
 
 			// Verify the hashed password
@@ -61,9 +65,9 @@ namespace PiggsPeak_API.Controllers
 
 			};
 
-			// Commented out the authentication step
-			// var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-			// await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+			// this step sets the Cookie used for Auth
+			var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
 
 			// Return a DTO with necessary user information but bypass authentication
 			return Ok(new LoginResponseDTO { LoginID = user.LoginID, PartyName = user.PartyName, DefaultSchoolID = user.DefaultSchool });

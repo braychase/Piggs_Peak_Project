@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/StudentSponsor")]
-	[ApiController]
-	public class StudentSponsorController : ControllerBase
+    [Authorize]
+    [ApiController]
+    [Route("api/StudentSponsor")]
+    public class StudentSponsorController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
 

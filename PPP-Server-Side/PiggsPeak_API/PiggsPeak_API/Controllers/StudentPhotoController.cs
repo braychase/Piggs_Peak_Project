@@ -11,8 +11,9 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
 	public class StudentPhotoController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;

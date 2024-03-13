@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/PartyPermission")]
+    [Authorize]
 	[ApiController]
-	public class PartyPermissionController : ControllerBase
+    [Route("api/PartyPermission")]
+    public class PartyPermissionController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
 

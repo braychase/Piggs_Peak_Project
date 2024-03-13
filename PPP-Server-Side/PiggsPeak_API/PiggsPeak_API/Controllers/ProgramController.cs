@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
-	public class ProgramController : ControllerBase
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class ProgramController : ControllerBase
 	{
 		private readonly AppDbContext _context;
 

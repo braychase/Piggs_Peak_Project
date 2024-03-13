@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Route("api/[controller]")]
+    [Authorize]
 	[ApiController]
-	public class GradeSearchController : ControllerBase
+    [Route("api/[controller]")]
+    public class GradeSearchController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
 

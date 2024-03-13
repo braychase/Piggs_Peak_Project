@@ -120,7 +120,8 @@ const StudentPage = ({ navigation }) => {
       }).toString();
 
       const response = await fetch(
-        `${baseUrl}api/StudentSearch?${queryParams}`
+        `${baseUrl}api/StudentSearch?${queryParams}`,
+        { credentials: "include"}
       );
       if (response.ok) {
         const data = await response.json();
