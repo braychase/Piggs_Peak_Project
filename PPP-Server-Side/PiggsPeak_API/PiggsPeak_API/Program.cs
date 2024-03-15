@@ -14,7 +14,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -23,6 +22,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 	.AddCookie(options =>
 	{
 		options.LoginPath = "/api/Login";
+		options.Cookie.SameSite = SameSiteMode.None;
 	});
 builder.Services.AddScoped<IPasswordHasher<Party>, PasswordHasher<Party>>();
 
