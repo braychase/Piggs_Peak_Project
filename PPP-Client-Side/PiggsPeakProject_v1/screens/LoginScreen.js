@@ -23,7 +23,7 @@ import { useApi } from "../ApiContext";
 
 const LoginScreen = ({ navigation }) => {
   const { setBaseUrl } = useApi();
-  const { baseUrl } = useApi();
+  var { baseUrl } = useApi();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [baseUrlInput, setBaseUrlInput] = useState("https://localhost:");
@@ -44,9 +44,10 @@ const LoginScreen = ({ navigation }) => {
       // Update baseUrl in context and AsyncStorage for persistence
       setBaseUrl(baseUrlInput);
       await AsyncStorage.setItem("baseUrl", baseUrlInput);
-
+      //baseUrl = "https://localHost:7208/";
       const response = await fetch(baseUrl + "api/Login", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

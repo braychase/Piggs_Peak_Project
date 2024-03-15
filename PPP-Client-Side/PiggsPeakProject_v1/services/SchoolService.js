@@ -2,7 +2,7 @@ import CONSTANTS from "../constants/constants";
 
 export const getSchools = async (baseUrl) => {
   try {
-    baseUrl = "https://localHost:7208/";
+    //baseUrl = "https://localHost:7208/";
 
     const response = await fetch(`${baseUrl}api/School`, {
       method: "GET",
