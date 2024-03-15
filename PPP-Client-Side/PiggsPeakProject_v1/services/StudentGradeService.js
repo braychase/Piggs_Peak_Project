@@ -5,6 +5,7 @@ export const getStudentGrade = async (baseUrl) => {
   try {
     const response = await fetch(`${baseUrl}api/GradeSearch`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -28,6 +29,7 @@ export const getStudentGradeById = async (baseUrl, studentId) => {
   try {
     const response = await fetch(`${baseUrl}api/GradeSearch/${studentId}`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
