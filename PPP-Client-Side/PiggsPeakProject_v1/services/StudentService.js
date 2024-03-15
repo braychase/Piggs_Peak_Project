@@ -5,6 +5,7 @@ export const getStudents = async (baseUrl) => {
   try {
     const response = await fetch(`${baseUrl}api/Student`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -29,6 +30,7 @@ export const getStudentById = async (baseUrl, studentId) => {
     const response = await fetch(`${baseUrl}api/Student/${studentId}`, {
       // Adjust the URL to include the student ID
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -57,6 +59,7 @@ export const updateStudentById = async (baseUrl, studentId, studentData) => {
   try {
     const response = await fetch(`${baseUrl}api/Student/${studentId}`, {
       method: "PUT",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -84,6 +87,7 @@ export const addStudent = async (baseUrl, studentData) => {
   try {
     const response = await fetch(`${baseUrl}api/Student`, {
       method: "POST",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

@@ -5,6 +5,7 @@ export const getStudentPhoto = async (baseUrl) => {
   try {
     const response = await fetch(`${baseUrl}api/StudentPhoto`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -29,6 +30,7 @@ export const getStudentPhotoById = async (baseUrl, photoId) => {
   try {
     const response = await fetch(`${baseUrl}api/StudentPhoto/${photoId}`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

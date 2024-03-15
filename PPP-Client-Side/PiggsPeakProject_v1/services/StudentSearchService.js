@@ -5,6 +5,7 @@ export const getStudents = async (baseUrl) => {
   try {
     const response = await fetch(`${baseUrl}api/StudentSearch`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -34,6 +35,7 @@ export const getStudentBySearch = async (baseUrl, searchCriteria) => {
 
     const response = await fetch(url, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

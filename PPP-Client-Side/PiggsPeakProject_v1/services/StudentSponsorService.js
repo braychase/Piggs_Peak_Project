@@ -8,6 +8,7 @@ export const getAllStudentSponsors = async (baseUrl) => {
   try {
     const response = await fetch(`${baseUrl}api/StudentSponsor`, {
       method: "GET",
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -32,6 +33,7 @@ export const getStudentSponsorById = async (baseUrl, studentId) => {
   try {
     const response = await fetch(`${baseUrl}api/StudentSponsor/${studentId}`, {
       method: "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
