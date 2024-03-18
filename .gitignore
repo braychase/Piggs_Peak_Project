@@ -4,7 +4,6 @@ obj
 Migrations
 *.lock
 package-lock.json
-
 SQL/StudentPhotos
 *.png
 *.dll
@@ -15,9 +14,6 @@ SQL/StudentPhotos
 *.p7s
 *.targets
 *.pdb
-*.csproj
 *.config
-*.cs
-*.sln
 *.ps1
 *.pri
