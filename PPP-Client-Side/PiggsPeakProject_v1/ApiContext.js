@@ -7,21 +7,24 @@ const ApiContext = createContext();
 export const useApi = () => useContext(ApiContext);
 
 export const ApiProvider = ({ children }) => {
+  
   const [baseUrl, setBaseUrl] = useState("");
 
-  useEffect(() => {
-    const loadBaseUrl = async () => {
-      const storedBaseUrl = await AsyncStorage.getItem("baseUrl");
-      if (storedBaseUrl) {
-        setBaseUrl(storedBaseUrl);
-      }
-    };
+  const loadBaseUrl = async () => {
+    let value = await AsyncStorage.getItem("baseUrl");
+    if (!value)
+      value = "https://localhost:7208/";
+    console.error("API GET baseUrl =", value);
+    setBaseUrl(value);
+    return value;
+  };
 
+  useEffect(() => {
     loadBaseUrl();
   }, []);
 
   return (
-    <ApiContext.Provider value={{ baseUrl, setBaseUrl }}>
+    <ApiContext.Provider value={{ baseUrl, setBaseUrl, loadBaseUrl }}>
       {children}
     </ApiContext.Provider>
   );
