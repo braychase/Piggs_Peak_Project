@@ -8,6 +8,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+
 namespace PiggsPeak_API.Controllers
 {
 	[ApiController]
@@ -16,16 +18,21 @@ namespace PiggsPeak_API.Controllers
 	{
 		private readonly AppDbContext _dbContext;
 		private readonly IPasswordHasher<Party> _passwordHasher;
+		private readonly ILogger<LoginController> _logger;
 
-		public LoginController(AppDbContext dbContext, IPasswordHasher<Party> passwordHasher)
+		public LoginController(AppDbContext dbContext, IPasswordHasher<Party> passwordHasher, ILogger<LoginController> logger)
 		{
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 			_passwordHasher = passwordHasher;
+			_logger = logger;
 		}
 
         [HttpGet]				// this endpoint can be used browser testing
         public async Task<ActionResult<LoginResponseDTO>> LoginGet(string username, string password = "")
-        { return await LoginPost(new LoginRequestDTO() { LoginID = username, Password = password }); }
+        {
+			_logger.LogInformation("GET login attempt for user {Username}", username);
+			return await LoginPost(new LoginRequestDTO() { LoginID = username, Password = password });
+		}
 
         public static bool IsBase64(string s)
         {
@@ -49,17 +56,26 @@ namespace PiggsPeak_API.Controllers
 		{
 			if (string.IsNullOrEmpty(credentials.LoginID))
 			{
+				_logger.LogWarning("Login attempt with empty username");
 				return BadRequest(new { message = "Username is required" });
 			}
 
-            Party? user = await _dbContext.Parties
+			_logger.LogInformation("POST login attempt for user {Username}", credentials.LoginID);
+
+			Party? user = await _dbContext.Parties
 						.AsNoTracking()
 						.FirstOrDefaultAsync(u => u.LoginID == credentials.LoginID);
 
-			if (user == null)				
+			if (user == null)
+			{
+				_logger.LogWarning("User not found for username {Username}", credentials.LoginID);
 				return Unauthorized(new { message = "User not found" });
-            else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
+			}
+			else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
+			{
+				_logger.LogWarning("Attempt to login with disabled or deleted user {Username}", credentials.LoginID);
 				return Unauthorized(new { message = "Unable to login with this User" });
+			}
 
 			// Verify the password
 			bool bPasswordValid;
@@ -69,7 +85,12 @@ namespace PiggsPeak_API.Controllers
                 // used when database has not yet run the hasher program ...
                 bPasswordValid = user.PasswordHash == credentials.Password;
             if (!bPasswordValid)
+			{
+				_logger.LogWarning("Invalid credentials for user {Username}", credentials.LoginID);
 				return Unauthorized(new { message = "Invalid credentials" });
+			}
+
+			_logger.LogInformation("User {Username} successfully logged in", credentials.LoginID);
 
 			// Upon finding the user, generate claims for the user
 			var claims = new List<Claim>
@@ -92,6 +113,7 @@ namespace PiggsPeak_API.Controllers
 		[Route("/api/Logout")]
 		public async Task<IActionResult> Logout()
 		{
+			_logger.LogInformation("User logged out");
 			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 			return Redirect("/Login.html"); // Adjust redirect as needed based on your application's routing
 		}

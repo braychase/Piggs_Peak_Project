@@ -2,22 +2,26 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PiggsPeak_API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PiggsPeak_API.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]")]
+	[Authorize]
+	[ApiController]
+	[Route("api/[controller]")]
 	public class StudentSearchController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
+		private readonly ILogger<StudentSearchController> _logger; // Add logger
 
-		public StudentSearchController(AppDbContext dbContext)
+		public StudentSearchController(AppDbContext dbContext, ILogger<StudentSearchController> logger)
 		{
 			_dbContext = dbContext;
+			_logger = logger; // Initialize the logger
 		}
 
 		// GET: api/StudentSearch?pageNumber=1&pageSize=10&firstName=&lastName=&schoolCode=&gender=&form=
@@ -31,13 +35,17 @@ namespace PiggsPeak_API.Controllers
 			string gender = "",
 			string form = "")
 		{
+			_logger.LogInformation($"Initiating student search with filters: First Name: {firstName}, Last Name: {lastName}, School Code: {schoolCode}, Gender: {gender}, Form: {form}, Page Number: {pageNumber}, Page Size: {pageSize}");
+
 			if (pageNumber < 1 || pageSize < 1)
 			{
+				_logger.LogWarning("PageNumber and PageSize must be greater than 0.");
 				return BadRequest("PageNumber and PageSize must be greater than 0.");
 			}
 
 			var query = _dbContext.StudentSearch.AsQueryable();
 
+			// Applying filters
 			if (!string.IsNullOrWhiteSpace(firstName))
 			{
 				query = query.Where(s => EF.Functions.Like(s.FirstName, $"{firstName}%"));
@@ -73,6 +81,8 @@ namespace PiggsPeak_API.Controllers
 								.Take(pageSize)
 								.ToListAsync();
 
+			_logger.LogInformation($"Search completed. Total Count: {totalCount}, Total Pages: {totalPages}, Current Page: {pageNumber}, Page Size: {pageSize}");
+
 			var response = new
 			{
 				TotalCount = totalCount,
@@ -89,10 +99,12 @@ namespace PiggsPeak_API.Controllers
 		[HttpGet("{id}")]
 		public async Task<ActionResult<StudentSearch>> Get(int id)
 		{
+			_logger.LogInformation($"Fetching student search result with ID: {id}");
 			var studentSearch = await _dbContext.StudentSearch.FindAsync(id);
 
 			if (studentSearch == null)
 			{
+				_logger.LogWarning($"Student search result with ID: {id} not found");
 				return NotFound();
 			}
 

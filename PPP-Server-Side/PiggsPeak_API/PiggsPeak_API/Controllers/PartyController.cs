@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PiggsPeak_API.Controllers
 {
@@ -15,17 +16,21 @@ namespace PiggsPeak_API.Controllers
     public class PartyController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
+		private readonly ILogger<PartyController> _logger;
 
-		public PartyController(AppDbContext dbContext)
+		public PartyController(AppDbContext dbContext, ILogger<PartyController> logger)
 		{
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			_logger = logger;
 		}
 
 		[HttpGet]
 		public async Task<IEnumerable<Party>> Get()
 		{
+			_logger.LogInformation("Fetching all parties");
 			// Retrieve parties from the database
 			var parties = await _dbContext.Parties.ToListAsync();
+			_logger.LogInformation($"Found {parties.Count} parties");
 
 			// Handle null values for specific properties
 			foreach (var party in parties)
@@ -71,10 +76,12 @@ namespace PiggsPeak_API.Controllers
 		[HttpGet("{id}")]
 		public async Task<ActionResult<Party>> Get(int id)
 		{
+			_logger.LogInformation($"Fetching party with ID: {id}");
 			var party = await _dbContext.Parties.FindAsync(id);
 
 			if (party == null)
 			{
+				_logger.LogWarning($"Party with ID: {id} not found");
 				return NotFound();
 			}
 
@@ -84,8 +91,10 @@ namespace PiggsPeak_API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] Party party)
 		{
+			_logger.LogInformation($"Creating a new party with name: {party.PartyName}");
 			_dbContext.Parties.Add(party);
 			await _dbContext.SaveChangesAsync();
+			_logger.LogInformation($"Party with ID: {party.PartyID} created successfully");
 
 			return CreatedAtAction(nameof(Get), new { id = party.PartyID }, party);
 		}
@@ -93,10 +102,12 @@ namespace PiggsPeak_API.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] Party updatedParty)
 		{
+			_logger.LogInformation($"Updating party with ID: {id}");
 			var existingParty = await _dbContext.Parties.FindAsync(id);
 
 			if (existingParty == null)
 			{
+				_logger.LogWarning($"Party with ID: {id} not found for update");
 				return NotFound();
 			}
 
@@ -119,6 +130,7 @@ namespace PiggsPeak_API.Controllers
 			existingParty.ModifiedTimeZone = updatedParty.ModifiedTimeZone;
 
 			await _dbContext.SaveChangesAsync();
+			_logger.LogInformation($"Party with ID: {id} updated successfully");
 
 			return NoContent();
 		}
@@ -126,15 +138,18 @@ namespace PiggsPeak_API.Controllers
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
+			_logger.LogInformation($"Deleting party with ID: {id}");
 			var party = await _dbContext.Parties.FindAsync(id);
 
 			if (party == null)
 			{
+				_logger.LogWarning($"Party with ID: {id} not found for deletion");
 				return NotFound();
 			}
 
 			_dbContext.Parties.Remove(party);
 			await _dbContext.SaveChangesAsync();
+			_logger.LogInformation($"Party with ID: {id} deleted successfully");
 
 			return NoContent();
 		}
