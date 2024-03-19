@@ -83,6 +83,24 @@ const StudentPage = ({ navigation }) => {
     fetchSchoolsData();
   }, []);
 
+  const handleKeyboardEvent = ({ nativeEvent }) => {
+    if (nativeEvent.key === "Escape" && isFiltersVisible) {
+      setIsFiltersVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isFiltersVisible) {
+      document.body.addEventListener("keydown", handleKeyboardEvent);
+    } else {
+      document.body.removeEventListener("keydown", handleKeyboardEvent);
+    }
+
+    return () => {
+      document.body.removeEventListener("keydown", handleKeyboardEvent);
+    };
+  }, [isFiltersVisible]);
+
   const goToNextPage = () => {
     if (currentPage < filteredTotalPages) {
       setCurrentPage(currentPage + 1);
@@ -121,7 +139,7 @@ const StudentPage = ({ navigation }) => {
 
       const response = await fetch(
         `${baseUrl}api/StudentSearch?${queryParams}`,
-        { credentials: "include"}
+        { credentials: "include" }
       );
       if (response.ok) {
         const data = await response.json();
