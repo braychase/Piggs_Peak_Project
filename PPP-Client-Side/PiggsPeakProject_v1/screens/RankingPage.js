@@ -37,7 +37,6 @@ const RankingScreen = () => {
   const [selectedTab, setSelectedTab] = useState("Step 1");
   const [schools, setSchools] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState("");
-  const [maxSponsoredStudents, setMaxSponsoredStudents] = useState("");
 
   useEffect(() => {
     const fetchSchools = async () => {
@@ -57,33 +56,28 @@ const RankingScreen = () => {
     switch (selectedTab) {
       case "Step 1":
         return (
-          <View style={styles.formContainer}>
-            <View style={styles.row}>
-              <Text style={styles.pickerLabel}>Select School:</Text>
-              <Picker
-                selectedValue={selectedSchool}
-                onValueChange={(itemValue, itemIndex) =>
-                  setSelectedSchool(itemValue)
-                }
-                style={styles.picker}
-              >
-                {schools.map((school) => (
-                  <Picker.Item
-                    key={school.schoolID}
-                    label={school.description}
-                    value={school.schoolCode}
-                  />
-                ))}
-              </Picker>
+          <View>
+            <View style={styles.formContainer}>
+              <View style={styles.row}>
+                <Text style={styles.pickerLabel}>Select School:</Text>
+                <Picker
+                  selectedValue={selectedSchool}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setSelectedSchool(itemValue)
+                  }
+                  style={styles.picker}
+                >
+                  {schools.map((school) => (
+                    <Picker.Item
+                      key={school.schoolID}
+                      label={school.description}
+                      value={school.schoolCode}
+                    />
+                  ))}
+                </Picker>
+              </View>
             </View>
-            <View style={styles.row}>
-              <Text>Max Number of Sponsored Students:</Text>
-              <TextInput
-                value={maxSponsoredStudents}
-                onChangeText={setMaxSponsoredStudents}
-                keyboardType="numeric" // Ensure numeric input for number of students
-              />
-            </View>
+            <View style={styles.formContainer}></View>
           </View>
         );
       case "Step 2":
@@ -93,10 +87,6 @@ const RankingScreen = () => {
       case "Step 3":
         return (
           <Text style={styles.contentPlaceholder}>Placeholder for Step 3</Text>
-        );
-      case "Results":
-        return (
-          <Text style={styles.contentPlaceholder}>Placeholder for Step 4</Text>
         );
       default:
         return <Text style={styles.contentPlaceholder}>Select a step</Text>;
@@ -110,7 +100,7 @@ const RankingScreen = () => {
     >
       <ScrollView>
         <View style={styles.tabsContainer}>
-          {["Step 1", "Step 2", "Step 3", "Results"].map((step) => (
+          {["Step 1", "Step 2", "Step 3"].map((step) => (
             <Tab
               key={step}
               title={step}
