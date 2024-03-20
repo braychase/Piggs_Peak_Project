@@ -21,6 +21,9 @@ namespace PiggsPeak_API
 		[Column("Last_nm")]
 		public string? LastName { get; set; }
 
+		[Column("Middle_nm")]
+		public string? MiddleName { get; set; }
+
 		[Column("StudentCode_tx")]
 		public string StudentCode { get; set; }
 
@@ -112,6 +115,21 @@ namespace PiggsPeak_API
 		[Column("Modified_tz")]
 		public string? ModifiedTimeZone { get; set; }
 
+		[Column("YearFinished_nb")]
+		public int? YearFinished { get; set; }
+
+		[Column("Recommend_yn")]
+		public string? Recommend { get; set; }
+
+		[Column("Priority_nb")]
+		public int? Priority { get; set; }
+
+		[Column("DateEnrolled_dt")]
+		public DateTime? DateEnrolled { get; set; }
+
+		[Column("PrimarySchool_nm")]
+		public string? PrimarySchool { get; set; }
+
 
 		//public ICollection<StudentGrade> Grades;
 
@@ -125,12 +143,13 @@ namespace PiggsPeak_API
 			string? fatherWorking, string? fatherUnknown, string? motherLiving, string? motherAtHome, string? motherWorking,
 			string? motherUnknown, string? favouriteSubject, string? narritave, string? aspirations, string? notes, int? version,
 			string? createdBy, DateTime? createdDate, string? createdTimeZone, string? modifiedBy, DateTime? modifiedDate,
-			string? modifiedTimeZone)
+			string? modifiedTimeZone, string? middleName, string? recommend, int? priority, DateTime? dateEnrolled, string? primarySchool, int? yearFinished)
 		{
 			StudentID = studentID;
 			StudentName = studentName;
 			FirstName = firstName;
 			LastName = lastName;
+			MiddleName = middleName;
 			StudentCode = studentCode;
 			BirthDate = birthDate;
 			Gender = gender;
@@ -161,6 +180,11 @@ namespace PiggsPeak_API
 			ModifiedBy = modifiedBy;
 			ModifiedDate = modifiedDate;
 			ModifiedTimeZone = modifiedTimeZone;
+			Recommend = recommend;
+			Priority= priority;
+			DateEnrolled= dateEnrolled;
+			PrimarySchool= primarySchool;
+			YearFinished = yearFinished;
 		}
 
 	}

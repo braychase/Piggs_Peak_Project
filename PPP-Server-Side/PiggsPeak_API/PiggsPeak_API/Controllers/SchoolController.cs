@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace PiggsPeak_API.Controllers
 {
-	[Authorize]
+	//[Authorize]
 	[ApiController]
 	[Route("api/School")]
 	public class SchoolController : ControllerBase

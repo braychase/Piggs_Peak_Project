@@ -190,6 +190,16 @@ const AddStudentPage = () => {
               ? "unspecified"
               : studentData.fatherUnknown;
           setFatherUnknown(fatherUnknownValue);
+          setComments(studentData.notes || "");
+          setPriority(studentData.priority || 10);
+          if (studentData.dateEnrolled) {
+            const parsedDateEnrolled = new Date(studentData.dateEnrolled);
+            setDateEnrolled(parsedDateEnrolled);
+          } else {
+            // Set to current date or any default, if necessary
+            setDateEnrolled(new Date());
+          }
+          setRecommend(studentData.recommend || "Y");
 
           // Handle birthDate
           if (studentData.birthDate) {
@@ -268,6 +278,7 @@ const AddStudentPage = () => {
       studentCode: studentCode,
       lastName: surname,
       firstName: firstName.trim(), // Ensure no trailing spaces and correct spelling
+      middleName: middleName,
       gender: gender,
       ovc: ovc === "Y" ? "Y" : "N",
       birthDate: dob.toISOString().split("T")[0] + "T00:00:00", // Format to match the successful payload
@@ -292,6 +303,11 @@ const AddStudentPage = () => {
       active: active,
       version: version,
       deleted: deleted,
+      recommend: recommend,
+      priority: priority,
+      dateEnrolled: dateEnrolled,
+      primarySchool: primarySchool,
+      yearFinished: yearFinished,
     };
 
     try {
@@ -664,8 +680,8 @@ const AddStudentPage = () => {
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => setRecommend(itemValue)}
             >
-              <Picker.Item label="Yes" value="Yes" />
-              <Picker.Item label="No" value="No" />
+              <Picker.Item label="Yes" value="Y" />
+              <Picker.Item label="No" value="N" />
             </Picker>
           </View>
           <View style={styles.row}>

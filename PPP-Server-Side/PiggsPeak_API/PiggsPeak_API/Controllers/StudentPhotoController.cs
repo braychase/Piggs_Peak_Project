@@ -13,7 +13,7 @@ using Serilog.Core;
 
 namespace PiggsPeak_API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
 	public class StudentPhotoController : ControllerBase

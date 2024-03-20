@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace PiggsPeak_API.Controllers
 {
-    [Authorize]
+    //[Authorize]
 	[ApiController]
     [Route("api/Party")]
     public class PartyController : ControllerBase

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace PiggsPeak_API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/Student")]
     public class StudentController : ControllerBase
@@ -150,6 +150,12 @@ namespace PiggsPeak_API.Controllers
 			existingStudent.CreatedTimeZone = updatedStudent.CreatedTimeZone;
 			existingStudent.ModifiedBy = updatedStudent.ModifiedBy;
 			existingStudent.ModifiedDate = DateTime.UtcNow;
+			existingStudent.Priority = updatedStudent.Priority;
+			existingStudent.Recommend = updatedStudent.Recommend;
+			existingStudent.MiddleName = updatedStudent.MiddleName;
+			existingStudent.PrimarySchool = updatedStudent.PrimarySchool;
+			existingStudent.DateEnrolled = updatedStudent.DateEnrolled;
+			existingStudent.YearFinished = updatedStudent.YearFinished;
 			//existingStudent.ModifiedTimeZone = TimeZoneInfo.Local.Id;
 
 			await _dbContext.SaveChangesAsync();
