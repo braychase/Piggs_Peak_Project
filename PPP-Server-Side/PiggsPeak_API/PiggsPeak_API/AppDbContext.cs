@@ -20,6 +20,7 @@ namespace PiggsPeak_API
 		public DbSet<StudentPhoto> StudentPhotos { get; set; }
 		public DbSet<GradeSearch> GradeSearch { get; set; }
 		public DbSet<StudentSponsor> StudentSponsors { get; set; }
+		public DbSet<SchoolFee> SchoolFees { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

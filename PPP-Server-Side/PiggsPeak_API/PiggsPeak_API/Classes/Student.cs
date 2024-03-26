@@ -41,7 +41,7 @@ namespace PiggsPeak_API
 
 		[Column("deleted_yn")]
 		public string Deleted { get; set; }
-			
+
 		[Column("active_yn")]
 		public string Active { get; set; }
 
@@ -98,7 +98,7 @@ namespace PiggsPeak_API
 		public int? Version { get; set; }
 
 		[Column("Created_by")]
-		public string?  CreatedBy { get; set; }
+		public string? CreatedBy { get; set; }
 
 		[Column("Created_dt")]
 		public DateTime? CreatedDate { get; set; }
@@ -130,6 +130,16 @@ namespace PiggsPeak_API
 		[Column("PrimarySchool_nm")]
 		public string? PrimarySchool { get; set; }
 
+		[Column("Selected_yn")]
+		public string? Selected { get; set; }
+
+		[Column("StartYear_nb")]
+		public int? StartYear { get; set; }
+
+		[Column("New_yn")]
+		public string? NewStudent { get; set; }
+
+
 
 		//public ICollection<StudentGrade> Grades;
 
@@ -143,7 +153,8 @@ namespace PiggsPeak_API
 			string? fatherWorking, string? fatherUnknown, string? motherLiving, string? motherAtHome, string? motherWorking,
 			string? motherUnknown, string? favouriteSubject, string? narritave, string? aspirations, string? notes, int? version,
 			string? createdBy, DateTime? createdDate, string? createdTimeZone, string? modifiedBy, DateTime? modifiedDate,
-			string? modifiedTimeZone, string? middleName, string? recommend, int? priority, DateTime? dateEnrolled, string? primarySchool, int? yearFinished)
+			string? modifiedTimeZone, string? middleName, string? recommend, int? priority, DateTime? dateEnrolled, string? primarySchool,
+			int? yearFinished, string? selected, int? startYear, string? newStudent)
 		{
 			StudentID = studentID;
 			StudentName = studentName;
@@ -181,10 +192,13 @@ namespace PiggsPeak_API
 			ModifiedDate = modifiedDate;
 			ModifiedTimeZone = modifiedTimeZone;
 			Recommend = recommend;
-			Priority= priority;
-			DateEnrolled= dateEnrolled;
-			PrimarySchool= primarySchool;
+			Priority = priority;
+			DateEnrolled = dateEnrolled;
+			PrimarySchool = primarySchool;
 			YearFinished = yearFinished;
+			NewStudent = newStudent;
+			StartYear = startYear;
+			Selected = selected;
 		}
 
 	}

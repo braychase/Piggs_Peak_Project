@@ -56,3 +56,28 @@ export const getStudentBySearch = async (baseUrl, searchCriteria) => {
     throw error;
   }
 };
+
+export const getSchoolSummary = async (baseUrl, schoolId) => {
+  try {
+    const response = await fetch(
+      `${baseUrl}api/StudentSearch/SchoolSummary/${schoolId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch school summary");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching school summary:", error);
+    throw error;
+  }
+};

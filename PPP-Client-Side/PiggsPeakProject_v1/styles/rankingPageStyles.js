@@ -273,6 +273,21 @@ const styles = StyleSheet.create({
     height: 110,
     borderRadius: 10, // Adjust as needed
   },
+  paginationButton: {
+    backgroundColor: COLORS.lightGray,
+    padding: 10,
+    borderRadius: 5,
+    borderColor: COLORS.white,
+    borderWidth: 1,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+  },
+  dataTable: {
+    backgroundColor: COLORS.gray,
+  },
 });
 
 export default styles;

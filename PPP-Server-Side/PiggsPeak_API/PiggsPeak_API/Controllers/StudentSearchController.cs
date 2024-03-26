@@ -110,5 +110,65 @@ namespace PiggsPeak_API.Controllers
 
 			return Ok(studentSearch);
 		}
+
+		[HttpGet("SchoolSummary/{schoolId}")]
+		public async Task<ActionResult> GetSchoolSummary(int schoolId)
+		{
+			_logger.LogInformation($"Fetching summary for school ID: {schoolId}");
+
+			var newStudents = await _dbContext.Students
+				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent == "Y")
+				.GroupBy(s => s.Gender)
+				.Select(g => new { Gender = g.Key, Count = g.Count() })
+				.ToListAsync();
+
+			var selectedStudents = await _dbContext.Students
+				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent == "Y" && s.Selected == "Y")
+				.GroupBy(s => s.Gender)
+				.Select(g => new { Gender = g.Key, Count = g.Count() })
+				.ToListAsync();
+
+			var activeStudents = await _dbContext.Students
+				.Where(s => s.SchoolID == schoolId && s.StartYear != 2024 && s.Active == "Y")
+				.GroupBy(s => s.Gender)
+				.Select(g => new { Gender = g.Key, Count = g.Count() })
+				.ToListAsync();
+
+			// Calculate total counts for each category
+			var newTotal = newStudents.Sum(n => n.Count);
+			var selectedTotal = selectedStudents.Sum(s => s.Count);
+			var currentTotal = activeStudents.Sum(a => a.Count);
+
+			// Correctly calculate male and female totals
+			var totalMale = selectedStudents.Where(s => s.Gender == "M").Sum(s => s.Count) +
+							activeStudents.Where(a => a.Gender == "M").Sum(a => a.Count);
+
+			var totalFemale = selectedStudents.Where(s => s.Gender == "F").Sum(s => s.Count) +
+							  activeStudents.Where(a => a.Gender == "F").Sum(a => a.Count);
+
+			// Aggregate data from queries above to form the response
+			var summary = new
+			{
+				New = newStudents,
+				Selected = selectedStudents,
+				Current = activeStudents,
+				Total = new
+				{
+					Male = totalMale,
+					Female = totalFemale,
+					Total = selectedTotal + currentTotal
+				},
+				Totals = new // Include new total variables
+				{
+					NewTotal = newTotal,
+					SelectedTotal = selectedTotal,
+					CurrentTotal = currentTotal
+				}
+			};
+
+			return Ok(summary);
+		}
+
+
 	}
 }
