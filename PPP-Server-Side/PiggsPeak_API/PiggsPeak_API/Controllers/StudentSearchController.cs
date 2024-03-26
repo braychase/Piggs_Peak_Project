@@ -24,7 +24,8 @@ namespace PiggsPeak_API.Controllers
 			_logger = logger; // Initialize the logger
 		}
 
-		// GET: api/StudentSearch?pageNumber=1&pageSize=10&firstName=&lastName=&schoolCode=&gender=&form=
+
+		// GET: api/StudentSearch?pageNumber=1&pageSize=10&firstName=&lastName=&schoolCode=&gender=&form=&sortField=FirstName&sortOrder=ASC
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<StudentSearch>>> Get(
 			int pageNumber = 1,
@@ -33,9 +34,12 @@ namespace PiggsPeak_API.Controllers
 			string lastName = "",
 			string schoolCode = "",
 			string gender = "",
-			string form = "")
+			string form = "",
+			string sortField = "none",
+			string sortOrder = "ASC",
+			string sponsoredOnly = "N")
 		{
-			_logger.LogInformation($"Initiating student search with filters: First Name: {firstName}, Last Name: {lastName}, School Code: {schoolCode}, Gender: {gender}, Form: {form}, Page Number: {pageNumber}, Page Size: {pageSize}");
+			_logger.LogInformation($"Initiating student search with filters: First Name: {firstName}, Last Name: {lastName}, School Code: {schoolCode}, Gender: {gender}, Form: {form}, Page Number: {pageNumber}, Page Size: {pageSize}, SortField: {sortField}, SortOrder: {sortOrder}, SponsoredOnly: {sponsoredOnly}");
 
 			if (pageNumber < 1 || pageSize < 1)
 			{
@@ -45,7 +49,6 @@ namespace PiggsPeak_API.Controllers
 
 			var query = _dbContext.StudentSearch.AsQueryable();
 
-			// Applying filters
 			if (!string.IsNullOrWhiteSpace(firstName))
 			{
 				query = query.Where(s => EF.Functions.Like(s.FirstName, $"{firstName}%"));
@@ -66,12 +69,31 @@ namespace PiggsPeak_API.Controllers
 				query = query.Where(s => s.Gender == gender);
 			}
 
+			if (!string.IsNullOrWhiteSpace(sponsoredOnly) && sponsoredOnly.ToUpper() == "Y")
+			{
+				query = query.Where(s => s.Sponsored == "Y");
+			}
+
 			if (!string.IsNullOrWhiteSpace(form) && form != "all")
 			{
 				if (int.TryParse(form, out int formValue))
 				{
 					query = query.Where(s => s.Form == formValue);
 				}
+			}
+
+			if (!string.Equals(sortField, "none", StringComparison.OrdinalIgnoreCase))
+			{
+				bool descending = string.Equals(sortOrder, "DESC", StringComparison.OrdinalIgnoreCase);
+
+				query = sortField.ToLowerInvariant() switch
+				{
+					"firstname" => descending ? query.OrderByDescending(s => s.FirstName) : query.OrderBy(s => s.FirstName),
+					"lastname" => descending ? query.OrderByDescending(s => s.LastName) : query.OrderBy(s => s.LastName),
+					"gender" => descending ? query.OrderByDescending(s => s.Gender) : query.OrderBy(s => s.Gender),
+					"form" => descending ? query.OrderByDescending(s => s.Form) : query.OrderBy(s => s.Form),
+					_ => query
+				};
 			}
 
 			var totalCount = await query.CountAsync();
@@ -94,6 +116,11 @@ namespace PiggsPeak_API.Controllers
 
 			return Ok(response);
 		}
+
+
+
+
+
 
 		// GET api/StudentSearch/5
 		[HttpGet("{id}")]
@@ -168,7 +195,8 @@ namespace PiggsPeak_API.Controllers
 
 			return Ok(summary);
 		}
-
-
 	}
 }
+
+	
+

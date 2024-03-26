@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    //marginBottom: 10,
   },
   label: {
     fontSize: 16,
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderWidth: 1,
   },
-  changeButtonText: {
+  sortButtonText: {
     color: COLORS.white,
     fontSize: 16,
   },
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     width: "100%", // Take up the full width of the container
     marginTop: 10, // Add some space between the image and the buttons
   },
-  changeButton: {
+  sortOrderToggle: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -164,22 +164,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     elevation: 2,
     // Removed marginHorizontal to control width directly
-    width: "45%", // Adjust the width as needed to make the button smaller
+    //width: "45%", // Adjust the width as needed to make the button smaller
   },
-  deleteButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    backgroundColor: COLORS.gray,
-    justifyContent: "center",
-    alignItems: "center",
-    borderColor: COLORS.black,
-    borderWidth: 1,
-    elevation: 2,
-    // Removed marginHorizontal to control width directly
-    width: "45%", // Adjust the width as needed to make the button smaller
-  },
-  saveButton: {
+  searchButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -187,13 +174,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 2,
-    marginHorizontal: 20,
-    marginBottom: 20, // To add some space from the bottom of the screen
+    //marginHorizontal: 20,
+    //marginBottom: 20, // To add some space from the bottom of the screen
   },
-  saveButtonText: {
+  searchButtonText: {
     color: "#ffffff", // Text color for the button
-    fontSize: 18,
-    fontWeight: "bold", // If you want the font to be bold
+    fontSize: 16,
   },
   gridContainer: {
     flexDirection: "column",
@@ -287,6 +273,15 @@ const styles = StyleSheet.create({
   },
   dataTable: {
     backgroundColor: COLORS.gray,
+  },
+  selectedRow: {
+    backgroundColor: COLORS.selected,
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

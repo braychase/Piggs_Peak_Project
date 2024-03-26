@@ -44,6 +44,7 @@ const RankingScreen = () => {
   const [filteredTotalPages, setFilteredTotalPages] = useState(0);
   const [sortField, setSortField] = useState("First"); // Example sort field
   const [selectedStudentId, setSelectedStudentId] = useState(null);
+  const [sortOrder, setSortOrder] = useState("ASC");
 
   useEffect(() => {
     const fetchSchoolsAndDefault = async () => {
@@ -87,6 +88,17 @@ const RankingScreen = () => {
     return null;
   };
 
+  const findSchoolCode = () => {
+    const selectedSchoolObj = schools.find(
+      (school) => school.schoolID.toString() === selectedSchool
+    );
+
+    if (selectedSchoolObj) {
+      return selectedSchoolObj.schoolCode;
+    }
+    return null;
+  };
+
   const selectStudent = (studentId) => {
     setSelectedStudentId(studentId);
   };
@@ -95,7 +107,6 @@ const RankingScreen = () => {
     if (selectedSchool) {
       const fetchSchoolSummary = async () => {
         try {
-          console.log(selectedSchool);
           const summaryData = await getSchoolSummary(baseUrl, selectedSchool);
           setSchoolSummary(summaryData);
         } catch (error) {
@@ -108,20 +119,30 @@ const RankingScreen = () => {
   }, [selectedSchool, baseUrl]);
 
   const handleSearchPress = async (page) => {
-    try {
-      const queryParams = new URLSearchParams({
-        pageNumber: page || currentPage,
-        pageSize: 5,
-      }).toString();
+    console.log(selectedSchool);
+    const queryParams = new URLSearchParams({
+      pageNumber: page || currentPage,
+      pageSize: 5,
+      sortField: sortField, // Include the current sort field
+      sortOrder: sortOrder, // Include the current sort order
+      sponsoredOnly: "Y",
+      schoolCode: findSchoolCode(),
+    }).toString();
 
+    try {
       const response = await fetch(
         `${baseUrl}api/StudentSearch?${queryParams}`,
-        { credentials: "include" }
+        {
+          credentials: "include",
+          // Include other necessary options like headers
+        }
       );
+
       if (response.ok) {
         const data = await response.json();
         setStudents(data.students);
         setFilteredTotalPages(data.totalPages);
+        setCurrentPage(page || currentPage); // Update current page only after successful fetch
       } else {
         console.error("Failed to fetch students");
         setStudents([]);
@@ -179,23 +200,45 @@ const RankingScreen = () => {
             </View>
             <View style={styles.formContainer}>
               {renderSchoolSummaryTable()}
-              <Text style={{ marginTop: 20, fontWeight: "bold" }}>
-                Total Cost:{" "}
-              </Text>
+              <Text style={styles.totalText}>Total Cost: </Text>
             </View>
           </View>
         );
       case "Step 2":
         return (
           <View>
-            <View style={styles.buttonContainer}>
-              <View style={styles.searchContainer}>
-                <Pressable
-                  onPress={() => handleSearchPress(1)}
-                  style={styles.searchButton}
+            <View style={styles.searchContainer}>
+              <View style={styles.sortControls}>
+                <Picker
+                  selectedValue={sortField}
+                  onValueChange={(itemValue) => setSortField(itemValue)}
+                  style={styles.picker}
                 >
-                  <Text style={styles.buttonText}>Search</Text>
-                </Pressable>
+                  <Picker.Item label="None" value="none" />
+                  <Picker.Item label="First Name" value="firstName" />
+                  <Picker.Item label="Last Name" value="lastName" />
+                  <Picker.Item label="Gender" value="gender" />
+                  <Picker.Item label="Form" value="form" />
+                </Picker>
+                <View style={styles.buttonContainer}>
+                  <Pressable
+                    onPress={() =>
+                      setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC")
+                    }
+                    style={styles.sortOrderToggle}
+                  >
+                    <Text style={styles.sortButtonText}>
+                      {sortOrder === "ASC" ? "Ascending" : "Descending"}
+                    </Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={() => handleSearchPress(1)}
+                    style={styles.searchButton}
+                  >
+                    <Text style={styles.searchButtonText}>Search</Text>
+                  </Pressable>
+                </View>
               </View>
             </View>
             <ScrollView>
