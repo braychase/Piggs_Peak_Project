@@ -5,14 +5,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PiggsPeak_API
 {
-	[Table("Student")]
+    public enum StudentStatus { New = 1, Active = 2, Graduated = 3, Failed = 4, Moved = 5, Pregnant = 6, Deceased = 7, Unknown = 99 };
+
+    [Table("Student")]
 	public class Student
 	{
-		[Key]
+        [Key]
 		[Column("Student_id")]
 		public int StudentID { get; set; }
 
-		[Column("Student_nm")]
+        [Column("Status_id")]
+        public StudentStatus Status { get; set; }
+
+        [Column("Student_nm")]
 		public string StudentName { get; set; }
 
 		[Column("First_nm")]

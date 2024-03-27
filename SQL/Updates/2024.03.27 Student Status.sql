@@ -6,6 +6,7 @@ CREATE TABLE Student_Status (
 	Status_nm varchar(12) NOT NULL
 	);
 
+-- enum StudentStatus { New=1, Active=2, Graduated=3, Failed=4, Moved=5, Pregnant=6, Deceased=7, Unknown=99 };
 INSERT INTO Student_Status VALUES (1, 'New');
 INSERT INTO Student_Status VALUES (2, 'Active');
 INSERT INTO Student_Status VALUES (3, 'Graduated');
