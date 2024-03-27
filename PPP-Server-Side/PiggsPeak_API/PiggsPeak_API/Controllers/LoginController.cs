@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using PiggsPeak_API.Classes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using System.Collections.Generic;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc;
+
+using PiggsPeak_API.Classes;
 
 namespace PiggsPeak_API.Controllers
 {
@@ -30,7 +31,6 @@ namespace PiggsPeak_API.Controllers
         [HttpGet]				// this endpoint can be used browser testing
         public async Task<ActionResult<LoginResponseDTO>> LoginGet(string username, string password = "")
         {
-			_logger.LogInformation("GET login attempt for user {Username}", username);
 			return await LoginPost(new LoginRequestDTO() { LoginID = username, Password = password });
 		}
 
@@ -41,14 +41,21 @@ namespace PiggsPeak_API.Controllers
                || s.Contains(" ") || s.Contains("\t") || s.Contains("\r") || s.Contains("\n"))
                 return false;
 
+            // a little extra code to avoid the execption
+            string sExtra = "+/=";
+            foreach (char c in s)
+                if (Char.IsDigit(c) || Char.IsLetter(c))
+                    continue;
+                else if (!sExtra.Contains(c))
+                    return false;
+
             try
             {
                 Convert.FromBase64String(s);
                 return true;
             }
-            catch (Exception exception)
-            { return false; }
-            
+            catch (Exception ex)
+            { return false; }            
         }
 
         [HttpPost]
@@ -60,7 +67,7 @@ namespace PiggsPeak_API.Controllers
 				return BadRequest(new { message = "Username is required" });
 			}
 
-			_logger.LogInformation("POST login attempt for user {Username}", credentials.LoginID);
+			_logger.LogInformation("login attempt for user {Username}", credentials.LoginID);
 
 			Party? user = await _dbContext.Parties
 						.AsNoTracking()
@@ -71,7 +78,7 @@ namespace PiggsPeak_API.Controllers
 				_logger.LogWarning("User not found for username {Username}", credentials.LoginID);
 				return Unauthorized(new { message = "User not found" });
 			}
-			else if (user.IsDeleted == "Y" || user.IsDisabled == "Y")
+			else if (user.IsDeleted || user.IsDisabled)
 			{
 				_logger.LogWarning("Attempt to login with disabled or deleted user {Username}", credentials.LoginID);
 				return Unauthorized(new { message = "Unable to login with this User" });

@@ -151,19 +151,19 @@ namespace PiggsPeak_API.Controllers
 			_logger.LogInformation($"Fetching summary for school ID: {schoolId}");
 
 			var newStudents = await _dbContext.Students
-				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent == "Y")
+				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent)
 				.GroupBy(s => s.Gender)
 				.Select(g => new { Gender = g.Key, Count = g.Count() })
 				.ToListAsync();
 
 			var selectedStudents = await _dbContext.Students
-				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent == "Y" && s.Selected == "Y")
+				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent && s.Selected)
 				.GroupBy(s => s.Gender)
 				.Select(g => new { Gender = g.Key, Count = g.Count() })
 				.ToListAsync();
 
 			var activeStudents = await _dbContext.Students
-				.Where(s => s.SchoolID == schoolId && s.StartYear != 2024 && s.Active == "Y")
+				.Where(s => s.SchoolID == schoolId && s.StartYear != 2024 && s.Active)
 				.GroupBy(s => s.Gender)
 				.Select(g => new { Gender = g.Key, Count = g.Count() })
 				.ToListAsync();

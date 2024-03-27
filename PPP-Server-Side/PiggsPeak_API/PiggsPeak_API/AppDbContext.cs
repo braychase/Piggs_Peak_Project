@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+
 using PiggsPeak_API.Classes;
 
 namespace PiggsPeak_API
@@ -28,12 +31,41 @@ namespace PiggsPeak_API
 			modelBuilder.Entity<PartyPermission>()
 				.HasKey(pp => new { pp.PartyID, pp.PermissionID });
 
-    //        modelBuilder.Entity<Student>()
-				//.HasOne(st => st.School)
-				//.WithMany()
-				////.HasForeignKey(b => b.AuthorId)
-				//;
+			var ynConverter = new BoolToStringConverter("N", "Y");
 
+            modelBuilder.Entity<Party>()
+                .Property(p => p.IsGroup)
+                .HasConversion(ynConverter);
+            modelBuilder.Entity<Party>()
+                .Property(p => p.IsAdmin)
+                .HasConversion(ynConverter);
+            modelBuilder.Entity<Party>()
+                .Property(p => p.IsDisabled)
+                .HasConversion(ynConverter);
+            modelBuilder.Entity<Party>()
+                .Property(p => p.IsDeleted)
+                .HasConversion(ynConverter);
+
+            modelBuilder.Entity<Student>()
+				.Property(p => p.Deleted)
+                .HasConversion(ynConverter);
+            modelBuilder.Entity<Student>()
+                .Property(p => p.OVC)
+                .HasConversion(ynConverter);
+            modelBuilder.Entity<Student>()
+				.Property(p => p.Active)
+				.HasConversion(ynConverter);
+            modelBuilder.Entity<Student>()
+                .Property(p => p.NewStudent)
+                .HasConversion(ynConverter);
+            modelBuilder.Entity<Student>()
+                .Property(p => p.Selected)
+                .HasConversion(ynConverter);
+
+            modelBuilder.Entity<SchoolFee>()
+                .Property(p => p.OVC)
+                .HasConversion(ynConverter);
+            
             // Additional configurations...
 
             base.OnModelCreating(modelBuilder);

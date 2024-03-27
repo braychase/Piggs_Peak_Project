@@ -22,7 +22,7 @@ namespace PiggsPeak_API.Classes
 		public int ProgramId { get; set; }
 
 		[Column("OVC_yn")]
-		public char OVC { get; set; }
+		public bool OVC { get; set; }
 
 		[Column("RegFee_nb")]
 		public decimal RegistrationFee { get; set; }

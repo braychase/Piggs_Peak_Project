@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PiggsPeak_API.Classes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
+using PiggsPeak_API.Classes;
 
 namespace PiggsPeak_API.Controllers
 {
@@ -45,16 +46,16 @@ namespace PiggsPeak_API.Controllers
 				party.PasswordHash ??= string.Empty;
 
 				// Handle Group_yn (char) - Set to an empty string if null
-				party.IsGroup ??= string.Empty;
+				//party.IsGroup ??= string.Empty;
 
 				// Handle Admin_yn (char) - Set to an empty string if null
-				party.IsAdmin ??= string.Empty;
+				//party.IsAdmin ??= string.Empty;
 
 				// Handle Disabled_yn (char) - Set to an empty string if null
-				party.IsDisabled ??= string.Empty;
+				//party.IsDisabled ??= string.Empty;
 
 				// Handle Deleted_yn (char) - Set to an empty string if null
-				party.IsDeleted ??= string.Empty;
+				//party.IsDeleted ??= string.Empty;
 
 				// Handle Created_by (varchar) - Set to an empty string if null
 				party.CreatedBy ??= string.Empty;
