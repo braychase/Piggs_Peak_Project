@@ -37,7 +37,8 @@ namespace PiggsPeak_API.Controllers
 			string form = "",
 			string sortField = "none",
 			string sortOrder = "ASC",
-			string sponsoredOnly = "N")
+			string sponsoredOnly = "N",
+			string newOnly = "N")
 		{
 			_logger.LogInformation($"Initiating student search with filters: First Name: {firstName}, Last Name: {lastName}, School Code: {schoolCode}, Gender: {gender}, Form: {form}, Page Number: {pageNumber}, Page Size: {pageSize}, SortField: {sortField}, SortOrder: {sortOrder}, SponsoredOnly: {sponsoredOnly}");
 
@@ -74,6 +75,11 @@ namespace PiggsPeak_API.Controllers
 				query = query.Where(s => s.Sponsored == "Y");
 			}
 
+			if (!string.IsNullOrWhiteSpace(newOnly) && newOnly.ToUpper() == "Y")
+			{
+				query = query.Where(s => s.NewStudent == "Y");
+			}
+
 			if (!string.IsNullOrWhiteSpace(form) && form != "all")
 			{
 				if (int.TryParse(form, out int formValue))
@@ -92,6 +98,7 @@ namespace PiggsPeak_API.Controllers
 					"lastname" => descending ? query.OrderByDescending(s => s.LastName) : query.OrderBy(s => s.LastName),
 					"gender" => descending ? query.OrderByDescending(s => s.Gender) : query.OrderBy(s => s.Gender),
 					"form" => descending ? query.OrderByDescending(s => s.Form) : query.OrderBy(s => s.Form),
+					"priority" => descending ? query.OrderByDescending(s => s.Priority) : query.OrderBy(s => s.Priority),
 					_ => query
 				};
 			}

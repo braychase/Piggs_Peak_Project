@@ -24,8 +24,8 @@ function StudentScreen({ navigation }) {
   return <StudentPage navigation={navigation} />;
 }
 
-function RankingScreen() {
-  return <RankingPage />;
+function RankingScreen({ navigation }) {
+  return <RankingPage navigation={navigation} />;
 }
 
 // MoreScreen Component
