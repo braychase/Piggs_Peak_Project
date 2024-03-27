@@ -73,7 +73,7 @@ const AddStudentPage = () => {
   const [schoolID, setSchoolID] = useState("");
   const [schoolCode, setSchoolCode] = useState("");
   const [schoolDescription, setSchoolDescription] = useState("");
-  const [yearFinished, setYearFinished] = useState("");
+  const [yearFinished, setYearFinished] = useState(new Date());
   const [dateEnrolled, setDateEnrolled] = useState(new Date());
   const [year, setYear] = useState("");
   const [form, setForm] = useState("");
@@ -90,6 +90,8 @@ const AddStudentPage = () => {
   const [recommend, setRecommend] = useState("");
   const [priority, setPriority] = useState(10);
   const [comments, setComments] = useState("");
+  const [sponsored, setSponsored] = useState("");
+  const [selected, setSelected] = useState("");
 
   // Placeholder for sibling data rows
   const siblingRows = Array.from({ length: 3 }, (_, index) => ({
@@ -148,7 +150,7 @@ const AddStudentPage = () => {
           setPrimarySchool(studentData.primarySchool || "");
           setAmbitionAfterGraduation(studentData.aspirations || "");
           setFavouriteSubject(studentData.favouriteSubject || "");
-          setYearFinished(studentData.yearFinished || "");
+          setYearFinished(studentData.yearFinished || null);
           setForm(studentData.form || "");
           const motherLivingValue =
             studentData.motherLiving === null
@@ -191,6 +193,8 @@ const AddStudentPage = () => {
               : studentData.fatherUnknown;
           setFatherUnknown(fatherUnknownValue);
           setComments(studentData.notes || "");
+          setSponsored(studentData.sponsored || "");
+          setSelected(studentData.selected || "");
           setPriority(studentData.priority || 10);
           if (studentData.dateEnrolled) {
             const parsedDateEnrolled = new Date(studentData.dateEnrolled);
@@ -308,6 +312,8 @@ const AddStudentPage = () => {
       dateEnrolled: dateEnrolled,
       primarySchool: primarySchool,
       yearFinished: yearFinished,
+      sponsored: sponsored,
+      selected: selected,
     };
 
     try {

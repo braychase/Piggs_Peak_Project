@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, Pressable, Text, View } from "react-native";
 import { DataTable, TextInput } from "react-native-paper";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -11,6 +11,8 @@ import { getSchoolSummary } from "../services/StudentSearchService";
 import { useApi } from "../ApiContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
+import { Modalize } from "react-native-modalize";
+import { updateStudentById, getStudentById } from "../services/StudentService";
 
 const Tab = ({ title, onPress, isSelected }) => {
   return (
@@ -33,7 +35,7 @@ const Tab = ({ title, onPress, isSelected }) => {
   );
 };
 
-const RankingScreen = () => {
+const RankingScreen = ({ navigation }) => {
   const { baseUrl } = useApi();
   const [selectedTab, setSelectedTab] = useState("Step 1");
   const [schools, setSchools] = useState([]);
@@ -42,9 +44,10 @@ const RankingScreen = () => {
   const [students, setStudents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredTotalPages, setFilteredTotalPages] = useState(0);
-  const [sortField, setSortField] = useState("First"); // Example sort field
+  const [sortField, setSortField] = useState("none");
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [sortOrder, setSortOrder] = useState("ASC");
+  const removeStudentModalRef = useRef(null);
 
   useEffect(() => {
     const fetchSchoolsAndDefault = async () => {
@@ -80,7 +83,7 @@ const RankingScreen = () => {
 
     if (selectedSchoolObj) {
       return (
-        <Text style={styles.studentFullName}>
+        <Text style={styles.schoolFullName}>
           {selectedSchoolObj.description}
         </Text>
       );
@@ -153,6 +156,41 @@ const RankingScreen = () => {
     }
   };
 
+  const handleNewSearchPress = async (page) => {
+    console.log(selectedSchool);
+    const queryParams = new URLSearchParams({
+      pageNumber: page || currentPage,
+      pageSize: 5,
+      sortField: sortField, // Include the current sort field
+      sortOrder: sortOrder, // Include the current sort order
+      newOnly: "Y",
+      schoolCode: findSchoolCode(),
+    }).toString();
+
+    try {
+      const response = await fetch(
+        `${baseUrl}api/StudentSearch?${queryParams}`,
+        {
+          credentials: "include",
+          // Include other necessary options like headers
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setStudents(data.students);
+        setFilteredTotalPages(data.totalPages);
+        setCurrentPage(page || currentPage); // Update current page only after successful fetch
+      } else {
+        console.error("Failed to fetch students");
+        setStudents([]);
+        setFilteredTotalPages(0);
+      }
+    } catch (error) {
+      console.error("Error loading student data:", error.message);
+    }
+  };
+
   // When a new school is selected, update both the state and AsyncStorage
   const handleSchoolChange = (itemValue) => {
     setSelectedSchool(itemValue);
@@ -170,6 +208,86 @@ const RankingScreen = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
       handleSearchPress(currentPage - 1);
+    }
+  };
+
+  const goToNewNextPage = () => {
+    if (currentPage < filteredTotalPages) {
+      setCurrentPage(currentPage + 1);
+      handleNewSearchPress(currentPage + 1);
+    }
+  };
+
+  const goToNewPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+      handleNewSearchPress(currentPage - 1);
+    }
+  };
+
+  const handleOpenRemovalModal = () => {
+    if (removeStudentModalRef.current) {
+      removeStudentModalRef.current.open();
+    }
+  };
+
+  const handleEditPress = () => {
+    const studentToEdit = students.find(
+      (student) => student.studentID === selectedStudentId
+    );
+    if (studentToEdit) {
+      navigation.navigate("AddStudent", {
+        studentID: studentToEdit.studentID,
+        photoID: studentToEdit.photoId,
+      });
+    }
+  };
+
+  const handleConfirmRemoval = async () => {
+    if (selectedStudentId) {
+      try {
+        // Fetch the current student data
+        const studentData = await getStudentById(baseUrl, selectedStudentId);
+
+        // Update the Active_yn field and any other fields as needed
+        studentData.Active = "N";
+
+        // Now update the student with the modified data
+        await updateStudentById(baseUrl, selectedStudentId, studentData);
+        console.log("Student updated successfully");
+
+        // Close the modal and refresh the list of students
+        removeStudentModalRef.current?.close();
+        handleSearchPress();
+      } catch (error) {
+        console.error("Error updating the student:", error);
+      }
+    }
+  };
+
+  const handleSelectOrRemove = async () => {
+    if (selectedStudentId) {
+      try {
+        // Fetch the current student data
+        const studentData = await getStudentById(baseUrl, selectedStudentId);
+
+        // Toggle the 'selected' field based on its current value
+        studentData.Selected = studentData.selected === "Y" ? "N" : "Y";
+
+        console.log(
+          "Updated student data before sending to update:",
+          studentData
+        );
+
+        // Now update the student with the modified data
+        await updateStudentById(baseUrl, selectedStudentId, studentData);
+        console.log("Student updated successfully");
+
+        // After updating, you might want to refresh the students list
+        handleNewSearchPress(currentPage);
+      } catch (error) {
+        console.error("Error updating the student:", error);
+      }
     }
   };
 
@@ -207,8 +325,11 @@ const RankingScreen = () => {
       case "Step 2":
         return (
           <View>
-            <View style={styles.searchContainer}>
-              <View style={styles.sortControls}>
+            {/* <View style={styles.searchContainer}> */}
+            {/* <View style={styles.sortControls}> */}
+            <View style={styles.sortContainer}>
+              <View style={styles.row}>
+                <Text style={styles.pickerLabel}>Sort by:</Text>
                 <Picker
                   selectedValue={sortField}
                   onValueChange={(itemValue) => setSortField(itemValue)}
@@ -220,26 +341,28 @@ const RankingScreen = () => {
                   <Picker.Item label="Gender" value="gender" />
                   <Picker.Item label="Form" value="form" />
                 </Picker>
-                <View style={styles.buttonContainer}>
-                  <Pressable
-                    onPress={() =>
-                      setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC")
-                    }
-                    style={styles.sortOrderToggle}
-                  >
-                    <Text style={styles.sortButtonText}>
-                      {sortOrder === "ASC" ? "Ascending" : "Descending"}
-                    </Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => handleSearchPress(1)}
-                    style={styles.searchButton}
-                  >
-                    <Text style={styles.searchButtonText}>Search</Text>
-                  </Pressable>
-                </View>
               </View>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Pressable
+                onPress={() =>
+                  setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC")
+                }
+                style={styles.sortOrderToggle}
+              >
+                <Text style={styles.sortButtonText}>
+                  {sortOrder === "ASC" ? "Ascending" : "Descending"}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => handleSearchPress(1)}
+                style={styles.searchButton}
+              >
+                <Text style={styles.searchButtonText}>Search</Text>
+              </Pressable>
+              {/* </View> */}
+              {/* </View> */}
             </View>
             <ScrollView>
               <DataTable
@@ -247,7 +370,7 @@ const RankingScreen = () => {
                 style={styles.dataTable}
               >
                 <DataTable.Header>
-                  <DataTable.Title> First Name</DataTable.Title>
+                  <DataTable.Title>First Name</DataTable.Title>
                   <DataTable.Title>Last Name</DataTable.Title>
                   <DataTable.Title>Gender</DataTable.Title>
                   <DataTable.Title>OVC</DataTable.Title>
@@ -287,6 +410,26 @@ const RankingScreen = () => {
                 <Text>Prev</Text>
               </Pressable>
               <Pressable
+                onPress={handleEditPress}
+                disabled={!selectedStudentId} // Button is disabled if no student is selected
+                style={[
+                  styles.editButton,
+                  !selectedStudentId && styles.disabledButton, // Use your existing disabled style
+                ]}
+              >
+                <Text style={styles.removeButtonText}>Edit</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleOpenRemovalModal}
+                disabled={!selectedStudentId} // Button is disabled if no student is selected
+                style={[
+                  styles.removeButton,
+                  !selectedStudentId && styles.disabledButton, // Use your existing disabled style
+                ]}
+              >
+                <Text style={styles.removeButtonText}>Remove</Text>
+              </Pressable>
+              <Pressable
                 onPress={goToNextPage}
                 disabled={currentPage >= filteredTotalPages}
                 style={[
@@ -303,7 +446,126 @@ const RankingScreen = () => {
         );
       case "Step 3":
         return (
-          <Text style={styles.contentPlaceholder}>Placeholder for Step 3</Text>
+          <View>
+            <View style={styles.sortContainer}>
+              <View style={styles.row}>
+                <Text style={styles.pickerLabel}>Sort by:</Text>
+                <Picker
+                  selectedValue={sortField}
+                  onValueChange={(itemValue) => setSortField(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="None" value="none" />
+                  <Picker.Item label="First Name" value="firstName" />
+                  <Picker.Item label="Last Name" value="lastName" />
+                  <Picker.Item label="Gender" value="gender" />
+                  <Picker.Item label="Form" value="form" />
+                  <Picker.Item label="Priority" value="priority" />
+                </Picker>
+              </View>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Pressable
+                onPress={() =>
+                  setSortOrder(sortOrder === "ASC" ? "DESC" : "ASC")
+                }
+                style={styles.sortOrderToggle}
+              >
+                <Text style={styles.sortButtonText}>
+                  {sortOrder === "ASC" ? "Ascending" : "Descending"}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => handleNewSearchPress(1)}
+                style={styles.searchButton}
+              >
+                <Text style={styles.searchButtonText}>Search</Text>
+              </Pressable>
+            </View>
+            <ScrollView>
+              <DataTable
+                theme={{ colors: { text: COLORS.black } }}
+                style={styles.dataTable}
+              >
+                <DataTable.Header>
+                  <DataTable.Title>First Name</DataTable.Title>
+                  <DataTable.Title>Last Name</DataTable.Title>
+                  <DataTable.Title>Gender</DataTable.Title>
+                  <DataTable.Title>OVC</DataTable.Title>
+                  <DataTable.Title>Form</DataTable.Title>
+                  <DataTable.Title>Priority</DataTable.Title>
+                  <DataTable.Title>Selected</DataTable.Title>
+                </DataTable.Header>
+                {students.map((student) => (
+                  <DataTable.Row
+                    key={student.studentID}
+                    onPress={() => selectStudent(student.studentID)}
+                    style={[
+                      styles.row,
+                      student.studentID === selectedStudentId &&
+                        styles.selectedRow,
+                    ]}
+                  >
+                    <DataTable.Cell>{student.firstName}</DataTable.Cell>
+                    <DataTable.Cell>{student.lastName}</DataTable.Cell>
+                    <DataTable.Cell>{student.gender}</DataTable.Cell>
+                    <DataTable.Cell>{student.ovc}</DataTable.Cell>
+                    <DataTable.Cell>{student.form}</DataTable.Cell>
+                    <DataTable.Cell>{student.priority}</DataTable.Cell>
+                    <DataTable.Cell>{student.selected}</DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+              </DataTable>
+            </ScrollView>
+            {renderSchoolName()}
+            <View style={styles.buttonContainer}>
+              <Pressable
+                onPress={goToNewPrevPage}
+                disabled={currentPage === 1}
+                style={[
+                  styles.paginationButton,
+                  currentPage === 1 && styles.disabledButton,
+                  { opacity: currentPage === 1 ? 0.5 : 1 },
+                ]}
+              >
+                <FontAwesomeIcon icon={faArrowLeft} size={16} />
+                <Text>Prev</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleEditPress}
+                disabled={!selectedStudentId} // Button is disabled if no student is selected
+                style={[
+                  styles.editButton,
+                  !selectedStudentId && styles.disabledButton, // Use your existing disabled style
+                ]}
+              >
+                <Text style={styles.removeButtonText}>Edit</Text>
+              </Pressable>
+              <Pressable
+                onPress={handleSelectOrRemove}
+                disabled={!selectedStudentId} // Button is disabled if no student is selected
+                style={[
+                  styles.removeButton,
+                  !selectedStudentId && styles.disabledButton, // Use your existing disabled style
+                ]}
+              >
+                <Text style={styles.removeButtonText}>Select/Remove</Text>
+              </Pressable>
+              <Pressable
+                onPress={goToNewNextPage}
+                disabled={currentPage >= filteredTotalPages}
+                style={[
+                  styles.paginationButton,
+                  currentPage >= filteredTotalPages && styles.disabledButton,
+                  { opacity: currentPage >= filteredTotalPages ? 0.5 : 1 },
+                ]}
+              >
+                <FontAwesomeIcon icon={faArrowRight} size={16} />
+                <Text>Next</Text>
+              </Pressable>
+            </View>
+          </View>
         );
       default:
         return <Text style={styles.contentPlaceholder}>Select a step</Text>;
@@ -402,6 +664,43 @@ const RankingScreen = () => {
           ))}
         </View>
         <View style={styles.contentContainer}>{renderContent()}</View>
+        <Modalize ref={removeStudentModalRef} adjustToContentHeight={true}>
+          <View style={{ padding: 20 }}>
+            <Text style={{ marginBottom: 20 }}>Enter Reason for Removal</Text>
+            <TextInput
+              label="Reason"
+              mode="outlined"
+              multiline={true}
+              numberOfLines={4}
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-around",
+                marginTop: 20,
+              }}
+            >
+              <Pressable
+                onPress={handleConfirmRemoval}
+                style={({ pressed }) => [
+                  { opacity: pressed ? 0.5 : 1 },
+                  styles.modalButton,
+                ]}
+              >
+                <Text style={styles.modalButtonText}>Submit</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => removeStudentModalRef.current?.close()}
+                style={({ pressed }) => [
+                  { opacity: pressed ? 0.5 : 1 },
+                  styles.removeModalButton,
+                ]}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modalize>
       </ScrollView>
     </LinearGradient>
   );
