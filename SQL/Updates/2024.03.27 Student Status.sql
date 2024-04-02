@@ -1,3 +1,4 @@
+use PiggsPeakProject;
 DROP TABLE IF EXISTS Student_Status;
 go
 
@@ -30,7 +31,7 @@ UPDATE Student SET Status_id=99 WHERE Status_id=1 AND StartYear_nb < 2023
 --ALTER TABLE Student DROP New_yn;
 --ALTER TABLE Student DROP Active_yn;
 
-SELECT StartYear_nb, Status_nm, count(*)
+SELECT StartYear_nb, Status_nm, count(*) as 'Count'
 FROM Student S INNER JOIN Student_Status SS ON (S.Status_id = SS.Status_id)
 WHERE Deleted_yn='N'
 GROUP BY StartYear_nb, Status_nm

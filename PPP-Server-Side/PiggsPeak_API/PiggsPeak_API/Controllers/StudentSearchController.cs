@@ -25,7 +25,7 @@ namespace PiggsPeak_API.Controllers
 		}
 
 
-		// GET: api/StudentSearch?pageNumber=1&pageSize=10&firstName=&lastName=&schoolCode=&gender=&form=&sortField=FirstName&sortOrder=ASC
+		// GET: api/StudentSearch?pageNumber=1&pageSize=10&firstName=&lastName=&schoolCode=&gender=&form=&sortField=FirstName&sortOrder=ASC&status_id=
 		[HttpGet]
 		public async Task<ActionResult<IEnumerable<StudentSearch>>> Get(
 			int pageNumber = 1,
@@ -38,9 +38,10 @@ namespace PiggsPeak_API.Controllers
 			string sortField = "none",
 			string sortOrder = "ASC",
 			string sponsoredOnly = "N",
-			string newOnly = "N")
+			string newOnly = "N",
+			int? statusId = null)
 		{
-			_logger.LogInformation($"Initiating student search with filters: First Name: {firstName}, Last Name: {lastName}, School Code: {schoolCode}, Gender: {gender}, Form: {form}, Page Number: {pageNumber}, Page Size: {pageSize}, SortField: {sortField}, SortOrder: {sortOrder}, SponsoredOnly: {sponsoredOnly}");
+			_logger.LogInformation($"Initiating student search with filters: First Name: {firstName}, Last Name: {lastName}, School Code: {schoolCode}, Gender: {gender}, Form: {form}, Status ID: {statusId}, Page Number: {pageNumber}, Page Size: {pageSize}, SortField: {sortField}, SortOrder: {sortOrder}, SponsoredOnly: {sponsoredOnly}");
 
 			if (pageNumber < 1 || pageSize < 1)
 			{
@@ -49,6 +50,11 @@ namespace PiggsPeak_API.Controllers
 			}
 
 			var query = _dbContext.StudentSearch.AsQueryable();
+
+			if (statusId.HasValue) // Check if status_id is provided
+			{
+				query = query.Where(s => s.StatusID == statusId.Value);
+			}
 
 			if (!string.IsNullOrWhiteSpace(firstName))
 			{

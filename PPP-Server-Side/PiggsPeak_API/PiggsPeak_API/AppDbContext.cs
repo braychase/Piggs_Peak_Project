@@ -25,6 +25,7 @@ namespace PiggsPeak_API
 		public DbSet<StudentSponsor> StudentSponsors { get; set; }
 		public DbSet<SchoolFee> SchoolFees { get; set; }
 
+
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			// Configure composite key for PartyPermission

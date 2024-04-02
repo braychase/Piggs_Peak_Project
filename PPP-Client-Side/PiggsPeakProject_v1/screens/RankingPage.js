@@ -13,6 +13,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { Modalize } from "react-native-modalize";
 import { updateStudentById, getStudentById } from "../services/StudentService";
+import { getStatuses } from "../services/StudentStatusService";
 
 const Tab = ({ title, onPress, isSelected }) => {
   return (
@@ -48,6 +49,8 @@ const RankingScreen = ({ navigation }) => {
   const [selectedStudentId, setSelectedStudentId] = useState(null);
   const [sortOrder, setSortOrder] = useState("ASC");
   const removeStudentModalRef = useRef(null);
+  const [statuses, setStatuses] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   useEffect(() => {
     const fetchSchoolsAndDefault = async () => {
@@ -74,6 +77,20 @@ const RankingScreen = ({ navigation }) => {
 
     fetchSchoolsAndDefault();
   }, [baseUrl]);
+
+  useEffect(() => {
+    const fetchStatuses = async () => {
+      try {
+        const data = await getStatuses(baseUrl); // Use your actual base URL constant
+        setStatuses(data);
+        setSelectedStatus(data[0]?.value); // Optionally set an initial value
+      } catch (error) {
+        console.error("Error fetching statuses:", error);
+      }
+    };
+
+    fetchStatuses();
+  }, []);
 
   const renderSchoolName = () => {
     // Assuming selectedSchool is the ID of the school
@@ -122,7 +139,6 @@ const RankingScreen = ({ navigation }) => {
   }, [selectedSchool, baseUrl]);
 
   const handleSearchPress = async (page) => {
-    console.log(selectedSchool);
     const queryParams = new URLSearchParams({
       pageNumber: page || currentPage,
       pageSize: 5,
@@ -130,6 +146,7 @@ const RankingScreen = ({ navigation }) => {
       sortOrder: sortOrder, // Include the current sort order
       sponsoredOnly: "Y",
       schoolCode: findSchoolCode(),
+      statusId: 2,
     }).toString();
 
     try {
@@ -157,7 +174,6 @@ const RankingScreen = ({ navigation }) => {
   };
 
   const handleNewSearchPress = async (page) => {
-    console.log(selectedSchool);
     const queryParams = new URLSearchParams({
       pageNumber: page || currentPage,
       pageSize: 5,
@@ -250,8 +266,8 @@ const RankingScreen = ({ navigation }) => {
         const studentData = await getStudentById(baseUrl, selectedStudentId);
 
         // Update the Active_yn field and any other fields as needed
-        studentData.Active = "N";
-
+        studentData.status = parseInt(selectedStatus, 10);
+        console.log(studentData);
         // Now update the student with the modified data
         await updateStudentById(baseUrl, selectedStudentId, studentData);
         console.log("Student updated successfully");
@@ -272,7 +288,7 @@ const RankingScreen = ({ navigation }) => {
         const studentData = await getStudentById(baseUrl, selectedStudentId);
 
         // Toggle the 'selected' field based on its current value
-        studentData.Selected = studentData.selected === "Y" ? "N" : "Y";
+        studentData.Selected = studentData.selected === true ? false : true;
 
         console.log(
           "Updated student data before sending to update:",
@@ -667,12 +683,21 @@ const RankingScreen = ({ navigation }) => {
         <Modalize ref={removeStudentModalRef} adjustToContentHeight={true}>
           <View style={{ padding: 20 }}>
             <Text style={{ marginBottom: 20 }}>Enter Reason for Removal</Text>
-            <TextInput
-              label="Reason"
-              mode="outlined"
-              multiline={true}
-              numberOfLines={4}
-            />
+            <Picker
+              selectedValue={selectedStatus}
+              onValueChange={(itemValue, itemIndex) =>
+                setSelectedStatus(itemValue)
+              }
+            >
+              {statuses.map((status) => (
+                <Picker.Item
+                  key={status.id}
+                  label={status.name}
+                  value={status.id}
+                />
+              ))}
+            </Picker>
+
             <View
               style={{
                 flexDirection: "row",

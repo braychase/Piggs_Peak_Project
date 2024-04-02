@@ -157,6 +157,7 @@ namespace PiggsPeak_API.Controllers
 			existingStudent.DateEnrolled = updatedStudent.DateEnrolled;
 			existingStudent.YearFinished = updatedStudent.YearFinished;
 			existingStudent.Selected = updatedStudent.Selected;
+			existingStudent.Status = updatedStudent.Status;
 			//existingStudent.ModifiedTimeZone = TimeZoneInfo.Local.Id;
 
 			await _dbContext.SaveChangesAsync();
