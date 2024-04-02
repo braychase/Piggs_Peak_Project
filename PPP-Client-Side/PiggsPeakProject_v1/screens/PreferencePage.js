@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
 import COLORS from "../constants/colors";
-import styles from "../styles/interviewPageStyles";
+import styles from "../styles/rankingPageStyles";
 import { getSchools } from "../services/SchoolService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "../ApiContext";

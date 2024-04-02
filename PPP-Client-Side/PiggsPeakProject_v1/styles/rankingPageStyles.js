@@ -48,7 +48,23 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 20,
     margin: 20,
-    marginTop: 0, // Remove the top margin to align with the tabs
+    marginTop: 0,
+    shadowColor: "#000", // Add shadow for elevation effect
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  sortContainer: {
+    backgroundColor: COLORS.lightGray,
+    padding: 20,
+    borderRadius: 20,
+    margin: 20,
+    marginTop: 0,
+    marginBottom: 5,
     shadowColor: "#000", // Add shadow for elevation effect
     shadowOffset: {
       width: 0,
@@ -61,7 +77,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    //marginBottom: 10,
   },
   label: {
     fontSize: 16,
@@ -128,12 +144,12 @@ const styles = StyleSheet.create({
     borderRadius: 45, // Half of the width and height to make it circular
     backgroundColor: COLORS.secondary,
     borderColor: COLORS.black,
-    // justifyContent: "center",
-    // alignItems: "center",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 10,
     borderWidth: 1,
   },
-  changeButtonText: {
+  sortButtonText: {
     color: COLORS.white,
     fontSize: 16,
   },
@@ -143,14 +159,9 @@ const styles = StyleSheet.create({
   },
   // Additional row for the image and buttons
   imageRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  imageButtonsContainer: {
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+    alignItems: "center", // Center items vertically within the container
+    justifyContent: "center", // Center items horizontally
+    marginTop: 10,
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -158,34 +169,20 @@ const styles = StyleSheet.create({
     width: "100%", // Take up the full width of the container
     marginTop: 10, // Add some space between the image and the buttons
   },
-  changeButton: {
+  sortOrderToggle: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
     backgroundColor: COLORS.primary,
-    // justifyContent: "center",
-    // alignItems: "center",
+    justifyContent: "center",
+    alignItems: "center",
     borderColor: COLORS.white,
     borderWidth: 1,
     elevation: 2,
-    marginBottom: 10,
     // Removed marginHorizontal to control width directly
     //width: "45%", // Adjust the width as needed to make the button smaller
   },
-  deleteButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    backgroundColor: COLORS.gray,
-    // justifyContent: "center",
-    // alignItems: "center",
-    borderColor: COLORS.black,
-    borderWidth: 1,
-    elevation: 2,
-    // Removed marginHorizontal to control width directly
-    //width: "45%", // Adjust the width as needed to make the button smaller
-  },
-  saveButton: {
+  searchButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -193,13 +190,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     elevation: 2,
-    marginHorizontal: 20,
-    marginBottom: 20, // To add some space from the bottom of the screen
+    //marginHorizontal: 20,
+    //marginBottom: 20, // To add some space from the bottom of the screen
   },
-  saveButtonText: {
+  searchButtonText: {
     color: "#ffffff", // Text color for the button
-    fontSize: 18,
-    fontWeight: "bold", // If you want the font to be bold
+    fontSize: 16,
   },
   gridContainer: {
     flexDirection: "column",
@@ -267,6 +263,9 @@ const styles = StyleSheet.create({
   },
   pickerLabel: {
     marginRight: 5,
+    fontSize: 16,
+    marginBottom: 5,
+    marginLeft: 2,
   },
   studentFullName: {
     fontSize: 20,
@@ -274,12 +273,77 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20, // Add some space below the name
   },
+  schoolFullName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 2, // Add some space below the name
+  },
   image: {
     width: 110,
     height: 110,
     borderRadius: 10, // Adjust as needed
-    resizeMode: "cover",
-    marginRight: 10,
+  },
+  paginationButton: {
+    backgroundColor: COLORS.lightGray,
+    padding: 10,
+    borderRadius: 5,
+    borderColor: COLORS.white,
+    borderWidth: 1,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+  },
+  dataTable: {
+    backgroundColor: COLORS.gray,
+  },
+  selectedRow: {
+    backgroundColor: COLORS.selected,
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  removeButton: {
+    backgroundColor: "red", // Example style
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
+  },
+  disabledButton: {
+    opacity: 0.5, // You might already have this for other disabled buttons
+  },
+  removeButtonText: {
+    color: "#ffffff", // Example text color
+  },
+  modalButton: {
+    backgroundColor: "blue", // Or any color that fits your app's theme
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    // Add more styling as needed
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: 16,
+    // Add more styling as needed
+  },
+  removeModalButton: {
+    backgroundColor: "red", // Or any color that fits your app's theme
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    // Add more styling as needed
+  },
+  editButton: {
+    backgroundColor: "blue", // Example style
+    padding: 10,
+    margin: 10,
+    borderRadius: 5,
   },
 });
 

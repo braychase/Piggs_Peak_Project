@@ -23,14 +23,14 @@ namespace PiggsPeak_API.Classes
 
 		[Column("Group_yn")]
 		[Required]
-		public string IsGroup { get; set; }
+		public bool IsGroup { get; set; }
 
 		[Column("Password_Change_dt")]
 		public DateTime? PasswordChangeDate { get; set; }
 
 		[Column("Admin_yn")]
 		[Required]
-		public string IsAdmin { get; set; }
+		public bool IsAdmin { get; set; }
 
 		[Column("Failed_Login_nb")]
 		public byte? FailedLoginCount { get; set; }
@@ -40,14 +40,14 @@ namespace PiggsPeak_API.Classes
 
 		[Column("Disabled_yn")]
 		[Required]
-		public string IsDisabled { get; set; }
+		public bool IsDisabled { get; set; }
 
 		[Column("Failed_Login_dt")]
 		public DateTime? FailedLoginDate { get; set; }
 
 		[Column("Deleted_yn")]
 		[Required]
-		public string IsDeleted { get; set; }
+		public bool IsDeleted { get; set; }
 
 		[Column("Created_by")]
 		public string? CreatedBy { get; set; }

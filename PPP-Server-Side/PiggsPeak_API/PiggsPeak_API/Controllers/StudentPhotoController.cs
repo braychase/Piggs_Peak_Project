@@ -8,19 +8,23 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace PiggsPeak_API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
 	public class StudentPhotoController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
+		private readonly ILogger<StudentPhotoController> _logger;
 
-		public StudentPhotoController(AppDbContext dbContext)
+		public StudentPhotoController(AppDbContext dbContext, ILogger<StudentPhotoController> logger)
 		{
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			_logger = logger;
 		}
 
         //// GET: api/StudentPhoto
@@ -46,16 +50,19 @@ namespace PiggsPeak_API.Controllers
         [HttpGet("{id}")]
 		public async Task<IActionResult> Get(int id)
 		{
-            StudentPhoto? studentPhoto = await _dbContext.StudentPhotos
+			_logger.LogInformation($"Attempting to fetch photo with ID: {id}");
+			StudentPhoto? studentPhoto = await _dbContext.StudentPhotos
 				.FirstOrDefaultAsync(sp => sp.PhotoId == id);
 
             if (studentPhoto != null) {
-                if (studentPhoto.CroppedPhotoData != null)
+				_logger.LogInformation($"Photo with ID: {id} found, returning photo");
+				if (studentPhoto.CroppedPhotoData != null)
                     return File(studentPhoto.CroppedPhotoData, "image/jpeg");
                 if (studentPhoto.PhotoData != null)
                     return File(studentPhoto.PhotoData, "image/jpeg");
             }
-            return NotFound();
+			_logger.LogWarning($"Photo with ID: {id} not found");
+			return NotFound();
     }
 
     //// POST api/StudentPhoto

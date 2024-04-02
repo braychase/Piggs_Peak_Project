@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,37 +17,50 @@ import {
   faLink,
 } from "@fortawesome/free-solid-svg-icons";
 import styles from "../styles/loginScreenStyles";
-import CONSTANTS from "../constants/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+//import CONSTANTS from "../constants/constants";
 import { useApi } from "../ApiContext";
 
 const LoginScreen = ({ navigation }) => {
-  const { setBaseUrl } = useApi();
-  var { baseUrl } = useApi();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [baseUrlInput, setBaseUrlInput] = useState("https://localhost:");
+  const { baseUrl, setBaseUrl, loadBaseUrl } = useApi();
+  const [baseUrlInput, setBaseUrlInput] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const loadInputUrl = async () => {
+      let value = await loadBaseUrl();
+      console.error("login: load Url=", value);
+      setBaseUrlInput(value);
+    };
+    loadInputUrl();
+  }, []);
+
   const handleLogin = async () => {
+
     try {
-      setBaseUrl(baseUrlInput);
       if (
         !username.trim() ||
         !password.trim() ||
-        baseUrlInput === "https://localhost:"
+        baseUrlInput === null ||
+        baseUrlInput.length == 0
       ) {
         setError("Please enter valid credentials");
         return;
       }
 
-      // Update baseUrl in context and AsyncStorage for persistence
-      setBaseUrl(baseUrlInput);
-      await AsyncStorage.setItem("baseUrl", baseUrlInput);
-      //baseUrl = "https://localHost:7208/";
-      const response = await fetch(baseUrl + "api/Login", {
+      let loginUrl = baseUrlInput.trim();
+      if (!loginUrl.includes("://"))
+        loginUrl = "https://" + loginUrl;
+      if (!loginUrl.endsWith("/"))
+        loginUrl += "/";
+      //console.error("login: base Url=", loginUrl);
+
+      setError("Connecting, please wait ...");
+      const response = await fetch(loginUrl + "api/Login", {
         method: "POST",
-        credentials: "include",
+        //credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -60,7 +73,14 @@ const LoginScreen = ({ navigation }) => {
       const data = await response.json();
 
       if (response.ok) {
-        // Login successful, store the DefaultSchoolId
+        // Login successful
+
+        // only store the Server URL after successful login
+        console.error("LOGIN storing baseUrl =", loginUrl);
+        await AsyncStorage.setItem("baseUrl", loginUrl);  // this is for next time
+        setBaseUrl(loginUrl);                             // this is for now
+
+        // store the DefaultSchoolId
         if (data.defaultSchoolID) {
           await AsyncStorage.setItem(
             "defaultSchoolID",
@@ -70,15 +90,15 @@ const LoginScreen = ({ navigation }) => {
         navigation.replace("Main");
       } else if (response.status === 401) {
         // Unauthorized
-        setError("Invalid credentials. Please try again.");
+        setError("Invalid credentials. Please try again");
       } else {
         // Other errors
-        setError("An error occurred during login. Please try again later.");
+        setError("An error occurred during login. Please try again later");
       }
     } catch (error) {
       console.error("Login error:", error);
       setError(
-        "An error occurred during login. Please check your connection and try again."
+        "An error occurred during login. Please check your connection and try again"
       );
     }
   };

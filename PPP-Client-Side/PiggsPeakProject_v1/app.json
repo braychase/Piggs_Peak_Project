@@ -15,8 +15,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    },
+      "supportsTablet": true,
+      "bundleIdentifier": "com.braychase.PiggsPeakProject_v1",
+      "buildNumber": "1.0.0"
+    },    
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",

@@ -1,18 +1,24 @@
-﻿using PiggsPeak_API.Classes;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using PiggsPeak_API.Classes;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PiggsPeak_API
 {
-	[Table("Student")]
+    public enum StudentStatus { New = 1, Active = 2, Graduated = 3, Failed = 4, Moved = 5, Pregnant = 6, Deceased = 7, Unknown = 99 };
+
+    [Table("Student")]
 	public class Student
 	{
-		[Key]
+        [Key]
 		[Column("Student_id")]
 		public int StudentID { get; set; }
 
-		[Column("Student_nm")]
+        [Column("Status_id")]
+        public StudentStatus Status { get; set; }
+
+        [Column("Student_nm")]
 		public string StudentName { get; set; }
 
 		[Column("First_nm")]
@@ -20,6 +26,9 @@ namespace PiggsPeak_API
 
 		[Column("Last_nm")]
 		public string? LastName { get; set; }
+
+		[Column("Middle_nm")]
+		public string? MiddleName { get; set; }
 
 		[Column("StudentCode_tx")]
 		public string StudentCode { get; set; }
@@ -31,16 +40,16 @@ namespace PiggsPeak_API
 		public string? Gender { get; set; }
 
 		[Column("Sponsored_yn")]
-		public string? Sponsored { get; set; }
+        public string? Sponsored { get; set; }
 
 		[Column("OVC_yn")]
-		public string OVC { get; set; }
+		public bool OVC { get; set; }
 
-		[Column("deleted_yn")]
-		public string Deleted { get; set; }
-			
-		[Column("active_yn")]
-		public string Active { get; set; }
+		[Column("Deleted_yn")]
+        public bool Deleted { get; set; }
+
+		[Column("Active_yn")]
+        public bool Active { get; set; }
 
 		[Column("Form_nb")]
 		public int? Form { get; set; }
@@ -95,7 +104,7 @@ namespace PiggsPeak_API
 		public int? Version { get; set; }
 
 		[Column("Created_by")]
-		public string?  CreatedBy { get; set; }
+		public string? CreatedBy { get; set; }
 
 		[Column("Created_dt")]
 		public DateTime? CreatedDate { get; set; }
@@ -112,6 +121,31 @@ namespace PiggsPeak_API
 		[Column("Modified_tz")]
 		public string? ModifiedTimeZone { get; set; }
 
+		[Column("YearFinished_nb")]
+		public int? YearFinished { get; set; }
+
+		[Column("Recommend_yn")]
+		public string? Recommend { get; set; }
+
+		[Column("Priority_nb")]
+		public int? Priority { get; set; }
+
+		[Column("DateEnrolled_dt")]
+		public DateTime? DateEnrolled { get; set; }
+
+		[Column("PrimarySchool_nm")]
+		public string? PrimarySchool { get; set; }
+
+		[Column("Selected_yn")]
+		public bool Selected { get; set; }
+
+		[Column("StartYear_nb")]
+		public int? StartYear { get; set; }
+
+		[Column("New_yn")]
+		public bool NewStudent { get; set; }
+
+
 
 		//public ICollection<StudentGrade> Grades;
 
@@ -120,17 +154,19 @@ namespace PiggsPeak_API
 		}
 
 		public Student(int studentID, string studentName, string? firstName, string? lastName, string studentCode,
-			DateTime? birthDate, string? gender, string? sponsored, string ovc, string deleted, string active, int? form,
+			DateTime? birthDate, string? gender, string? sponsored, bool ovc, bool deleted, bool active, int? form,
 			int? schoolID, School? school, DateTime? sponsorStart, string? fatherLiving, string? fatherAtHome,
 			string? fatherWorking, string? fatherUnknown, string? motherLiving, string? motherAtHome, string? motherWorking,
 			string? motherUnknown, string? favouriteSubject, string? narritave, string? aspirations, string? notes, int? version,
 			string? createdBy, DateTime? createdDate, string? createdTimeZone, string? modifiedBy, DateTime? modifiedDate,
-			string? modifiedTimeZone)
+			string? modifiedTimeZone, string? middleName, string? recommend, int? priority, DateTime? dateEnrolled, string? primarySchool,
+			int? yearFinished, bool selected, int? startYear, bool newStudent)
 		{
 			StudentID = studentID;
 			StudentName = studentName;
 			FirstName = firstName;
 			LastName = lastName;
+			MiddleName = middleName;
 			StudentCode = studentCode;
 			BirthDate = birthDate;
 			Gender = gender;
@@ -161,6 +197,14 @@ namespace PiggsPeak_API
 			ModifiedBy = modifiedBy;
 			ModifiedDate = modifiedDate;
 			ModifiedTimeZone = modifiedTimeZone;
+			Recommend = recommend;
+			Priority = priority;
+			DateEnrolled = dateEnrolled;
+			PrimarySchool = primarySchool;
+			YearFinished = yearFinished;
+			NewStudent = newStudent;
+			StartYear = startYear;
+			Selected = selected;
 		}
 
 	}

@@ -5,25 +5,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace PiggsPeak_API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/Student")]
     public class StudentController : ControllerBase
 	{
 		private readonly AppDbContext _dbContext;
+		private readonly ILogger<StudentController> _logger;
 
-		public StudentController(AppDbContext dbContext)
+		public StudentController(AppDbContext dbContext, ILogger<StudentController> logger)
 		{
 			_dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+			_logger = logger;
 		}
 
 		// GET: api/Student
 		[HttpGet]
 		public async Task<IEnumerable<Student>> Get()
 		{
+			_logger.LogInformation("Fetching all students");
 			var students = await _dbContext.Students
 				.Include(s => s.School) // Eager loading of the School navigation property
 				.ToListAsync();
@@ -51,13 +55,16 @@ namespace PiggsPeak_API.Controllers
 		{
 			//var student = await _dbContext.Students.FindAsync(id);
 
-            var student = _dbContext.Students
+			_logger.LogInformation($"Fetching student with ID: {id}");
+
+			var student = _dbContext.Students
                 .Include(s => s.School)
                 .SingleOrDefault(s => s.StudentID == id);
 			
 			
             if (student == null)
 			{
+				_logger.LogWarning($"Student with ID: {id} not found");
 				return NotFound();
 			}
 
@@ -67,6 +74,7 @@ namespace PiggsPeak_API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Post([FromBody] Student student)
 		{
+			_logger.LogInformation($"Creating new student with name: {student.StudentName}");
 			// Assuming the client sends only the schoolCode
 			if (!string.IsNullOrWhiteSpace(student.School?.SchoolCode))
 			{
@@ -93,6 +101,7 @@ namespace PiggsPeak_API.Controllers
 			// Proceed to add the student now that the school information has been filled in
 			_dbContext.Students.Add(student);
 			await _dbContext.SaveChangesAsync();
+			_logger.LogInformation($"Student with ID: {student.StudentID} created successfully");
 
 			return CreatedAtAction(nameof(Get), new { id = student.StudentID }, student);
 		}
@@ -101,10 +110,12 @@ namespace PiggsPeak_API.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] Student updatedStudent)
 		{
+			_logger.LogInformation($"Updating student with ID: {id}");
 			var existingStudent = await _dbContext.Students.FindAsync(id);
 
 			if (existingStudent == null)
 			{
+				_logger.LogWarning($"Student with ID: {id} not found for update");
 				return NotFound();
 			}
 
@@ -139,9 +150,18 @@ namespace PiggsPeak_API.Controllers
 			existingStudent.CreatedTimeZone = updatedStudent.CreatedTimeZone;
 			existingStudent.ModifiedBy = updatedStudent.ModifiedBy;
 			existingStudent.ModifiedDate = DateTime.UtcNow;
+			existingStudent.Priority = updatedStudent.Priority;
+			existingStudent.Recommend = updatedStudent.Recommend;
+			existingStudent.MiddleName = updatedStudent.MiddleName;
+			existingStudent.PrimarySchool = updatedStudent.PrimarySchool;
+			existingStudent.DateEnrolled = updatedStudent.DateEnrolled;
+			existingStudent.YearFinished = updatedStudent.YearFinished;
+			existingStudent.Selected = updatedStudent.Selected;
+			existingStudent.Status = updatedStudent.Status;
 			//existingStudent.ModifiedTimeZone = TimeZoneInfo.Local.Id;
 
 			await _dbContext.SaveChangesAsync();
+			_logger.LogInformation($"Student with ID: {id} updated successfully");
 
 			return NoContent();
 		}
@@ -151,15 +171,18 @@ namespace PiggsPeak_API.Controllers
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> Delete(int id)
 		{
+			_logger.LogInformation($"Deleting student with ID: {id}");
 			var student = await _dbContext.Students.FindAsync(id);
 
 			if (student == null)
 			{
+				_logger.LogWarning($"Student with ID: {id} not found for deletion");
 				return NotFound();
 			}
 
 			_dbContext.Students.Remove(student);
 			await _dbContext.SaveChangesAsync();
+			_logger.LogInformation($"Student with ID: {id} deleted successfully");
 
 			return NoContent();
 		}

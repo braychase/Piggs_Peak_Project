@@ -52,5 +52,22 @@ namespace PiggsPeak_API
         [Column("Photo_dt")]
         public DateTime? PhotoDate { get; set; }
 
-    }
+		[Column("New_yn")]
+		public string? NewStudent { get; set; }
+
+		[Column("Active_yn")]
+		public string? Active { get; set; }
+
+		[Column("Priority_nb")]
+		public int? Priority { get; set; }
+
+		[Column("Selected_yn")]
+		public string? Selected { get; set; }
+
+		[Column("StartYear_nb")]
+		public int? StartYear { get; set; }
+
+		[Column("Status_id")]
+		public int? StatusID { get; set; }
+	}
 }

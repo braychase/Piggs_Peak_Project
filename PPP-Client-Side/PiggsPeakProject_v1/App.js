@@ -6,7 +6,7 @@ import {
   LoginScreen,
   StudentPage,
   AddStudentPage,
-  InterviewPage,
+  RankingPage,
   MorePage,
   SponsorPage,
   AuditTrailPage,
@@ -24,8 +24,8 @@ function StudentScreen({ navigation }) {
   return <StudentPage navigation={navigation} />;
 }
 
-function InterviewScreen() {
-  return <InterviewPage />;
+function RankingScreen({ navigation }) {
+  return <RankingPage navigation={navigation} />;
 }
 
 // MoreScreen Component
@@ -116,7 +116,7 @@ function TabNavigator() {
       />
       <Tab.Screen
         name="Ranking"
-        component={InterviewScreen}
+        component={RankingScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen

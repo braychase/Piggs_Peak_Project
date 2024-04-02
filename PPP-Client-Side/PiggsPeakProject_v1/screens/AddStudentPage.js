@@ -26,6 +26,7 @@ import { render } from "react-dom";
 import styles from "../styles/addStudentPageStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "../ApiContext";
+import { getStatusById } from "../services/StudentStatusService";
 
 const Tab = ({ selected, title, onPress, isFirst, isLast }) => {
   return (
@@ -73,7 +74,7 @@ const AddStudentPage = () => {
   const [schoolID, setSchoolID] = useState("");
   const [schoolCode, setSchoolCode] = useState("");
   const [schoolDescription, setSchoolDescription] = useState("");
-  const [yearFinished, setYearFinished] = useState("");
+  const [yearFinished, setYearFinished] = useState(new Date());
   const [dateEnrolled, setDateEnrolled] = useState(new Date());
   const [year, setYear] = useState("");
   const [form, setForm] = useState("");
@@ -90,6 +91,9 @@ const AddStudentPage = () => {
   const [recommend, setRecommend] = useState("");
   const [priority, setPriority] = useState(10);
   const [comments, setComments] = useState("");
+  const [sponsored, setSponsored] = useState("");
+  const [selected, setSelected] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   // Placeholder for sibling data rows
   const siblingRows = Array.from({ length: 3 }, (_, index) => ({
@@ -127,20 +131,28 @@ const AddStudentPage = () => {
   };
 
   useEffect(() => {
+    const fetchStatus = async (statusId) => {
+      try {
+        const statusData = await getStatusById(baseUrl, statusId);
+        setSelectedStatus(statusData); // statusData should include { id, name }
+      } catch (error) {
+        console.error("Failed to fetch status data:", error);
+      }
+    };
+
     const fetchStudentData = async () => {
       if (studentID) {
         try {
           const studentData = await getStudentById(baseUrl, studentID);
-
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
           setMiddleName(studentData.middleName || "");
           setFirstName(studentData.firstName || "");
           setGender(studentData.gender || "");
-          setOVC(studentData.ovc || "");
+          setOVC(studentData.ovc === true || studentData.ovc === "true");
           setStudentCode(studentData.studentCode || "");
           setActive(studentData.active || "");
-          setDeleted(studentData.deleted || "");
+          setDeleted(studentData.deleted || false);
           setVersion(studentData.version || "");
           setSchoolID(studentData.schoolID || "");
           setSchoolCode(studentData.school.schoolCode || "");
@@ -148,7 +160,7 @@ const AddStudentPage = () => {
           setPrimarySchool(studentData.primarySchool || "");
           setAmbitionAfterGraduation(studentData.aspirations || "");
           setFavouriteSubject(studentData.favouriteSubject || "");
-          setYearFinished(studentData.yearFinished || "");
+          setYearFinished(studentData.yearFinished || null);
           setForm(studentData.form || "");
           const motherLivingValue =
             studentData.motherLiving === null
@@ -190,11 +202,26 @@ const AddStudentPage = () => {
               ? "unspecified"
               : studentData.fatherUnknown;
           setFatherUnknown(fatherUnknownValue);
+          setComments(studentData.notes || "");
+          setSponsored(studentData.sponsored || "");
+          setSelected(studentData.selected || false);
+          setPriority(studentData.priority || 10);
+          if (studentData.dateEnrolled) {
+            const parsedDateEnrolled = new Date(studentData.dateEnrolled);
+            setDateEnrolled(parsedDateEnrolled);
+          } else {
+            // Set to current date or any default, if necessary
+            setDateEnrolled(new Date());
+          }
+          setRecommend(studentData.recommend || "Y");
 
           // Handle birthDate
           if (studentData.birthDate) {
             const parsedDob = new Date(studentData.birthDate);
             setDob(parsedDob);
+          }
+          if (studentData.status) {
+            fetchStatus(studentData.status);
           }
         } catch (error) {
           console.error("Failed to fetch student data:", error);
@@ -261,15 +288,16 @@ const AddStudentPage = () => {
     fetchSchoolsData();
   }, [studentID, photoID]);
   const handleSaveStudent = async () => {
-    console.log();
+    console.log(ovc);
     const studentData = {
       studentID: studentID,
       studentName: surname + ", " + firstName,
       studentCode: studentCode,
       lastName: surname,
       firstName: firstName.trim(), // Ensure no trailing spaces and correct spelling
+      middleName: middleName,
       gender: gender,
-      ovc: ovc === "Y" ? "Y" : "N",
+      ovc: ovc === true ? true : false,
       birthDate: dob.toISOString().split("T")[0] + "T00:00:00", // Format to match the successful payload
       schoolID: schoolID,
       school: {
@@ -292,6 +320,14 @@ const AddStudentPage = () => {
       active: active,
       version: version,
       deleted: deleted,
+      recommend: recommend,
+      priority: priority,
+      dateEnrolled: dateEnrolled,
+      primarySchool: primarySchool,
+      yearFinished: yearFinished,
+      sponsored: sponsored,
+      selected: selected,
+      status: selectedStatus.id,
     };
 
     try {
@@ -334,6 +370,11 @@ const AddStudentPage = () => {
       {selectedTab === "Personal" && (
         <View style={styles.formContainer}>
           <View style={styles.row}>
+            <Text style={styles.pickerLabel}>
+              Status : {selectedStatus.name}
+            </Text>
+          </View>
+          <View style={styles.row}>
             <TextInput
               mode="outlined"
               label="Surname"
@@ -372,12 +413,12 @@ const AddStudentPage = () => {
             <View style={styles.horizontalRow}>
               <Text style={[styles.ovcLabel, { marginLeft: 20 }]}>OVC:</Text>
               <Picker
-                selectedValue={ovc}
-                onValueChange={(itemValue) => setOVC(itemValue)}
-                style={styles.ovcPicker} // Apply specific styling for the OVC Picker
+                selectedValue={ovc.toString()} // Convert the boolean ovc value to a string
+                onValueChange={(itemValue) => setOVC(itemValue === "true")} // Convert selected value back to boolean
+                style={styles.ovcPicker}
               >
-                <Picker.Item label="Yes" value="Y" />
-                <Picker.Item label="No" value="N" />
+                <Picker.Item label="Yes" value="true" />
+                <Picker.Item label="No" value="false" />
               </Picker>
             </View>
           </View>
@@ -409,7 +450,7 @@ const AddStudentPage = () => {
             )}
 
             {/* Container for the buttons, applying the new buttonsContainer style */}
-            <View style={styles.buttonsContainer}>
+            <View style={styles.imageButtonsContainer}>
               <Pressable style={styles.changeButton}>
                 <Text style={styles.changeButtonText}>Change Picture</Text>
               </Pressable>
@@ -664,8 +705,8 @@ const AddStudentPage = () => {
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => setRecommend(itemValue)}
             >
-              <Picker.Item label="Yes" value="Yes" />
-              <Picker.Item label="No" value="No" />
+              <Picker.Item label="Yes" value="Y" />
+              <Picker.Item label="No" value="N" />
             </Picker>
           </View>
           <View style={styles.row}>
