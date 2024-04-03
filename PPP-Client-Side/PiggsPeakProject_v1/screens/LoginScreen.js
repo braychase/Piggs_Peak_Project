@@ -38,7 +38,6 @@ const LoginScreen = ({ navigation }) => {
   }, []);
 
   const handleLogin = async () => {
-
     try {
       if (
         !username.trim() ||
@@ -51,10 +50,8 @@ const LoginScreen = ({ navigation }) => {
       }
 
       let loginUrl = baseUrlInput.trim();
-      if (!loginUrl.includes("://"))
-        loginUrl = "https://" + loginUrl;
-      if (!loginUrl.endsWith("/"))
-        loginUrl += "/";
+      if (!loginUrl.includes("://")) loginUrl = "https://" + loginUrl;
+      if (!loginUrl.endsWith("/")) loginUrl += "/";
       //console.error("login: base Url=", loginUrl);
 
       setError("Connecting, please wait ...");
@@ -77,8 +74,8 @@ const LoginScreen = ({ navigation }) => {
 
         // only store the Server URL after successful login
         console.error("LOGIN storing baseUrl =", loginUrl);
-        await AsyncStorage.setItem("baseUrl", loginUrl);  // this is for next time
-        setBaseUrl(loginUrl);                             // this is for now
+        await AsyncStorage.setItem("baseUrl", loginUrl); // this is for next time
+        setBaseUrl(loginUrl); // this is for now
 
         // store the DefaultSchoolId
         if (data.defaultSchoolID) {

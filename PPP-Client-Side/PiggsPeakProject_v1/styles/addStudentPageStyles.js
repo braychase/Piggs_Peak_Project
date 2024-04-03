@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
     borderRadius: 45, // Half of the width and height to make it circular
     backgroundColor: COLORS.secondary,
     borderColor: COLORS.black,
-    justifyContent: "center",
-    alignItems: "center",
+    // justifyContent: "center",
+    // alignItems: "center",
     marginRight: 10,
     borderWidth: 1,
   },
@@ -143,9 +143,14 @@ const styles = StyleSheet.create({
   },
   // Additional row for the image and buttons
   imageRow: {
-    alignItems: "center", // Center items vertically within the container
-    justifyContent: "center", // Center items horizontally
-    marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  imageButtonsContainer: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
   },
   buttonsContainer: {
     flexDirection: "row",
@@ -158,26 +163,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 5,
     backgroundColor: COLORS.primary,
-    justifyContent: "center",
-    alignItems: "center",
+    // justifyContent: "center",
+    // alignItems: "center",
     borderColor: COLORS.white,
     borderWidth: 1,
     elevation: 2,
+    marginBottom: 10,
     // Removed marginHorizontal to control width directly
-    width: "45%", // Adjust the width as needed to make the button smaller
+    //width: "45%", // Adjust the width as needed to make the button smaller
   },
   deleteButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
     backgroundColor: COLORS.gray,
-    justifyContent: "center",
-    alignItems: "center",
+    // justifyContent: "center",
+    // alignItems: "center",
     borderColor: COLORS.black,
     borderWidth: 1,
     elevation: 2,
     // Removed marginHorizontal to control width directly
-    width: "45%", // Adjust the width as needed to make the button smaller
+    //width: "45%", // Adjust the width as needed to make the button smaller
   },
   saveButton: {
     paddingVertical: 12,
@@ -272,6 +278,37 @@ const styles = StyleSheet.create({
     width: 110,
     height: 110,
     borderRadius: 10, // Adjust as needed
+    resizeMode: "cover",
+    marginRight: 10,
+  },
+  newGradeButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: COLORS.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 2,
+    marginHorizontal: 30,
+  },
+  addButton: {
+    backgroundColor: "blue", // Or any color that fits your app's theme
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    // Add more styling as needed
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: 16,
+    // Add more styling as needed
+  },
+  cancelButton: {
+    backgroundColor: "red", // Or any color that fits your app's theme
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    // Add more styling as needed
   },
 });
 

@@ -66,5 +66,8 @@ namespace PiggsPeak_API
 
 		[Column("StartYear_nb")]
 		public int? StartYear { get; set; }
+
+		[Column("Status_id")]
+		public int? StatusID { get; set; }
 	}
 }
