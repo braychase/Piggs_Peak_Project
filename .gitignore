@@ -5,6 +5,7 @@ Migrations
 *.lock
 package-lock.json
 SQL/StudentPhotos
+stash-ChrisR
 *.png
 *.dll
 *.nupkg
@@ -18,9 +19,4 @@ SQL/StudentPhotos
 *.ps1
 *.pri
 *.lnk
-PasswordHasher/HashPasswords/HashPasswords.sln
-PasswordHasher/HashPasswords/HashPasswords/HashPasswords.csproj
-PasswordHasher/HashPasswords/HashPasswords/Program.cs
-PasswordHasher/HashPasswords/HashPasswords/Properties/AssemblyInfo.cs
-PPP-Server-Side/PiggsPeak_API/PiggsPeak_API/Services/CustomPasswordHasher.cs
-PPP-Server-Side/PiggsPeak_API/PiggsPeak_API/Services/ICustomPasswordHasher.cs
+
