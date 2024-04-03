@@ -281,6 +281,35 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     marginRight: 10,
   },
+  newGradeButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    backgroundColor: COLORS.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 2,
+    marginHorizontal: 30,
+  },
+  addButton: {
+    backgroundColor: "blue", // Or any color that fits your app's theme
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    // Add more styling as needed
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: 16,
+    // Add more styling as needed
+  },
+  cancelButton: {
+    backgroundColor: "red", // Or any color that fits your app's theme
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    // Add more styling as needed
+  },
 });
 
 export default styles;

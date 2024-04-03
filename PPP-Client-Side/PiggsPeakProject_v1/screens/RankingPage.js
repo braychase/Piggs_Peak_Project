@@ -38,7 +38,7 @@ const Tab = ({ title, onPress, isSelected }) => {
 
 const RankingScreen = ({ navigation }) => {
   const { baseUrl } = useApi();
-  const [selectedTab, setSelectedTab] = useState("Step 1");
+  const [selectedTab, setSelectedTab] = useState("Summary");
   const [schools, setSchools] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(1);
   const [schoolSummary, setSchoolSummary] = useState(null);
@@ -309,7 +309,7 @@ const RankingScreen = ({ navigation }) => {
 
   const renderContent = () => {
     switch (selectedTab) {
-      case "Step 1":
+      case "Summary":
         return (
           <View>
             <View style={styles.formContainer}>
@@ -338,7 +338,7 @@ const RankingScreen = ({ navigation }) => {
             </View>
           </View>
         );
-      case "Step 2":
+      case "Current":
         return (
           <View>
             {/* <View style={styles.searchContainer}> */}
@@ -460,7 +460,7 @@ const RankingScreen = ({ navigation }) => {
             </View>
           </View>
         );
-      case "Step 3":
+      case "New":
         return (
           <View>
             <View style={styles.sortContainer}>
@@ -670,7 +670,7 @@ const RankingScreen = ({ navigation }) => {
     >
       <ScrollView>
         <View style={styles.tabsContainer}>
-          {["Step 1", "Step 2", "Step 3"].map((step) => (
+          {["Summary", "Current", "New"].map((step) => (
             <Tab
               key={step}
               title={step}
