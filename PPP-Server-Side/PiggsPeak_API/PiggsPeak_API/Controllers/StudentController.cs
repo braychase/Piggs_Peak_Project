@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace PiggsPeak_API.Controllers
 {
@@ -75,36 +76,54 @@ namespace PiggsPeak_API.Controllers
 		public async Task<IActionResult> Post([FromBody] Student student)
 		{
 			_logger.LogInformation($"Creating new student with name: {student.StudentName}");
-			// Assuming the client sends only the schoolCode
-			if (!string.IsNullOrWhiteSpace(student.School?.SchoolCode))
-			{
-				// Find the school in the database by the provided schoolCode
-				var school = await _dbContext.Schools.FirstOrDefaultAsync(s => s.SchoolCode == student.School.SchoolCode);
-				if (school != null)
-				{
-					// Set the schoolID and description based on the found school
-					student.SchoolID = school.SchoolID; // Ensure the student is linked to the correct school ID
-														// Optionally, if you want to keep the school entity updated in student
-					student.School = school;
-				}
-				else
-				{
-					// Handle case where the schoolCode does not match any school in the database
-					return BadRequest("Invalid school code.");
-				}
-			}
-			else
+
+			// Check for a valid school code
+			if (string.IsNullOrWhiteSpace(student.School?.SchoolCode))
 			{
 				return BadRequest("School code is required.");
 			}
 
-			// Proceed to add the student now that the school information has been filled in
+			// Find the school by the provided schoolCode
+			var school = await _dbContext.Schools
+				.FirstOrDefaultAsync(s => s.SchoolCode == student.School.SchoolCode);
+			if (school == null)
+			{
+				// Return a bad request if the school code is invalid
+				return BadRequest("Invalid school code.");
+			}
+
+			// Generate the StudentCode with the school code and the current year
+			int currentYear = DateTime.Now.Year;
+			string prefix = $"{school.SchoolCode}-{currentYear}-"; // e.g., PCH-2024-
+			var lastStudentCode = await _dbContext.Students
+									.Where(s => s.StudentCode.StartsWith(prefix))
+									.OrderByDescending(s => s.StudentCode)
+									.Select(s => s.StudentCode)
+									.FirstOrDefaultAsync();
+
+			int nextNumber = 1;
+			if (lastStudentCode != null)
+			{
+				string numberStr = lastStudentCode.Substring(lastStudentCode.LastIndexOf('-') + 1);
+				if (int.TryParse(numberStr, out int lastNumber))
+				{
+					nextNumber = lastNumber + 1;
+				}
+			}
+
+			student.StudentCode = $"{prefix}{nextNumber:00}"; // e.g., PCH-2024-01
+			student.SchoolID = school.SchoolID; // Link student to the correct school ID
+			student.School = new School { SchoolID = school.SchoolID, SchoolCode = school.SchoolCode, Description = school.Description }; // Full school object with description
+
+			// Add the student to the database context
 			_dbContext.Students.Add(student);
 			await _dbContext.SaveChangesAsync();
 			_logger.LogInformation($"Student with ID: {student.StudentID} created successfully");
 
 			return CreatedAtAction(nameof(Get), new { id = student.StudentID }, student);
 		}
+
+
 
 
 		[HttpPut("{id}")]
