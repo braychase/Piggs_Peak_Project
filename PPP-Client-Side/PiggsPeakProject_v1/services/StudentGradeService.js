@@ -53,3 +53,31 @@ export const getStudentGradeById = async (baseUrl, studentId) => {
     throw error;
   }
 };
+
+export const addSchoolGrade = async (baseUrl, gradeData) => {
+  console.log(gradeData);
+  try {
+    const response = await fetch(`${baseUrl}api/StudentGrade`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(gradeData), // Convert the grade data object to a JSON string
+    });
+
+    const responseText = await response.text(); // First get the response as text
+
+    if (!response.ok) {
+      // If the server response is not ok, parse the text to JSON and throw an error
+      const errorResponse = JSON.parse(responseText); // Safely parse the text to JSON
+      throw new Error(errorResponse.message || "Failed to add school grade");
+    }
+
+    return JSON.parse(responseText); // Finally parse the text to JSON and return
+  } catch (error) {
+    console.error("Error adding school grade:", error.message);
+    throw error; // Re-throw the error to be handled by the caller
+  }
+};

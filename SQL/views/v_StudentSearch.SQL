@@ -1,3 +1,4 @@
+--use PiggsPeakProject;
 DROP VIEW IF EXISTS v_StudentSearch;
 GO
 
@@ -16,17 +17,18 @@ SELECT
     S.New_yn,         -- Added field
     S.Selected_yn,    -- Added field
     S.Priority_nb,    -- Added field
-	S.Status_id,
 	S.Active_yn,    -- Added field
-	S.StartYear_nb,    -- Added field
-    S.School_id, 
+	S.StartYear_nb, 
+	S.Status_id,  -- Added field
     Sc.School_nm, 
+    S.School_id, 
     S.Form_nb,
+	S.Program_id,
     P.Photo_id, 
     P.Photo_dt
 FROM Student S
     LEFT JOIN School Sc ON S.School_id = Sc.School_id
-    LEFT OUTER JOIN Student_Photo P ON S.Student_id = P.Student_id 
+    LEFT JOIN Student_Photo P ON S.Student_id = P.Student_id 
     AND P.Photo_dt = (
         SELECT MAX(Photo_dt) 
         FROM Student_Photo P2 

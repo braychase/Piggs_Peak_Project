@@ -9,25 +9,31 @@ namespace PiggsPeak_API.Classes
 	{
 		[Key]
 		[Column("School_id")]
-		public int SchoolId { get; set; }
+		public int SchoolID { get; set; }
 
-		[Column("Effective_dt")]
-		[Required]
-		public DateTime? EffectiveDate { get; set; }
+		[Key]
+		[Column("Program_id")]
+		public int ProgramID { get; set; }
 
+		[Key]
 		[Column("Form_nb")]
 		public int FormNumber { get; set; }
 
-		[Column("Program_id")]
-		public int ProgramId { get; set; }
-
+		[Key]
 		[Column("OVC_yn")]
 		public bool OVC { get; set; }
+
+		[Column("Effective_dt")]
+		//		[Required]
+		public DateTime? EffectiveDate { get; set; }
 
 		[Column("RegFee_nb")]
 		public decimal RegistrationFee { get; set; }
 
 		[Column("ExamFee_nb")]
 		public decimal ExaminationFee { get; set; }
-	}
+
+		//public decimal TotalFees
+		//{ get { return RegistrationFee + ExaminationFee; } }
+    }
 }

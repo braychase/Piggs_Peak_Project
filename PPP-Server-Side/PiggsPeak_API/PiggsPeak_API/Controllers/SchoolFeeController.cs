@@ -36,7 +36,7 @@ namespace PiggsPeak_API.Controllers
 		{
 			_logger.LogInformation($"Fetching school fees for SchoolId: {schoolId}");
 			var schoolFees = await _dbContext.SchoolFees
-											  .Where(fee => fee.SchoolId == schoolId)
+											  .Where(fee => fee.SchoolID == schoolId)
 											  .AsNoTracking()
 											  .ToListAsync();
 

@@ -31,14 +31,13 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     const loadInputUrl = async () => {
       let value = await loadBaseUrl();
-      console.warn("login: load Url=", value);
+      console.error("login: load Url=", value);
       setBaseUrlInput(value);
     };
     loadInputUrl();
   }, []);
 
   const handleLogin = async () => {
-
     try {
       if (
         !username.trim() ||
@@ -51,11 +50,9 @@ const LoginScreen = ({ navigation }) => {
       }
 
       let loginUrl = baseUrlInput.trim();
-      if (!loginUrl.includes("://"))
-        loginUrl = "https://" + loginUrl;
-      if (!loginUrl.endsWith("/"))
-        loginUrl += "/";
-      console.warn("login: using Url=", loginUrl);
+      if (!loginUrl.includes("://")) loginUrl = "https://" + loginUrl;
+      if (!loginUrl.endsWith("/")) loginUrl += "/";
+      //console.error("login: base Url=", loginUrl);
 
       setError("Connecting, please wait ...");
       const response = await fetch(loginUrl + "api/Login", {
@@ -77,8 +74,8 @@ const LoginScreen = ({ navigation }) => {
 
         // only store the Server URL after successful login
         console.error("LOGIN storing baseUrl =", loginUrl);
-        await AsyncStorage.setItem("baseUrl", loginUrl);  // this is for next time
-        setBaseUrl(loginUrl);                             // this is for now
+        await AsyncStorage.setItem("baseUrl", loginUrl); // this is for next time
+        setBaseUrl(loginUrl); // this is for now
 
         // store the DefaultSchoolId
         if (data.defaultSchoolID) {

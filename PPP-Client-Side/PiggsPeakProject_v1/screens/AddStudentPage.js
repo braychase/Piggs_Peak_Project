@@ -21,7 +21,10 @@ import {
   addStudent,
 } from "../services/StudentService";
 import { getStudentPhotoById } from "../services/StudentPhotoService";
-import { getStudentGradeById } from "../services/StudentGradeService";
+import {
+  getStudentGradeById,
+  addSchoolGrade,
+} from "../services/StudentGradeService";
 import { render } from "react-dom";
 import styles from "../styles/addStudentPageStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -64,20 +67,22 @@ const AddStudentPage = () => {
   const [firstName, setFirstName] = useState("");
   const [gender, setGender] = useState("M");
   const [ovc, setOVC] = useState("");
-  const [active, setActive] = useState("");
-  const [deleted, setDeleted] = useState("");
-  const [version, setVersion] = useState("");
+  const [active, setActive] = useState("Y");
+  const [deleted, setDeleted] = useState("N");
+  const [version, setVersion] = useState("1");
   const [studentCode, setStudentCode] = useState("");
   const [dob, setDob] = useState(new Date());
   //const [checked, setChecked] = useState(false);
   const [primarySchool, setPrimarySchool] = useState("");
   const [schoolID, setSchoolID] = useState("");
   const [schoolCode, setSchoolCode] = useState("");
+  const [newGradeSchool, setNewGradeSchool] = useState("");
   const [schoolDescription, setSchoolDescription] = useState("");
-  const [yearFinished, setYearFinished] = useState(new Date());
+  const [yearFinished, setYearFinished] = useState("");
   const [dateEnrolled, setDateEnrolled] = useState(new Date());
-  const [year, setYear] = useState("");
+  const [startYear, setStartYear] = useState("");
   const [form, setForm] = useState("");
+  const [newGradeForm, setNewGradeForm] = useState("");
   const [ambitionAfterGraduation, setAmbitionAfterGraduation] = useState("");
   const [favouriteSubject, setFavouriteSubject] = useState("");
   const [motherLiving, setMotherLiving] = useState("unspecified");
@@ -88,12 +93,35 @@ const AddStudentPage = () => {
   const [fatherAtHome, setFatherAtHome] = useState("unspecified");
   const [fatherWorking, setFatherWorking] = useState("unspecified");
   const [fatherUnknown, setFatherUnknown] = useState("unspecified");
-  const [recommend, setRecommend] = useState("");
+  const [recommend, setRecommend] = useState("N");
   const [priority, setPriority] = useState(10);
   const [comments, setComments] = useState("");
   const [sponsored, setSponsored] = useState("");
   const [selected, setSelected] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [isAddingGrade, setIsAddingGrade] = useState(false);
+  const [programId, setProgramId] = useState("");
+  const [notes, setNotes] = useState("");
+  const [examFee, setExamFee] = useState("");
+  const [regFee, setRegFee] = useState("");
+  const formatCurrency = (amount) => {
+    // Check if the amount is a number and not undefined or null
+    if (amount == null) return 0;
+
+    // Create an instance of Intl.NumberFormat for currency formatting
+    // Adjusted to use no specific currency symbol, but manual prefix 'R '
+    const formatter = new Intl.NumberFormat("en-ZA", {
+      style: "currency",
+      currency: "ZAR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+      // Use grouping to separate thousands with commas
+      useGrouping: true,
+    });
+
+    // Return the formatted amount with 'R ' prefixed
+    return formatter.format(amount);
+  };
 
   // Placeholder for sibling data rows
   const siblingRows = Array.from({ length: 3 }, (_, index) => ({
@@ -120,6 +148,13 @@ const AddStudentPage = () => {
     }));
   };
 
+  const handleTabSelect = (tab) => {
+    // When switching tabs, always reset the adding grade state
+    setIsAddingGrade(false);
+    // Then set the new selected tab
+    setSelectedTab(tab);
+  };
+
   const calculateAge = (dob) => {
     const today = new Date();
     const age = today.getFullYear() - dob.getFullYear();
@@ -128,6 +163,46 @@ const AddStudentPage = () => {
       return age - 1;
     }
     return age;
+  };
+
+  const handleAddGrade = async () => {
+    const effectiveDate = new Date(new Date().getFullYear() + 1, 0, 1, 0, 0, 0);
+    const formattedEffectiveDate =
+      effectiveDate.toISOString().split("T")[0] + "T00:00:00";
+
+    const newGradeData = {
+      studentID: studentID,
+      schoolID: schoolID,
+      programId: programId,
+      formNumber: newGradeForm,
+      notes: notes,
+      effectiveDate: formattedEffectiveDate, // YYYY-MM-DDT00:00:00 format
+      deleted: "n",
+      version: 1,
+    };
+
+    console.log(newGradeData);
+
+    try {
+      const response = await addSchoolGrade(baseUrl, newGradeData);
+      console.log("Grade added:", response);
+      alert("Grade added successfully");
+      setIsAddingGrade(false); // Reset the form after confirming operation success
+    } catch (error) {
+      console.error("Failed to add grade:", error);
+      alert("Failed to add grade. Please check the details and try again.");
+      setIsAddingGrade(true); // Consider only resetting this on failure if you want the user to retry without losing form data
+    }
+  };
+
+  // Function to toggle to "add new grade" mode
+  const handleNewGradePress = () => {
+    setIsAddingGrade(true);
+  };
+
+  // Function to cancel adding a new grade
+  const handleCancel = () => {
+    setIsAddingGrade(false);
   };
 
   useEffect(() => {
@@ -144,6 +219,7 @@ const AddStudentPage = () => {
       if (studentID) {
         try {
           const studentData = await getStudentById(baseUrl, studentID);
+          console.log(studentData);
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
           setMiddleName(studentData.middleName || "");
@@ -156,11 +232,15 @@ const AddStudentPage = () => {
           setVersion(studentData.version || "");
           setSchoolID(studentData.schoolID || "");
           setSchoolCode(studentData.school.schoolCode || "");
+          setNewGradeSchool(studentData.school.schoolCode || "");
           setSchoolDescription(studentData.school.description || "");
           setPrimarySchool(studentData.primarySchool || "");
           setAmbitionAfterGraduation(studentData.aspirations || "");
           setFavouriteSubject(studentData.favouriteSubject || "");
           setYearFinished(studentData.yearFinished || null);
+          setStartYear(studentData.startYear || null);
+          setRegFee(studentData.schoolFee.registrationFee || "");
+          setExamFee(studentData.schoolFee.examinationFee || "");
           setForm(studentData.form || "");
           const motherLivingValue =
             studentData.motherLiving === null
@@ -242,6 +322,7 @@ const AddStudentPage = () => {
           );
           if (defaultSchool) {
             setSchoolCode(defaultSchool.schoolCode);
+            setNewGradeSchool(defaultSchool.schoolCode);
           }
         }
       } catch (error) {
@@ -288,7 +369,6 @@ const AddStudentPage = () => {
     fetchSchoolsData();
   }, [studentID, photoID]);
   const handleSaveStudent = async () => {
-    console.log(ovc);
     const studentData = {
       studentID: studentID,
       studentName: surname + ", " + firstName,
@@ -318,6 +398,7 @@ const AddStudentPage = () => {
       fatherUnknown: fatherUnknown === "unspecified" ? null : fatherUnknown,
       notes: comments || null,
       active: active,
+      startYear: startYear,
       version: version,
       deleted: deleted,
       recommend: recommend,
@@ -329,10 +410,8 @@ const AddStudentPage = () => {
       selected: selected,
       status: selectedStatus.id,
     };
-
+    console.log(studentData);
     try {
-      console.log(studentData);
-
       // Determine whether to add or update the student based on the presence of studentCode
       if (studentCode === null || studentCode.trim() === "") {
         const newStudent = await addStudent(baseUrl, studentData);
@@ -347,6 +426,7 @@ const AddStudentPage = () => {
       alert("Failed to save student. Please check the details and try again.");
     }
   };
+
   return (
     <LinearGradient
       style={styles.container}
@@ -359,7 +439,7 @@ const AddStudentPage = () => {
               key={tab}
               title={tab}
               selected={selectedTab === tab}
-              onPress={() => setSelectedTab(tab)}
+              onPress={() => handleTabSelect(tab)}
               isFirst={index === 0}
               isLast={index === array.length - 1}
             />
@@ -464,6 +544,14 @@ const AddStudentPage = () => {
       {selectedTab === "School" && (
         <View style={styles.formContainer}>
           <View style={styles.row}>
+            <Text style={styles.regLabel}>
+              Reg Fee : {formatCurrency(regFee)}
+            </Text>
+            <Text style={styles.examLabel}>
+              Exam Fee : {formatCurrency(examFee)}
+            </Text>
+          </View>
+          <View style={styles.row}>
             <TextInput
               mode="outlined"
               label="Primary School"
@@ -498,8 +586,8 @@ const AddStudentPage = () => {
             <TextInput
               mode="outlined"
               label="Year"
-              value={year}
-              onChangeText={setYear}
+              value={startYear}
+              onChangeText={setStartYear}
               style={styles.smallTextInput}
             />
           </View>
@@ -539,27 +627,103 @@ const AddStudentPage = () => {
       )}
 
       {selectedTab === "Grades" && (
-        <ScrollView style={styles.tableContainer}>
-          <DataTable>
-            <DataTable.Header>
-              <DataTable.Title>Effective Date</DataTable.Title>
-              <DataTable.Title>School Name</DataTable.Title>
-              <DataTable.Title>Result</DataTable.Title>
-              <DataTable.Title>Form Number</DataTable.Title>
-            </DataTable.Header>
+        <View>
+          {!isAddingGrade ? (
+            <>
+              <View>
+                <Pressable
+                  style={styles.newGradeButton}
+                  onPress={handleNewGradePress}
+                >
+                  <Text style={styles.changeButtonText}>New Grade</Text>
+                </Pressable>
+              </View>
+              <ScrollView style={styles.tableContainer}>
+                <DataTable>
+                  <DataTable.Header>
+                    <DataTable.Title>Effective Date</DataTable.Title>
+                    <DataTable.Title>School Name</DataTable.Title>
+                    <DataTable.Title>Result</DataTable.Title>
+                    <DataTable.Title>Form Number</DataTable.Title>
+                  </DataTable.Header>
 
-            {grades.map((grade, index) => (
-              <DataTable.Row key={index}>
-                <DataTable.Cell>
-                  {new Date(grade.effective_dt).toLocaleDateString()}
-                </DataTable.Cell>
-                <DataTable.Cell>{grade.school_nm}</DataTable.Cell>
-                <DataTable.Cell>{grade.result_tx}</DataTable.Cell>
-                <DataTable.Cell>{grade.form_nb}</DataTable.Cell>
-              </DataTable.Row>
-            ))}
-          </DataTable>
-        </ScrollView>
+                  {grades.map((grade, index) => (
+                    <DataTable.Row key={index}>
+                      <DataTable.Cell>
+                        {new Date(grade.effective_dt).toLocaleDateString()}
+                      </DataTable.Cell>
+                      <DataTable.Cell>{grade.school_nm}</DataTable.Cell>
+                      <DataTable.Cell>{grade.result_tx}</DataTable.Cell>
+                      <DataTable.Cell>{grade.form_nb}</DataTable.Cell>
+                    </DataTable.Row>
+                  ))}
+                </DataTable>
+              </ScrollView>
+            </>
+          ) : (
+            <View style={{ padding: 10 }}>
+              {/* Implement input fields here */}
+              <Text style={styles.pickerLabel}>School : </Text>
+              <View style={styles.row}>
+                <Picker
+                  selectedValue={schoolCode}
+                  style={styles.picker}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setNewGradeSchool(itemValue)
+                  }
+                  placeholder="Select High School"
+                >
+                  {schools.map((school, index) => (
+                    <Picker.Item
+                      key={index}
+                      label={school.description}
+                      value={school.schoolCode}
+                    />
+                  ))}
+                </Picker>
+              </View>
+              <View style={styles.row}>
+                <TextInput
+                  mode="outlined"
+                  label="Form"
+                  value={newGradeForm}
+                  onChangeText={setNewGradeForm}
+                  style={styles.smallTextInput}
+                />
+                <TextInput
+                  mode="outlined"
+                  label="Program"
+                  value={programId}
+                  onChangeText={setProgramId}
+                  style={styles.input}
+                />
+              </View>
+              <Text style={styles.label}>Notes:</Text>
+              <TextInput
+                style={styles.commentsInput}
+                multiline
+                numberOfLines={4}
+                onChangeText={setNotes}
+                value={notes}
+                placeholder="Type your comment here..."
+              />
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  marginTop: 10,
+                }}
+              >
+                <Pressable style={styles.addButton} onPress={handleAddGrade}>
+                  <Text style={styles.modalButtonText}>Add Grade</Text>
+                </Pressable>
+                <Pressable style={styles.cancelButton} onPress={handleCancel}>
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </Pressable>
+              </View>
+            </View>
+          )}
+        </View>
       )}
 
       {selectedTab === "Family" && (
@@ -739,10 +903,12 @@ const AddStudentPage = () => {
       )}
       {/* ... Content for other selected tabs ... */}
 
-      {/* Save Student button */}
-      <Pressable style={styles.saveButton} onPress={handleSaveStudent}>
-        <Text style={styles.saveButtonText}>Save Student</Text>
-      </Pressable>
+      {/* Conditionally render the Save Student button */}
+      {!(selectedTab === "Grades" && isAddingGrade) && (
+        <Pressable style={styles.saveButton} onPress={handleSaveStudent}>
+          <Text style={styles.saveButtonText}>Save Student</Text>
+        </Pressable>
+      )}
     </LinearGradient>
   );
 };

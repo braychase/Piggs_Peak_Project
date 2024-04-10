@@ -38,7 +38,7 @@ const Tab = ({ title, onPress, isSelected }) => {
 
 const RankingScreen = ({ navigation }) => {
   const { baseUrl } = useApi();
-  const [selectedTab, setSelectedTab] = useState("Step 1");
+  const [selectedTab, setSelectedTab] = useState("Summary");
   const [schools, setSchools] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(1);
   const [schoolSummary, setSchoolSummary] = useState(null);
@@ -51,6 +51,24 @@ const RankingScreen = ({ navigation }) => {
   const removeStudentModalRef = useRef(null);
   const [statuses, setStatuses] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const formatCurrency = (amount) => {
+    // Check if the amount is a number and not undefined or null
+    if (amount == null) return "Unavailable";
+
+    // Create an instance of Intl.NumberFormat for currency formatting
+    // Adjusted to use no specific currency symbol, but manual prefix 'R '
+    const formatter = new Intl.NumberFormat("en-ZA", {
+      style: "currency",
+      currency: "ZAR", // Changed to 'decimal' to avoid using a default currency symbol
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+      // Use grouping to separate thousands with commas
+      useGrouping: true,
+    });
+
+    // Return the formatted amount with 'R ' prefixed
+    return formatter.format(amount);
+  };
 
   useEffect(() => {
     const fetchSchoolsAndDefault = async () => {
@@ -124,17 +142,17 @@ const RankingScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    if (selectedSchool) {
-      const fetchSchoolSummary = async () => {
-        try {
-          const summaryData = await getSchoolSummary(baseUrl, selectedSchool);
-          setSchoolSummary(summaryData);
-        } catch (error) {
-          console.error("Failed to fetch school summary:", error);
-        }
-      };
+    const fetchData = async () => {
+      try {
+        const data = await getSchoolSummary(baseUrl, selectedSchool);
+        setSchoolSummary(data);
+      } catch (error) {
+        console.error("Failed to fetch school summary:", error);
+      }
+    };
 
-      fetchSchoolSummary();
+    if (selectedSchool) {
+      fetchData();
     }
   }, [selectedSchool, baseUrl]);
 
@@ -154,7 +172,6 @@ const RankingScreen = ({ navigation }) => {
         `${baseUrl}api/StudentSearch?${queryParams}`,
         {
           credentials: "include",
-          // Include other necessary options like headers
         }
       );
 
@@ -309,7 +326,7 @@ const RankingScreen = ({ navigation }) => {
 
   const renderContent = () => {
     switch (selectedTab) {
-      case "Step 1":
+      case "Summary":
         return (
           <View>
             <View style={styles.formContainer}>
@@ -334,11 +351,14 @@ const RankingScreen = ({ navigation }) => {
             </View>
             <View style={styles.formContainer}>
               {renderSchoolSummaryTable()}
-              <Text style={styles.totalText}>Total Cost: </Text>
+              {/* Display the total fees from schoolSummary */}
+              <Text style={styles.totalText}>
+                Total Cost: {formatCurrency(schoolSummary?.totalFees)}
+              </Text>
             </View>
           </View>
         );
-      case "Step 2":
+      case "Current":
         return (
           <View>
             {/* <View style={styles.searchContainer}> */}
@@ -460,7 +480,7 @@ const RankingScreen = ({ navigation }) => {
             </View>
           </View>
         );
-      case "Step 3":
+      case "New":
         return (
           <View>
             <View style={styles.sortContainer}>
@@ -670,7 +690,7 @@ const RankingScreen = ({ navigation }) => {
     >
       <ScrollView>
         <View style={styles.tabsContainer}>
-          {["Step 1", "Step 2", "Step 3"].map((step) => (
+          {["Summary", "Current", "New"].map((step) => (
             <Tab
               key={step}
               title={step}

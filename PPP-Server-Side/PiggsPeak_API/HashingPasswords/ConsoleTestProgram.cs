@@ -49,7 +49,7 @@ class Program
 	private static async Task testStudentStatus(AppDbContext dbContext)
 	{
 		var students = dbContext.Students
-			.Where(s => s.Deleted == "N")
+			.Where(s => !s.Deleted)
 			.Where(s => s.StartYear == 2011)
 			.ToList();
 

@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PiggsPeak_API
 {
+    // NOTE: This enum needs to match the contents of the Student_Status TABLE
     public enum StudentStatus { New = 1, Active = 2, Graduated = 3, Failed = 4, Moved = 5, Pregnant = 6, Deceased = 7, Unknown = 99 };
 
     [Table("Student")]
@@ -13,7 +14,7 @@ namespace PiggsPeak_API
 	{
         [Key]
 		[Column("Student_id")]
-		public int StudentID { get; set; }
+        public int StudentID { get; set; }
 
         [Column("Status_id")]
         public StudentStatus Status { get; set; }
@@ -51,17 +52,22 @@ namespace PiggsPeak_API
 		[Column("Active_yn")]
         public bool Active { get; set; }
 
-		[Column("Form_nb")]
-		public int? Form { get; set; }
-
 		//[ForeignKey("School")]
 		[Column("School_id")]
 		public int? SchoolID { get; set; }
 
-		//[ForeignKey("School_id")]
-		public School? School { get; set; }
+        [Column("Program_id")]
+        public int? ProgramID { get; set; }
 
-		[Column("SponsorStart_dt")]
+        [Column("Form_nb")]
+        public int? Form { get; set; }
+
+        public School? School { get; set; }
+
+        [ForeignKey("SchoolID,ProgramID,Form,OVC")]
+        public SchoolFee? SchoolFee { get; set; }
+
+        [Column("SponsorStart_dt")]
 		public DateTime? SponsorStart { get; set; }
 
 		[Column("FatherLiving_yn")]
@@ -125,7 +131,7 @@ namespace PiggsPeak_API
 		public int? YearFinished { get; set; }
 
 		[Column("Recommend_yn")]
-		public string? Recommend { get; set; }
+		public bool Recommend { get; set; }
 
 		[Column("Priority_nb")]
 		public int? Priority { get; set; }
@@ -159,7 +165,7 @@ namespace PiggsPeak_API
 			string? fatherWorking, string? fatherUnknown, string? motherLiving, string? motherAtHome, string? motherWorking,
 			string? motherUnknown, string? favouriteSubject, string? narritave, string? aspirations, string? notes, int? version,
 			string? createdBy, DateTime? createdDate, string? createdTimeZone, string? modifiedBy, DateTime? modifiedDate,
-			string? modifiedTimeZone, string? middleName, string? recommend, int? priority, DateTime? dateEnrolled, string? primarySchool,
+			string? modifiedTimeZone, string? middleName, bool recommend, int? priority, DateTime? dateEnrolled, string? primarySchool,
 			int? yearFinished, bool selected, int? startYear, bool newStudent)
 		{
 			StudentID = studentID;
