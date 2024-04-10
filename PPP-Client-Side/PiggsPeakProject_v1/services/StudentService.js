@@ -85,28 +85,37 @@ export const updateStudentById = async (baseUrl, studentId, studentData) => {
 
 export const addStudent = async (baseUrl, studentData) => {
   try {
+    // Add or replace the StudentCode with a dummy code
+    studentData.studentCode = "DUMMY_CODE"; // This is the placeholder
+
+    // Wrap studentData in a "student" object
+    const payload = {
+      student: studentData,
+    };
+    console.log(JSON.stringify(payload));
     const response = await fetch(`${baseUrl}api/Student`, {
       method: "POST",
-      credentials: "include",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      credentials: "include",
-      body: JSON.stringify(studentData),
+      credentials: "include", // Ensures cookies are sent with the request if needed
+      body: JSON.stringify(payload), // Convert the payload to a JSON string
     });
 
     if (!response.ok) {
+      // If the HTTP response status code is not in the 2xx success range
       throw new Error(`Failed to add new student: ${response.statusText}`);
     }
 
-    // Check if the response has content before parsing it
+    // Retrieve the response body as text
     const text = await response.text();
+    // Parse the text as JSON only if it's not empty, otherwise return null
     const data = text ? JSON.parse(text) : null;
 
-    return data;
+    return data; // Return the parsed data or null if there was no content
   } catch (error) {
     console.error("Error adding new student:", error);
-    throw error;
+    throw error; // Re-throw the error for further handling if needed
   }
 };

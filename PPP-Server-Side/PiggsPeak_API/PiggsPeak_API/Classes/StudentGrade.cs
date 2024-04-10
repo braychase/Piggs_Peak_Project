@@ -20,8 +20,9 @@ namespace PiggsPeak_API.Classes
 		[Column("Program_id")]
 		public int? ProgramID { get; set; }
 
-		[Column("Effective_dt")]
-		public DateTime? EffectiveDate { get; set; }
+		[Column("Effective_dt", TypeName = "datetime")]
+		public DateTime EffectiveDate { get; set; }
+
 
 		[Column("Result_tx")]
 		public string? ResultText { get; set; }

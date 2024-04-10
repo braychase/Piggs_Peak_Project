@@ -21,7 +21,10 @@ import {
   addStudent,
 } from "../services/StudentService";
 import { getStudentPhotoById } from "../services/StudentPhotoService";
-import { getStudentGradeById } from "../services/StudentGradeService";
+import {
+  getStudentGradeById,
+  addSchoolGrade,
+} from "../services/StudentGradeService";
 import { render } from "react-dom";
 import styles from "../styles/addStudentPageStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -64,9 +67,9 @@ const AddStudentPage = () => {
   const [firstName, setFirstName] = useState("");
   const [gender, setGender] = useState("M");
   const [ovc, setOVC] = useState("");
-  const [active, setActive] = useState("");
-  const [deleted, setDeleted] = useState("");
-  const [version, setVersion] = useState("");
+  const [active, setActive] = useState("Y");
+  const [deleted, setDeleted] = useState("N");
+  const [version, setVersion] = useState("1");
   const [studentCode, setStudentCode] = useState("");
   const [dob, setDob] = useState(new Date());
   //const [checked, setChecked] = useState(false);
@@ -90,13 +93,15 @@ const AddStudentPage = () => {
   const [fatherAtHome, setFatherAtHome] = useState("unspecified");
   const [fatherWorking, setFatherWorking] = useState("unspecified");
   const [fatherUnknown, setFatherUnknown] = useState("unspecified");
-  const [recommend, setRecommend] = useState("");
+  const [recommend, setRecommend] = useState("N");
   const [priority, setPriority] = useState(10);
   const [comments, setComments] = useState("");
   const [sponsored, setSponsored] = useState("");
   const [selected, setSelected] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [isAddingGrade, setIsAddingGrade] = useState(false);
+  const [programId, setProgramId] = useState("");
+  const [notes, setNotes] = useState("");
 
   // Placeholder for sibling data rows
   const siblingRows = Array.from({ length: 3 }, (_, index) => ({
@@ -140,10 +145,34 @@ const AddStudentPage = () => {
     return age;
   };
 
-  // Placeholder function for adding a new grade
-  const handleAddGrade = () => {
-    setIsAddingGrade(false);
-    // Implementation for adding a new grade
+  const handleAddGrade = async () => {
+    const effectiveDate = new Date(new Date().getFullYear() + 1, 0, 1, 0, 0, 0);
+    const formattedEffectiveDate =
+      effectiveDate.toISOString().split("T")[0] + "T00:00:00";
+
+    const newGradeData = {
+      studentID: studentID,
+      schoolID: schoolID,
+      programId: programId,
+      formNumber: newGradeForm,
+      notes: notes,
+      effectiveDate: formattedEffectiveDate, // YYYY-MM-DDT00:00:00 format
+      deleted: "n",
+      version: 1,
+    };
+
+    console.log(newGradeData);
+
+    try {
+      const response = await addSchoolGrade(baseUrl, newGradeData);
+      console.log("Grade added:", response);
+      alert("Grade added successfully");
+      setIsAddingGrade(false); // Reset the form after confirming operation success
+    } catch (error) {
+      console.error("Failed to add grade:", error);
+      alert("Failed to add grade. Please check the details and try again.");
+      setIsAddingGrade(true); // Consider only resetting this on failure if you want the user to retry without losing form data
+    }
   };
 
   // Function to toggle to "add new grade" mode
@@ -356,7 +385,7 @@ const AddStudentPage = () => {
       selected: selected,
       status: selectedStatus.id,
     };
-
+    console.log(studentData);
     try {
       // Determine whether to add or update the student based on the presence of studentCode
       if (studentCode === null || studentCode.trim() === "") {
@@ -635,8 +664,8 @@ const AddStudentPage = () => {
                 <TextInput
                   mode="outlined"
                   label="Program"
-                  //value={year}
-                  //onChangeText={setYear}
+                  value={programId}
+                  onChangeText={setProgramId}
                   style={styles.input}
                 />
               </View>
@@ -645,8 +674,8 @@ const AddStudentPage = () => {
                 style={styles.commentsInput}
                 multiline
                 numberOfLines={4}
-                onChangeText={setComments}
-                value={comments}
+                onChangeText={setNotes}
+                value={notes}
                 placeholder="Type your comment here..."
               />
               <View

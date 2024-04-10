@@ -154,7 +154,6 @@ const RankingScreen = ({ navigation }) => {
         `${baseUrl}api/StudentSearch?${queryParams}`,
         {
           credentials: "include",
-          // Include other necessary options like headers
         }
       );
 
