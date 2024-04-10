@@ -43,7 +43,6 @@ namespace PiggsPeak_API.Controllers
 
                 //if (student.Grades == null)
                 //                student.Grades =
-                //	`
             }
 
 			return students;
@@ -59,9 +58,9 @@ namespace PiggsPeak_API.Controllers
 
 			var student = _dbContext.Students
                 .Include(s => s.School)
-                .SingleOrDefault(s => s.StudentID == id);
-			
-			
+                .Include(s => s.SchoolFee)
+                .FirstOrDefault(s => s.StudentID == id);
+						
             if (student == null)
 			{
 				_logger.LogWarning($"Student with ID: {id} not found");

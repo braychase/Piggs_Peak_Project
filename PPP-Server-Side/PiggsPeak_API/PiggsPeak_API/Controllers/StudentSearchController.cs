@@ -158,20 +158,23 @@ namespace PiggsPeak_API.Controllers
 
 			var newStudents = await _dbContext.Students
 				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent)
-				.GroupBy(s => s.Gender)
-				.Select(g => new { Gender = g.Key, Count = g.Count() })
+                .Include(s => s.SchoolFee)
+                .GroupBy(s => s.Gender)
+				.Select(g => new { Gender = g.Key, Count = g.Count(), Fees = g.Sum(s => s.SchoolFee != null ? s.SchoolFee.RegistrationFee + s.SchoolFee.ExaminationFee : 0 ) })
 				.ToListAsync();
 
 			var selectedStudents = await _dbContext.Students
 				.Where(s => s.SchoolID == schoolId && s.StartYear == 2024 && s.NewStudent && s.Selected)
-				.GroupBy(s => s.Gender)
-				.Select(g => new { Gender = g.Key, Count = g.Count() })
+                .Include(s => s.SchoolFee)
+                .GroupBy(s => s.Gender)
+				.Select(g => new { Gender = g.Key, Count = g.Count(), Fees = g.Sum(s => s.SchoolFee != null ? s.SchoolFee.RegistrationFee + s.SchoolFee.ExaminationFee : 0) })
 				.ToListAsync();
 
 			var activeStudents = await _dbContext.Students
 				.Where(s => s.SchoolID == schoolId && s.StartYear != 2024 && s.Active)
-				.GroupBy(s => s.Gender)
-				.Select(g => new { Gender = g.Key, Count = g.Count() })
+                .Include(s => s.SchoolFee)
+                .GroupBy(s => s.Gender)
+				.Select(g => new { Gender = g.Key, Count = g.Count(), Fees = g.Sum(s => s.SchoolFee != null ? s.SchoolFee.RegistrationFee + s.SchoolFee.ExaminationFee : 0) })
 				.ToListAsync();
 
 			// Calculate total counts for each category
@@ -186,8 +189,10 @@ namespace PiggsPeak_API.Controllers
 			var totalFemale = selectedStudents.Where(s => s.Gender == "F").Sum(s => s.Count) +
 							  activeStudents.Where(a => a.Gender == "F").Sum(a => a.Count);
 
-			// Aggregate data from queries above to form the response
-			var summary = new
+			var totalFees = activeStudents.Sum(a => a.Fees) + selectedStudents.Sum(a => a.Fees);
+
+            // Aggregate data from queries above to form the response
+            var summary = new
 			{
 				New = newStudents,
 				Selected = selectedStudents,
@@ -203,7 +208,8 @@ namespace PiggsPeak_API.Controllers
 					NewTotal = newTotal,
 					SelectedTotal = selectedTotal,
 					CurrentTotal = currentTotal
-				}
+				},
+				TotalFees = totalFees
 			};
 
 			return Ok(summary);

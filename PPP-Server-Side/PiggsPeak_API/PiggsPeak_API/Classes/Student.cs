@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PiggsPeak_API
 {
+    // NOTE: This enum needs to match the contents of the Student_Status TABLE
     public enum StudentStatus { New = 1, Active = 2, Graduated = 3, Failed = 4, Moved = 5, Pregnant = 6, Deceased = 7, Unknown = 99 };
 
     [Table("Student")]
@@ -51,17 +52,22 @@ namespace PiggsPeak_API
 		[Column("Active_yn")]
         public bool Active { get; set; }
 
-		[Column("Form_nb")]
-		public int? Form { get; set; }
-
 		//[ForeignKey("School")]
 		[Column("School_id")]
 		public int? SchoolID { get; set; }
 
-		//[ForeignKey("School_id")]
-		public School? School { get; set; }
+        [Column("Program_id")]
+        public int? ProgramID { get; set; }
 
-		[Column("SponsorStart_dt")]
+        [Column("Form_nb")]
+        public int? Form { get; set; }
+
+        public School? School { get; set; }
+
+        [ForeignKey("SchoolID,ProgramID,Form,OVC")]
+        public SchoolFee? SchoolFee { get; set; }
+
+        [Column("SponsorStart_dt")]
 		public DateTime? SponsorStart { get; set; }
 
 		[Column("FatherLiving_yn")]

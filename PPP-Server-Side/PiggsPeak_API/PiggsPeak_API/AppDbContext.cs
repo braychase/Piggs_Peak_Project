@@ -13,18 +13,19 @@ namespace PiggsPeak_API
 		}
 
 		public DbSet<School> Schools { get; set; }
-		public DbSet<Student> Students { get; set; }
+        public DbSet<SchoolFee> SchoolFees { get; set; }
+        public DbSet<SchoolProgram> SchoolPrograms { get; set; }
+        public DbSet<GradeSearch> GradeSearch { get; set; }
+
+        public DbSet<Student> Students { get; set; }
         public DbSet<StudentSearch> StudentSearch { get; set; }
         public DbSet<StudentGrade> StudentGrades { get; set; }
-		public DbSet<Party> Parties { get; set; }
-		public DbSet<Permission> Permissions { get; set; }
-		public DbSet<SchoolProgram> SchoolPrograms { get; set; }
-		public DbSet<PartyPermission> PartyPermissions { get; set; }
-		public DbSet<StudentPhoto> StudentPhotos { get; set; }
-		public DbSet<GradeSearch> GradeSearch { get; set; }
-		public DbSet<StudentSponsor> StudentSponsors { get; set; }
-		public DbSet<SchoolFee> SchoolFees { get; set; }
+        public DbSet<StudentPhoto> StudentPhotos { get; set; }
+        public DbSet<StudentSponsor> StudentSponsors { get; set; }
 
+        public DbSet<Party> Parties { get; set; }
+		public DbSet<Permission> Permissions { get; set; }
+		public DbSet<PartyPermission> PartyPermissions { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -63,6 +64,8 @@ namespace PiggsPeak_API
                 .Property(p => p.Selected)
                 .HasConversion(ynConverter);
 
+            modelBuilder.Entity<SchoolFee>()
+                .HasKey(k => new { k.SchoolID, k.ProgramID, k.FormNumber, k.OVC });
             modelBuilder.Entity<SchoolFee>()
                 .Property(p => p.OVC)
                 .HasConversion(ynConverter);
