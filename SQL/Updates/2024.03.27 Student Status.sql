@@ -1,4 +1,3 @@
-use PiggsPeakProject;
 DROP TABLE IF EXISTS Student_Status;
 go
 

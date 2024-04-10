@@ -7,8 +7,9 @@ ALTER TABLE Student
 		Selected_yn CHAR(1) NOT NULL DEFAULT 'N',
 		New_yn CHAR(1) NOT NULL DEFAULT 'Y',
 		PrimarySchool_nm VARCHAR(64) NULL,
-		YearFinished_nb INT NULL,
+		YearFinished_nb INT NULL
 	;
+go
 
 -- compute the StartYear field
 update Student set StartYear_nb = Convert(int, substring(studentCode_tx,5,4))

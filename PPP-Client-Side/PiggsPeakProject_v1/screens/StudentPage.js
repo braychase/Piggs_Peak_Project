@@ -89,17 +89,17 @@ const StudentPage = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    if (isFiltersVisible) {
-      document.body.addEventListener("keydown", handleKeyboardEvent);
-    } else {
-      document.body.removeEventListener("keydown", handleKeyboardEvent);
-    }
+  // useEffect(() => {
+  //   if (isFiltersVisible) {
+  //     document.body.addEventListener("keydown", handleKeyboardEvent);
+  //   } else {
+  //     document.body.removeEventListener("keydown", handleKeyboardEvent);
+  //   }
 
-    return () => {
-      document.body.removeEventListener("keydown", handleKeyboardEvent);
-    };
-  }, [isFiltersVisible]);
+  //   return () => {
+  //     document.body.removeEventListener("keydown", handleKeyboardEvent);
+  //   };
+  // }, [isFiltersVisible]);
 
   const goToNextPage = () => {
     if (currentPage < filteredTotalPages) {

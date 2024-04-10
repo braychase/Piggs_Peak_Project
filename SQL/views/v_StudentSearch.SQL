@@ -1,4 +1,3 @@
-use PiggsPeakProject;
 DROP VIEW IF EXISTS v_StudentSearch;
 GO
 
@@ -17,6 +16,7 @@ SELECT
     S.New_yn,         -- Added field
     S.Selected_yn,    -- Added field
     S.Priority_nb,    -- Added field
+	S.Status_id,
 	S.Active_yn,    -- Added field
 	S.StartYear_nb,    -- Added field
     S.School_id, 

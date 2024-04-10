@@ -1,24 +1,32 @@
 {
+
   "expo": {
     "name": "PiggsPeakProject_v1",
     "slug": "PiggsPeakProject_v1",
     "version": "1.0.0",
+
+    "packagerOpts": { "port": 9222 },
+      
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "assetBundlePatterns": [
       "**/*"
     ],
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.braychase.PiggsPeakProject_v1",
       "buildNumber": "1.0.0"
     },    
+
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -26,9 +34,11 @@
       },
       "package": "com.braychase.PiggsPeakProject_v1"
     },
+
     "web": {
       "favicon": "./assets/favicon.png"
     },
+
     "extra": {
       "eas": {
         "projectId": "fc61bd3a-0153-494e-a222-8fbf6d4b9659"

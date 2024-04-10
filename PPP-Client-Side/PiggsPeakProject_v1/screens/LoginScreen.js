@@ -31,7 +31,7 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     const loadInputUrl = async () => {
       let value = await loadBaseUrl();
-      console.error("login: load Url=", value);
+      console.warn("login: load Url=", value);
       setBaseUrlInput(value);
     };
     loadInputUrl();
@@ -55,7 +55,7 @@ const LoginScreen = ({ navigation }) => {
         loginUrl = "https://" + loginUrl;
       if (!loginUrl.endsWith("/"))
         loginUrl += "/";
-      //console.error("login: base Url=", loginUrl);
+      console.warn("login: using Url=", loginUrl);
 
       setError("Connecting, please wait ...");
       const response = await fetch(loginUrl + "api/Login", {

@@ -62,9 +62,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Configure CORS globally
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy("AllowReactNative",
+	options.AddPolicy("CorsPolicyName",
 		builder => builder
-			.WithOrigins("http://localhost:19006")
+            .WithOrigins("http://localhost:19006")
+            .WithOrigins("http://localhost:9222")
+            .WithOrigins("http://IoTS.ScheduleCare.ca:9222")
 			.AllowAnyHeader()
 			.AllowAnyMethod()
 			.AllowCredentials());
@@ -79,10 +81,10 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Enable CORS globally
-app.UseCors("AllowReactNative");
+app.UseCors("CorsPolicyName");
 
 // Authentication & Authorization middleware
 //app.UseAuthentication();
