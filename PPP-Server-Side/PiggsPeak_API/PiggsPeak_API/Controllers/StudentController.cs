@@ -72,34 +72,54 @@ namespace PiggsPeak_API.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Post([FromBody] Student student)
+        //[ValidateInput(false)]
+        public async Task<IActionResult> Post([FromBody] Student student)
 		{
 			_logger.LogInformation($"Creating new student with name: {student.StudentName}");
 
-			// Check for a valid school code
-			if (string.IsNullOrWhiteSpace(student.School?.SchoolCode))
+			School school;
+            int schoolID = (int)student.SchoolID;
+			if (schoolID == 0 && student.School != null)
+                schoolID = student.School.SchoolID;
+			if (schoolID > 0)
 			{
-				return BadRequest("School code is required.");
+                // validate school ID
+                school = await _dbContext.Schools
+					.FirstOrDefaultAsync(s => s.SchoolID == schoolID);
+				if (school == null)
+				{
+					// Return a bad request if the school code is invalid
+					return BadRequest("Invalid school ID");
+				}
 			}
-
-			// Find the school by the provided schoolCode
-			var school = await _dbContext.Schools
-				.FirstOrDefaultAsync(s => s.SchoolCode == student.School.SchoolCode);
-			if (school == null)
+			else
 			{
-				// Return a bad request if the school code is invalid
-				return BadRequest("Invalid school code.");
+				// validate school code
+				string schoolCode = student.School?.SchoolCode;
+				if (string.IsNullOrWhiteSpace(schoolCode))
+				{
+					return BadRequest("School code is required");
+				}
+				school = await _dbContext.Schools
+					.FirstOrDefaultAsync(s => s.SchoolCode == schoolCode);
+				if (school == null)
+				{
+					// Return a bad request if the school code is invalid
+					return BadRequest("Invalid school code");
+				}
+				student.SchoolID = school.SchoolID;
 			}
 
 			// Generate the StudentCode with the school code and the current year
 			int currentYear = DateTime.Now.Year;
 			string prefix = $"{school.SchoolCode}-{currentYear}-"; // e.g., PCH-2024-
+
+			//TODO this needs to be inside a db Transaction, or computed on db server using trigger
 			var lastStudentCode = await _dbContext.Students
 									.Where(s => s.StudentCode.StartsWith(prefix))
 									.OrderByDescending(s => s.StudentCode)
 									.Select(s => s.StudentCode)
 									.FirstOrDefaultAsync();
-
 			int nextNumber = 1;
 			if (lastStudentCode != null)
 			{
@@ -110,9 +130,13 @@ namespace PiggsPeak_API.Controllers
 				}
 			}
 
-			student.StudentCode = $"{prefix}{nextNumber:00}"; // e.g., PCH-2024-01
-			student.SchoolID = school.SchoolID; // Link student to the correct school ID
-			student.School = new School { SchoolID = school.SchoolID, SchoolCode = school.SchoolCode, Description = school.Description }; // Full school object with description
+			student.StudentID = 0;
+            student.StudentCode = $"{prefix}{nextNumber:00}"; // e.g., PCH-2024-01
+			student.Status = StudentStatus.New;
+			student.School = null;
+
+			// Should not need to populate student.School
+			//student.School = new School { SchoolID = school.SchoolID, SchoolCode = school.SchoolCode, Description = school.Description }; // Full school object with description
 
 			// Add the student to the database context
 			_dbContext.Students.Add(student);
@@ -121,9 +145,6 @@ namespace PiggsPeak_API.Controllers
 
 			return CreatedAtAction(nameof(Get), new { id = student.StudentID }, student);
 		}
-
-
-
 
 		[HttpPut("{id}")]
 		public async Task<IActionResult> Put(int id, [FromBody] Student updatedStudent)

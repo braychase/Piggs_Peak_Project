@@ -14,7 +14,7 @@ namespace PiggsPeak_API
 	{
         [Key]
 		[Column("Student_id")]
-		public int StudentID { get; set; }
+        public int StudentID { get; set; }
 
         [Column("Status_id")]
         public StudentStatus Status { get; set; }
@@ -131,7 +131,7 @@ namespace PiggsPeak_API
 		public int? YearFinished { get; set; }
 
 		[Column("Recommend_yn")]
-		public string? Recommend { get; set; }
+		public bool Recommend { get; set; }
 
 		[Column("Priority_nb")]
 		public int? Priority { get; set; }
@@ -165,7 +165,7 @@ namespace PiggsPeak_API
 			string? fatherWorking, string? fatherUnknown, string? motherLiving, string? motherAtHome, string? motherWorking,
 			string? motherUnknown, string? favouriteSubject, string? narritave, string? aspirations, string? notes, int? version,
 			string? createdBy, DateTime? createdDate, string? createdTimeZone, string? modifiedBy, DateTime? modifiedDate,
-			string? modifiedTimeZone, string? middleName, string? recommend, int? priority, DateTime? dateEnrolled, string? primarySchool,
+			string? modifiedTimeZone, string? middleName, bool recommend, int? priority, DateTime? dateEnrolled, string? primarySchool,
 			int? yearFinished, bool selected, int? startYear, bool newStudent)
 		{
 			StudentID = studentID;
