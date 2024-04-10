@@ -310,6 +310,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     // Add more styling as needed
   },
+  examLabel: {
+    marginRight: 5,
+    fontWeight: "bold",
+  },
+  regLabel: {
+    marginRight: 20,
+    fontWeight: "bold",
+  },
 });
 
 export default styles;

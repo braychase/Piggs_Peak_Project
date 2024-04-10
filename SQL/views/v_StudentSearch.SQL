@@ -18,7 +18,8 @@ SELECT
     S.Selected_yn,    -- Added field
     S.Priority_nb,    -- Added field
 	S.Active_yn,    -- Added field
-	S.StartYear_nb,    -- Added field
+	S.StartYear_nb, 
+	S.Status_id,  -- Added field
     Sc.School_nm, 
     S.School_id, 
     S.Form_nb,

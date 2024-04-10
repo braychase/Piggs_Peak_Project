@@ -78,9 +78,9 @@ const AddStudentPage = () => {
   const [schoolCode, setSchoolCode] = useState("");
   const [newGradeSchool, setNewGradeSchool] = useState("");
   const [schoolDescription, setSchoolDescription] = useState("");
-  const [yearFinished, setYearFinished] = useState(new Date());
+  const [yearFinished, setYearFinished] = useState("");
   const [dateEnrolled, setDateEnrolled] = useState(new Date());
-  const [year, setYear] = useState("");
+  const [startYear, setStartYear] = useState("");
   const [form, setForm] = useState("");
   const [newGradeForm, setNewGradeForm] = useState("");
   const [ambitionAfterGraduation, setAmbitionAfterGraduation] = useState("");
@@ -102,6 +102,26 @@ const AddStudentPage = () => {
   const [isAddingGrade, setIsAddingGrade] = useState(false);
   const [programId, setProgramId] = useState("");
   const [notes, setNotes] = useState("");
+  const [examFee, setExamFee] = useState("");
+  const [regFee, setRegFee] = useState("");
+  const formatCurrency = (amount) => {
+    // Check if the amount is a number and not undefined or null
+    if (amount == null) return 0;
+
+    // Create an instance of Intl.NumberFormat for currency formatting
+    // Adjusted to use no specific currency symbol, but manual prefix 'R '
+    const formatter = new Intl.NumberFormat("en-ZA", {
+      style: "currency",
+      currency: "ZAR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+      // Use grouping to separate thousands with commas
+      useGrouping: true,
+    });
+
+    // Return the formatted amount with 'R ' prefixed
+    return formatter.format(amount);
+  };
 
   // Placeholder for sibling data rows
   const siblingRows = Array.from({ length: 3 }, (_, index) => ({
@@ -199,6 +219,7 @@ const AddStudentPage = () => {
       if (studentID) {
         try {
           const studentData = await getStudentById(baseUrl, studentID);
+          console.log(studentData);
           // Populate form fields with fetched data
           setSurname(studentData.lastName || "");
           setMiddleName(studentData.middleName || "");
@@ -217,6 +238,9 @@ const AddStudentPage = () => {
           setAmbitionAfterGraduation(studentData.aspirations || "");
           setFavouriteSubject(studentData.favouriteSubject || "");
           setYearFinished(studentData.yearFinished || null);
+          setStartYear(studentData.startYear || null);
+          setRegFee(studentData.schoolFee.registrationFee || "");
+          setExamFee(studentData.schoolFee.examinationFee || "");
           setForm(studentData.form || "");
           const motherLivingValue =
             studentData.motherLiving === null
@@ -374,6 +398,7 @@ const AddStudentPage = () => {
       fatherUnknown: fatherUnknown === "unspecified" ? null : fatherUnknown,
       notes: comments || null,
       active: active,
+      startYear: startYear,
       version: version,
       deleted: deleted,
       recommend: recommend,
@@ -519,8 +544,12 @@ const AddStudentPage = () => {
       {selectedTab === "School" && (
         <View style={styles.formContainer}>
           <View style={styles.row}>
-            <Text style={styles.pickerLabel}>Reg Fee :</Text>
-            <Text style={styles.pickerLabel}>Exam Fee :</Text>
+            <Text style={styles.regLabel}>
+              Reg Fee : {formatCurrency(regFee)}
+            </Text>
+            <Text style={styles.examLabel}>
+              Exam Fee : {formatCurrency(examFee)}
+            </Text>
           </View>
           <View style={styles.row}>
             <TextInput
@@ -557,8 +586,8 @@ const AddStudentPage = () => {
             <TextInput
               mode="outlined"
               label="Year"
-              value={year}
-              onChangeText={setYear}
+              value={startYear}
+              onChangeText={setStartYear}
               style={styles.smallTextInput}
             />
           </View>

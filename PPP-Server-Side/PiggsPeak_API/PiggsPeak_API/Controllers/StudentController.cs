@@ -174,6 +174,7 @@ namespace PiggsPeak_API.Controllers
 			existingStudent.PrimarySchool = updatedStudent.PrimarySchool;
 			existingStudent.DateEnrolled = updatedStudent.DateEnrolled;
 			existingStudent.YearFinished = updatedStudent.YearFinished;
+			existingStudent.StartYear = updatedStudent.StartYear;
 			existingStudent.Selected = updatedStudent.Selected;
 			existingStudent.Status = updatedStudent.Status;
 			//existingStudent.ModifiedTimeZone = TimeZoneInfo.Local.Id;
