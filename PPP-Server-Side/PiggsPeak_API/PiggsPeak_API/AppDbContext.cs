@@ -48,11 +48,11 @@ namespace PiggsPeak_API
                 .Property(p => p.IsDeleted)
                 .HasConversion(ynConverter);
 
-            //modelBuilder.Entity<Student>()
-            //    .HasKey(p => p.StudentID);
-            //modelBuilder.Entity<Student>()
-            //    .Property(p => p.StudentID)
-            //    .UseIdentityColumn();
+            modelBuilder.Entity<Student>()
+                .HasKey(p => p.StudentID);
+            modelBuilder.Entity<Student>()
+                .Property(p => p.StudentID)
+                .UseIdentityColumn();
            modelBuilder.Entity<Student>()
 				.Property(p => p.Deleted)
                 .HasConversion(ynConverter);

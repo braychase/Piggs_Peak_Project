@@ -91,17 +91,17 @@ export const addStudent = async (baseUrl, studentData) => {
     studentData.school.schoolID = studentData.school.schoolID || 0;
     studentData.programID = studentData.programID || 1;
     studentData.studentID = 0;
+    studentData.startYear = studentData.startYear || 2024;
     //studentData.studentStatus = "New";
 
     // all bool values in Student should have values
     studentData.active = true;
     studentData.deleted = false;
     studentData.selected = studentData.selected || false;
-    if (typeof studentData.recommend == "string")
-      studentData.recommend = false;
+    if (typeof studentData.recommend == "string") studentData.recommend = false;
     studentData.recommend = studentData.recommend || false;
-    
-    studentData.yearFinished = null;   // this is INT on server-side, not DATE
+
+    studentData.yearFinished = null; // this is INT on server-side, not DATE
 
     const response = await fetch(`${baseUrl}api/Student`, {
       method: "POST",
