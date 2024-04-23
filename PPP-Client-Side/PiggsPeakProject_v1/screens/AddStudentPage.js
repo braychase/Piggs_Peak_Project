@@ -93,7 +93,7 @@ const AddStudentPage = () => {
   const [fatherAtHome, setFatherAtHome] = useState("unspecified");
   const [fatherWorking, setFatherWorking] = useState("unspecified");
   const [fatherUnknown, setFatherUnknown] = useState("unspecified");
-  const [recommend, setRecommend] = useState("N");
+  const [recommend, setRecommend] = useState(false);
   const [priority, setPriority] = useState(10);
   const [comments, setComments] = useState("");
   const [sponsored, setSponsored] = useState("");
@@ -293,7 +293,7 @@ const AddStudentPage = () => {
             // Set to current date or any default, if necessary
             setDateEnrolled(new Date());
           }
-          setRecommend(studentData.recommend || "Y");
+          setRecommend(studentData.recommend || true);
 
           // Handle birthDate
           if (studentData.birthDate) {
@@ -869,8 +869,8 @@ const AddStudentPage = () => {
               style={styles.picker}
               onValueChange={(itemValue, itemIndex) => setRecommend(itemValue)}
             >
-              <Picker.Item label="Yes" value="Y" />
-              <Picker.Item label="No" value="N" />
+              <Picker.Item label="Yes" value="true" />
+              <Picker.Item label="No" value="false" />
             </Picker>
           </View>
           <View style={styles.row}>
